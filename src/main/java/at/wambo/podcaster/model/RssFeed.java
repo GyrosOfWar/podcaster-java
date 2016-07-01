@@ -39,7 +39,6 @@ public class RssFeed {
     @ManyToOne(targetEntity = User.class)
     private User owner;
     private String hashedImageUrl;
-    @Column(nullable = true)
     @OneToMany(targetEntity = FeedItem.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FeedItem> items;
 
