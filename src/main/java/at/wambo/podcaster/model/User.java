@@ -1,4 +1,4 @@
-package at.wambo.podcaster;
+package at.wambo.podcaster.model;
 
 import lombok.Data;
 

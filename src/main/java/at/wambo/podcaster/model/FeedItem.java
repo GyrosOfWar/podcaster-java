@@ -1,4 +1,4 @@
-package at.wambo.podcaster;
+package at.wambo.podcaster.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rometools.rome.feed.synd.SyndEnclosure;

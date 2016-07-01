@@ -1,5 +1,6 @@
-package at.wambo.podcaster;
+package at.wambo.podcaster.repository;
 
+import at.wambo.podcaster.model.User;
 import org.springframework.data.repository.CrudRepository;
 
 /**
