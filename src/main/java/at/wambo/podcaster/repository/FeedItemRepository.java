@@ -13,4 +13,6 @@ public interface FeedItemRepository extends PagingAndSortingRepository<FeedItem,
     FeedItem findByLink(String link);
 
     List<FeedItem> findByHashedImageUrl(String hashedImageUrl);
+
+    List<FeedItem> findByIsFavoriteTrueAndFeed(Integer feedId);
 }

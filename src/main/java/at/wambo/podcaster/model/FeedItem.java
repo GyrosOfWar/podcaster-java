@@ -10,8 +10,7 @@ import org.jdom2.Element;
 
 import javax.persistence.*;
 import java.time.Duration;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -30,7 +29,7 @@ public class FeedItem {
     private String link;
     private String description;
     private String mp3Url;
-    private ZonedDateTime pubDate;
+    private Instant pubDate;
     private Duration duration;
     @ManyToOne(targetEntity = RssFeed.class)
     @JsonIgnore
@@ -58,7 +57,7 @@ public class FeedItem {
         item.setDuration(duration);
         item.setLink(entry.getLink());
         Date pubDate = entry.getPublishedDate();
-        item.setPubDate(ZonedDateTime.ofInstant(pubDate.toInstant(), ZoneId.of("UTC")));
+        item.setPubDate(pubDate.toInstant());
         item.setLastPosition(Duration.ZERO);
         item.setFeed(feed);
         String imageUrl = null;

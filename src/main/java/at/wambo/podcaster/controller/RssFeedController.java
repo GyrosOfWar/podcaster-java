@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author Martin
@@ -19,6 +20,7 @@ import java.util.List;
 @RequestMapping(path = "/api/feeds")
 public class RssFeedController {
     private static final int MAX_COUNT = 30;
+    private static final Random RANDOM = new Random();
 
     @Autowired
     private RssFeedRepository feedRepository;
@@ -37,7 +39,7 @@ public class RssFeedController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public RssFeed addFeed(@RequestBody String url) {
+    public RssFeed addFeed(@RequestParam(value = "url") String url) {
         RssFeed feed = RssFeed.fromUrl(url);
         RssFeed savedFeed = this.feedRepository.save(feed);
         // See above
@@ -70,6 +72,7 @@ public class RssFeedController {
         if (feed == null) {
             return null;
         }
+        // TODO optimize
         int len = feed.getItems().size();
         count = Math.min(MAX_COUNT, count);
         int start = Math.min(len - 2, offset);
@@ -77,4 +80,20 @@ public class RssFeedController {
         return feed.getItems().subList(start, end);
     }
 
+    @RequestMapping(path = "{feed}/search", method = RequestMethod.POST)
+    public List<FeedItem> searchItems(@PathVariable RssFeed feed, @RequestParam(value = "query") String query) {
+        String tsQuery = query.trim().replace(' ', '&');
+        return this.feedRepository.fullTextSearch(feed.getId(), tsQuery);
+    }
+
+    @RequestMapping(path = "{feed}/random")
+    public FeedItem randomItem(@PathVariable RssFeed feed) {
+        int max = feed.getItems().size();
+        return feed.getItems().get(RANDOM.nextInt(max));
+    }
+
+    @RequestMapping(path = "{feed}/favorites")
+    public List<FeedItem> favorites(@PathVariable RssFeed feed) {
+        return this.feedItemRepository.findByIsFavoriteTrueAndFeed(feed.getId());
+    }
 }

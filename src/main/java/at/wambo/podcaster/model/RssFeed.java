@@ -27,6 +27,9 @@ import java.util.stream.Collectors;
 @Data
 @Entity
 @Table(name = "feeds")
+@NamedNativeQuery(name = "RssFeed.fullTextSearch",
+        query = "SELECT * FROM feed_items WHERE feed_id = ?1 AND to_tsvector('english', title || ' ' || description) @@ to_tsquery(?2)",
+        resultClass = FeedItem.class)
 public class RssFeed {
     private static final Logger logger = LoggerFactory.getLogger(RssFeed.class);
 
