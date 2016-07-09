@@ -123,10 +123,10 @@ public class RssFeedControllerTests {
             System.out.println(result);
         }
 
-//        HttpEntity<FeedItem[]> favorites = this.restTemplate.getForEntity("/api/feeds/{id}/favorites", FeedItem[].class, id);
-//
-//        for (FeedItem item : favorites.getBody()) {
-//            assertTrue(item.isFavorite());
-//        }
+        HttpEntity<FeedItem[]> favorites = this.restTemplate.getForEntity("/api/feeds/{id}/favorites", FeedItem[].class, id);
+
+        for (FeedItem item : favorites.getBody()) {
+            assertTrue(item.isFavorite());
+        }
     }
 }

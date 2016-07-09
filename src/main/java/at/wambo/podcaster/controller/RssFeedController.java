@@ -94,6 +94,6 @@ public class RssFeedController {
 
     @RequestMapping(path = "{feed}/favorites")
     public List<FeedItem> favorites(@PathVariable RssFeed feed) {
-        return this.feedItemRepository.findByIsFavoriteTrueAndFeed(feed.getId());
+        return feedRepository.findByItemsIsFavoriteTrueAndId(feed.getId());
     }
 }

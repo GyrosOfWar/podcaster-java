@@ -59,12 +59,4 @@ public class ImageCacheController {
     public byte[] serveImage(@PathVariable String hashedUrl, @RequestParam Integer size) {
         return getImage(hashedUrl, size);
     }
-
-    public void setConnectionFactory(RedisConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
-    }
-
-    public void setItemRepository(FeedItemRepository itemRepository) {
-        this.itemRepository = itemRepository;
-    }
 }
