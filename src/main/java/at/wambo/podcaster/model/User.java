@@ -12,6 +12,8 @@ import javax.persistence.*;
 @Entity
 @Table(name = "users")
 public class User {
+    // TODO http://kielczewski.eu/2014/12/spring-boot-security-application/
+
     @GeneratedValue
     @Id
     private int id;
