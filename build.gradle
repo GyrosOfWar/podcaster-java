@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '1.4.0.BUILD-SNAPSHOT'
+        springBootVersion = '1.4.0.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -31,14 +31,14 @@ repositories {
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-data-redis')
-    // compile('org.springframework.boot:spring-boot-devtools')
+    compile('org.springframework.boot:spring-boot-devtools')
     compile('org.projectlombok:lombok:1.16.6')
     compile('org.springframework.boot:spring-boot-starter-security')
-    compile('org.springframework.boot:spring-boot-starter-velocity')
+    compile('org.springframework.boot:spring-boot-starter-freemarker')
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('com.rometools:rome:1.5.1')
     compile('commons-codec:commons-codec:1.10')
-    compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.7.5')
+    compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.1')
 
     runtime('org.postgresql:postgresql')
 

@@ -10,10 +10,8 @@ import javax.persistence.*;
  */
 @Data
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User {
-    // TODO http://kielczewski.eu/2014/12/spring-boot-security-application/
-
     @GeneratedValue
     @Id
     private int id;
