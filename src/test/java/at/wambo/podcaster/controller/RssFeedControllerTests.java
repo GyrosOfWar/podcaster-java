@@ -2,14 +2,15 @@ package at.wambo.podcaster.controller;
 
 import at.wambo.podcaster.model.FeedItem;
 import at.wambo.podcaster.model.RssFeed;
+import at.wambo.podcaster.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
@@ -27,8 +28,9 @@ import static org.junit.Assert.*;
 public class RssFeedControllerTests {
     private final String feedUrl = "http://www.giantbomb.com/podcast-xml/beastcast";
 
-    @Autowired
     private TestRestTemplate restTemplate;
+
+    private User user;
 
     private boolean hasFeeds() {
         HttpEntity<RssFeed[]> feeds = this.restTemplate.getForEntity(
@@ -39,7 +41,23 @@ public class RssFeedControllerTests {
         return feedArray.length > 0;
     }
 
+    private void registerUser() {
+        if (this.user == null) {
+            final String password = "test";
+            User user = new User(-1, "martin", "martin.tomasi@gmail.com", UserController.PASSWORD_ENCODER.encode(password));
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("email", user.getEmail());
+            params.add("username", user.getName());
+            params.add("password", password);
+            params.add("passwordRepeated", password);
+            ResponseEntity<String> entity = restTemplate.postForEntity("/register", params, String.class);
+            assertTrue(entity.getStatusCode().is3xxRedirection());
+            this.user = user;
+        }
+    }
+
     private int getFeedId() {
+        registerUser();
         int id = 1;
         if (!hasFeeds()) {
             MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
@@ -65,11 +83,6 @@ public class RssFeedControllerTests {
         HttpEntity<RssFeed> feed = this.restTemplate.getForEntity("/api/feeds/{id}", RssFeed.class, id);
         assertEquals(feed.getBody().getItems().size(), 0);
         assertEquals(feed.getBody().getTitle(), "The Giant Beastcast");
-    }
-
-    @Test
-    public void postFeed() {
-
     }
 
     @Test

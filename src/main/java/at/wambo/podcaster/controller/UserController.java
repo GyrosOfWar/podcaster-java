@@ -22,7 +22,7 @@ import javax.validation.Valid;
  */
 @Controller
 public class UserController {
-    private static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
+    public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
     @Autowired
     private UserRepository userRepository;
     @Autowired

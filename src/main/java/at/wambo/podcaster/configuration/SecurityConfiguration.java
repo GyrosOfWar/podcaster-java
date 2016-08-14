@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
@@ -16,14 +16,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  */
 @Configuration
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+@EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
-    private UserDetailsService userDetailsService;
+    private CurrentUserDetailsService userDetailsService;
 
     @Override protected void configure(HttpSecurity security) throws Exception {
-        security
+        security.authorizeRequests()
+                .antMatchers("/", "/static/**").permitAll()
+                .anyRequest().fullyAuthenticated()
+                .and()
                 .formLogin()
-                .loginPage("login")
+                .loginPage("/login")
                 .failureUrl("/login?error")
                 .usernameParameter("name")
                 .permitAll()
@@ -32,6 +36,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .logoutUrl("logout")
                 .logoutSuccessUrl("/")
                 .permitAll();
+        security.csrf().disable();
     }
 
     @Override public void configure(AuthenticationManagerBuilder auth) throws Exception {
