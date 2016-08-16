@@ -36,6 +36,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-security')
     compile('org.springframework.boot:spring-boot-starter-freemarker')
     compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.security:spring-security-test')
     compile('com.rometools:rome:1.5.1')
     compile('commons-codec:commons-codec:1.10')
     compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.1')

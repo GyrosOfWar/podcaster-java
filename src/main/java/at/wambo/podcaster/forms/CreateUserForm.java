@@ -17,4 +17,8 @@ public class CreateUserForm {
     private String password;
     @NotEmpty
     private String passwordRepeated;
+
+    public boolean hasNullValues() {
+        return email == null || username == null || password == null || passwordRepeated == null;
+    }
 }

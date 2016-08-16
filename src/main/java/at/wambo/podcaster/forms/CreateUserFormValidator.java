@@ -23,9 +23,15 @@ public class CreateUserFormValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         CreateUserForm form = (CreateUserForm) target;
+        if (form.hasNullValues()) {
+            errors.reject("value.empty", "One of the values in the form is empty.");
+            return;
+        }
+
         validatePasswords(errors, form);
         validateEmail(errors, form);
     }
+
 
     private void validatePasswords(Errors errors, CreateUserForm form) {
         if (!form.getPassword().equals(form.getPasswordRepeated())) {

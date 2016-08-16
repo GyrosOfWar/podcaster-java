@@ -80,7 +80,7 @@ public class RssFeedController {
         return feed.getItems().subList(start, end);
     }
 
-    @RequestMapping(path = "{feed}/search", method = RequestMethod.POST)
+    @RequestMapping(path = "{feed}/search", method = RequestMethod.GET)
     public List<FeedItem> searchItems(@PathVariable RssFeed feed, @RequestParam(value = "query") String query) {
         String tsQuery = query.trim().replace(' ', '&');
         return this.feedRepository.fullTextSearch(feed.getId(), tsQuery);

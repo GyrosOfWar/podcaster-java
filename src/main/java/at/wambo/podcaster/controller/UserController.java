@@ -4,6 +4,8 @@ import at.wambo.podcaster.forms.CreateUserForm;
 import at.wambo.podcaster.forms.CreateUserFormValidator;
 import at.wambo.podcaster.model.User;
 import at.wambo.podcaster.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,6 +25,7 @@ import javax.validation.Valid;
 @Controller
 public class UserController {
     public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -43,21 +46,26 @@ public class UserController {
 
     @RequestMapping(path = "/register", method = RequestMethod.GET)
     public ModelAndView registerPage() {
-        return new ModelAndView("register", "form", new CreateUserForm());
+        return new ModelAndView("registerPage", "form", new CreateUserForm());
     }
 
     @RequestMapping(path = "/register", method = RequestMethod.POST)
-    public String handleRegister(@Valid @ModelAttribute("form") CreateUserForm form, BindingResult bindingResult) {
+    public Object handleRegister(@Valid @ModelAttribute("form") CreateUserForm form, BindingResult bindingResult) {
+        User user;
         if (bindingResult.hasErrors()) {
-            return "register";
+            logger.debug("Found errors in form: {}", form);
+            return "registerPage";
         }
         try {
-            create(form);
+            user = create(form);
         } catch (DataIntegrityViolationException ex) {
             bindingResult.reject("user.exists", "User already exists.");
-            return "register";
+            logger.info("User alreadys exists: {}", form);
+            // FIXME
+            return "registerPage";
         }
-        return "redirect:/";
+        logger.debug("Successfully created user {}", user);
+        return "redirect:/login";
     }
 
     @RequestMapping(path = "/login", method = RequestMethod.GET)

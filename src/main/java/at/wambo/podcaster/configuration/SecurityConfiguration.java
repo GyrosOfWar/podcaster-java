@@ -1,5 +1,6 @@
 package at.wambo.podcaster.configuration;
 
+import at.wambo.podcaster.controller.UserController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Configuration;
@@ -8,22 +9,22 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  * @author Martin
  *         13.08.2016
  */
-@Configuration
-@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 @EnableWebSecurity
+@Configuration
+@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER - 1)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private CurrentUserDetailsService userDetailsService;
 
-    @Override protected void configure(HttpSecurity security) throws Exception {
+    @Override
+    protected void configure(HttpSecurity security) throws Exception {
         security.authorizeRequests()
-                .antMatchers("/", "/static/**").permitAll()
+                .antMatchers("/", "/static/**", "/register*", "/login").permitAll()
                 .anyRequest().fullyAuthenticated()
                 .and()
                 .formLogin()
@@ -36,10 +37,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .logoutUrl("logout")
                 .logoutSuccessUrl("/")
                 .permitAll();
-        security.csrf().disable();
+
+        security.antMatcher("/api/**")
+                .authorizeRequests()
+                .anyRequest().fullyAuthenticated()
+                .and()
+                .httpBasic()
+                .and()
+                .csrf().disable();
     }
 
-    @Override public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(UserController.PASSWORD_ENCODER);
     }
+
+
 }
