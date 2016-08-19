@@ -1,10 +1,13 @@
 package at.wambo.podcaster.controller;
 
+import at.wambo.podcaster.configuration.CurrentUser;
 import at.wambo.podcaster.model.FeedItem;
 import at.wambo.podcaster.model.RssFeed;
+import at.wambo.podcaster.model.User;
 import at.wambo.podcaster.repository.FeedItemRepository;
 import at.wambo.podcaster.repository.RssFeedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -27,6 +30,10 @@ public class RssFeedController {
     @Autowired
     private FeedItemRepository feedItemRepository;
 
+    private User getUser() {
+        return ((CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     public List<RssFeed> getFeeds() {
         List<RssFeed> feeds = new ArrayList<>();
@@ -40,7 +47,9 @@ public class RssFeedController {
 
     @RequestMapping(method = RequestMethod.POST)
     public RssFeed addFeed(@RequestParam(value = "url") String url) {
+        User user = getUser();
         RssFeed feed = RssFeed.fromUrl(url);
+        feed.setOwner(user);
         RssFeed savedFeed = this.feedRepository.save(feed);
         // See above
         savedFeed.setItems(Collections.emptyList());
@@ -67,17 +76,9 @@ public class RssFeedController {
         }
     }
 
-    @RequestMapping(path = "{feed}/{offset}/{count}")
-    public List<FeedItem> getPaginated(@PathVariable RssFeed feed, @PathVariable Integer offset, @PathVariable Integer count) {
-        if (feed == null) {
-            return null;
-        }
-        // TODO optimize
-        int len = feed.getItems().size();
-        count = Math.min(MAX_COUNT, count);
-        int start = Math.min(len - 2, offset);
-        int end = Math.min(len - 1, offset + count);
-        return feed.getItems().subList(start, end);
+    @RequestMapping(path = "{feedId}/{offset}/{count}")
+    public List<FeedItem> getPaginated(@PathVariable Integer feedId, @PathVariable Integer offset, @PathVariable Integer count) {
+        return feedItemRepository.findByFeedIdPaginated(feedId, offset, count);
     }
 
     @RequestMapping(path = "{feed}/search", method = RequestMethod.GET)

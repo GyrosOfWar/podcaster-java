@@ -37,7 +37,7 @@ public class RssFeedControllerTests {
     private WebApplicationContext context;
     @Autowired
     private ObjectMapper objectMapper;
-    private User user = new User(-1, "martin", "martin.tomasi@gmail.com", UserController.PASSWORD_ENCODER.encode(password));
+    private User user = new User("martin", "martin.tomasi@gmail.com", UserController.PASSWORD_ENCODER.encode(password));
     private MockMvc mvc;
     private boolean userRegistered = false;
 

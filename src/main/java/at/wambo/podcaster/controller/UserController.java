@@ -1,5 +1,6 @@
 package at.wambo.podcaster.controller;
 
+import at.wambo.podcaster.configuration.CurrentUser;
 import at.wambo.podcaster.forms.CreateUserForm;
 import at.wambo.podcaster.forms.CreateUserFormValidator;
 import at.wambo.podcaster.model.User;
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -61,7 +63,6 @@ public class UserController {
         } catch (DataIntegrityViolationException ex) {
             bindingResult.reject("user.exists", "User already exists.");
             logger.info("User alreadys exists: {}", form);
-            // FIXME
             return "registerPage";
         }
         logger.debug("Successfully created user {}", user);
@@ -71,5 +72,10 @@ public class UserController {
     @RequestMapping(path = "/login", method = RequestMethod.GET)
     public ModelAndView showLoginPage(@RequestParam String error) {
         return new ModelAndView("login", "error", error);
+    }
+
+    @RequestMapping(path = "/api/user", method = RequestMethod.GET)
+    public @ResponseBody User getUserInfo() {
+        return ((CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
     }
 }

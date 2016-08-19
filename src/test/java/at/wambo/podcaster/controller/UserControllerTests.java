@@ -1,5 +1,7 @@
 package at.wambo.podcaster.controller;
 
+import at.wambo.podcaster.model.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +16,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.Assert.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 /**
@@ -26,8 +30,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 public class UserControllerTests {
     private final String password = "test";
     private MockMvc mvc;
+
     @Autowired
     private WebApplicationContext context;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Before
     public void setup() {
@@ -58,5 +66,16 @@ public class UserControllerTests {
                 .param("passwordRepeated", password).with(csrf()))
                 .andReturn();
         assertEquals(302, result.getResponse().getStatus());
+    }
+
+    @Test
+    public void getUserinfo() throws Exception {
+        MvcResult result = mvc.perform(get("/api/user")
+                .with(httpBasic("martin2", password))).andReturn();
+        String response = result.getResponse().getContentAsString();
+        User user = objectMapper.readValue(response, User.class);
+        assertEquals(user.getName(), "martin2");
+        assertEquals(user.getEmail(), "test123@gmail.com");
+        assertEquals(user.getPwHash(), null);
     }
 }

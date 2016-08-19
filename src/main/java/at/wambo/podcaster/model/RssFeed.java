@@ -39,7 +39,7 @@ public class RssFeed {
     private String feedUrl;
     private String title;
     private String imageUrl;
-    @ManyToOne(targetEntity = User.class)
+    @ManyToOne(targetEntity = User.class, optional = false)
     private User owner;
     private String hashedImageUrl;
     @OneToMany(targetEntity = FeedItem.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -61,7 +61,6 @@ public class RssFeed {
         }
 
         RssFeed f = new RssFeed();
-        // f.setOwner(owner);
         String imageUrl = feed.getImage().getUrl();
         f.setFeedUrl(url);
         f.setImageUrl(imageUrl);
