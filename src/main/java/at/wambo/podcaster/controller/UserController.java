@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -28,14 +29,21 @@ import javax.validation.Valid;
 public class UserController {
     public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
+    private final UserRepository userRepository;
+    private final CreateUserFormValidator createUserFormValidator;
+
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private CreateUserFormValidator createUserFormValidator;
+    public UserController(CreateUserFormValidator createUserFormValidator, UserRepository userRepository) {
+        Assert.notNull(createUserFormValidator);
+        Assert.notNull(userRepository);
+        this.createUserFormValidator = createUserFormValidator;
+        this.userRepository = userRepository;
+    }
 
     @InitBinder("form")
     public void initBinder(WebDataBinder binder) {
-        binder.addValidators(createUserFormValidator);
+        binder.addValidators(this.createUserFormValidator);
     }
 
     private User create(CreateUserForm form) {
@@ -43,7 +51,7 @@ public class UserController {
         user.setEmail(form.getEmail());
         user.setName(form.getUsername());
         user.setPwHash(PASSWORD_ENCODER.encode(form.getPassword()));
-        return userRepository.save(user);
+        return this.userRepository.save(user);
     }
 
     @RequestMapping(path = "/register", method = RequestMethod.GET)
@@ -75,7 +83,9 @@ public class UserController {
     }
 
     @RequestMapping(path = "/api/user", method = RequestMethod.GET)
-    public @ResponseBody User getUserInfo() {
+    public
+    @ResponseBody
+    User getUserInfo() {
         return ((CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
     }
 }

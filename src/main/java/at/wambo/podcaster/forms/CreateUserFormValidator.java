@@ -12,8 +12,12 @@ import org.springframework.validation.Validator;
  */
 @Component
 public class CreateUserFormValidator implements Validator {
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    public CreateUserFormValidator(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -40,7 +44,7 @@ public class CreateUserFormValidator implements Validator {
     }
 
     private void validateEmail(Errors errors, CreateUserForm form) {
-        if (userRepository.findByEmail(form.getEmail()).isPresent()) {
+        if (this.userRepository.findByEmail(form.getEmail()).isPresent()) {
             errors.reject("user.exists", "User already exists.");
         }
     }

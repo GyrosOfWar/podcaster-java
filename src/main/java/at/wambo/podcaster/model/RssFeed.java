@@ -45,7 +45,7 @@ public class RssFeed {
     @OneToMany(targetEntity = FeedItem.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FeedItem> items;
 
-    public static RssFeed fromUrl(String url) {
+    public static RssFeed fromUrl(String url, User user) {
         try {
             url = URLDecoder.decode(url, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -72,6 +72,7 @@ public class RssFeed {
         f.setItems(items);
         String hash = DigestUtils.sha256Hex(imageUrl);
         f.setHashedImageUrl(hash);
+        f.setOwner(user);
         return f;
     }
 

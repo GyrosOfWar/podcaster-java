@@ -1,10 +1,13 @@
 package at.wambo.podcaster.controller;
 
 import at.wambo.podcaster.model.FeedItem;
+import at.wambo.podcaster.model.RssFeed;
 import at.wambo.podcaster.repository.FeedItemRepository;
+import at.wambo.podcaster.repository.RssFeedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,6 +19,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 /**
  * @author Martin
@@ -24,21 +28,35 @@ import java.net.URL;
 @RestController
 @RequestMapping(path = "/api/image/")
 public class ImageCacheController {
-    @Autowired
-    private RedisConnectionFactory connectionFactory;
+
+    private final RedisConnectionFactory connectionFactory;
+    private final FeedItemRepository itemRepository;
+    private final RssFeedRepository rssFeedRepository;
 
     @Autowired
-    private FeedItemRepository itemRepository;
+    public ImageCacheController(RedisConnectionFactory connectionFactory, FeedItemRepository itemRepository, RssFeedRepository rssFeedRepository) {
+        this.rssFeedRepository = rssFeedRepository;
+        Assert.notNull(connectionFactory);
+        Assert.notNull(itemRepository);
+        this.itemRepository = itemRepository;
+        this.connectionFactory = connectionFactory;
+    }
 
     // TODO save different image sizes
     private byte[] getImage(String hashedUrl, int size) {
         RedisConnection connection = this.connectionFactory.getConnection();
         byte[] result = connection.get(hashedUrl.getBytes());
         if (result == null) {
-            FeedItem item = this.itemRepository.findByHashedImageUrl(hashedUrl).get(0);
             URL url;
+            List<FeedItem> items = this.itemRepository.findByHashedImageUrl(hashedUrl);
             try {
-                url = new URL(item.getImageUrl());
+                if (items.size() > 0) {
+                    url = new URL(items.get(0).getImageUrl());
+                } else {
+                    List<RssFeed> feeds = this.rssFeedRepository.findByHashedImageUrl(hashedUrl);
+                    url = new URL(feeds.get(0).getImageUrl());
+                }
+
                 BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
                 img.createGraphics().drawImage(ImageIO.read(url).getScaledInstance(size, size, Image.SCALE_SMOOTH), 0, 0, null);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();

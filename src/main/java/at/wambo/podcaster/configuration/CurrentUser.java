@@ -9,18 +9,14 @@ import org.springframework.security.core.authority.AuthorityUtils;
  */
 public class CurrentUser extends org.springframework.security.core.userdetails.User {
     public static final String USER_ROLE = "user";
-    private User user;
+    private final User user;
 
     public CurrentUser(User user) {
         super(user.getName(), user.getPwHash(), AuthorityUtils.createAuthorityList(USER_ROLE));
         this.user = user;
     }
 
-    public long getId() {
-        return user.getId();
-    }
-
     public User getUser() {
-        return user;
+        return this.user;
     }
 }

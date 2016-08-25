@@ -18,8 +18,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER - 1)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+    private final CurrentUserDetailsService userDetailsService;
+
     @Autowired
-    private CurrentUserDetailsService userDetailsService;
+    public SecurityConfiguration(CurrentUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     protected void configure(HttpSecurity security) throws Exception {
@@ -49,7 +53,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(UserController.PASSWORD_ENCODER);
+        auth.userDetailsService(this.userDetailsService).passwordEncoder(UserController.PASSWORD_ENCODER);
     }
 
 

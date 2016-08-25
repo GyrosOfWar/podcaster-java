@@ -14,6 +14,7 @@ import java.util.List;
 public interface RssFeedRepository extends PagingAndSortingRepository<RssFeed, Integer> {
     List<FeedItem> fullTextSearch(Integer id, String query);
 
-    // List<FeedItem> findByIsFavoriteTrueAndFeed(Integer feedId);
     List<FeedItem> findByItemsIsFavoriteTrueAndId(Integer feedId);
+
+    List<RssFeed> findByHashedImageUrl(String hashedImageUrl);
 }

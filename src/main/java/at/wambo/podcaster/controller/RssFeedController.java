@@ -8,6 +8,7 @@ import at.wambo.podcaster.repository.FeedItemRepository;
 import at.wambo.podcaster.repository.RssFeedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -25,10 +26,16 @@ public class RssFeedController {
     private static final int MAX_COUNT = 30;
     private static final Random RANDOM = new Random();
 
+    private final RssFeedRepository feedRepository;
+    private final FeedItemRepository feedItemRepository;
+
     @Autowired
-    private RssFeedRepository feedRepository;
-    @Autowired
-    private FeedItemRepository feedItemRepository;
+    public RssFeedController(FeedItemRepository feedItemRepository, RssFeedRepository feedRepository) {
+        Assert.notNull(feedItemRepository);
+        Assert.notNull(feedRepository);
+        this.feedItemRepository = feedItemRepository;
+        this.feedRepository = feedRepository;
+    }
 
     private User getUser() {
         return ((CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
@@ -48,12 +55,9 @@ public class RssFeedController {
     @RequestMapping(method = RequestMethod.POST)
     public RssFeed addFeed(@RequestParam(value = "url") String url) {
         User user = getUser();
-        RssFeed feed = RssFeed.fromUrl(url);
-        feed.setOwner(user);
+        RssFeed feed = RssFeed.fromUrl(url, user);
         RssFeed savedFeed = this.feedRepository.save(feed);
-        // See above
         savedFeed.setItems(Collections.emptyList());
-
         return savedFeed;
     }
 
@@ -78,7 +82,7 @@ public class RssFeedController {
 
     @RequestMapping(path = "{feedId}/{offset}/{count}")
     public List<FeedItem> getPaginated(@PathVariable Integer feedId, @PathVariable Integer offset, @PathVariable Integer count) {
-        return feedItemRepository.findByFeedIdPaginated(feedId, offset, count);
+        return this.feedItemRepository.findByFeedIdPaginated(feedId, offset, count);
     }
 
     @RequestMapping(path = "{feed}/search", method = RequestMethod.GET)
@@ -95,6 +99,6 @@ public class RssFeedController {
 
     @RequestMapping(path = "{feed}/favorites")
     public List<FeedItem> favorites(@PathVariable RssFeed feed) {
-        return feedRepository.findByItemsIsFavoriteTrueAndId(feed.getId());
+        return this.feedRepository.findByItemsIsFavoriteTrueAndId(feed.getId());
     }
 }

@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 /**
  * @author Martin Tomasi.
  */
+@SuppressWarnings("SpringJavaAutowiredMembersInspection")
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -39,19 +40,19 @@ public class UserControllerTests {
 
     @Before
     public void setup() {
-        mvc = MockMvcBuilders
-                .webAppContextSetup(context)
+        this.mvc = MockMvcBuilders
+                .webAppContextSetup(this.context)
                 .apply(springSecurity())
                 .build();
     }
 
     @Test
     public void registerUser() throws Exception {
-        MvcResult result = mvc.perform(post("/register")
+        MvcResult result = this.mvc.perform(post("/register")
                 .param("email", "test123@gmail.com")
                 .param("username", "martin2")
-                .param("password", password)
-                .param("passwordRepeated", password).with(csrf()))
+                .param("password", this.password)
+                .param("passwordRepeated", this.password).with(csrf()))
                 .andReturn();
 
         assertEquals(result.getResponse().getStatus(), 302);
@@ -59,21 +60,21 @@ public class UserControllerTests {
 
     @Test
     public void registerUserWithoutCsrf() throws Exception {
-        MvcResult result = mvc.perform(post("/register")
+        MvcResult result = this.mvc.perform(post("/register")
                 .param("email", "test2345@gmail.com")
                 .param("username", "martin3")
-                .param("password", password)
-                .param("passwordRepeated", password).with(csrf()))
+                .param("password", this.password)
+                .param("passwordRepeated", this.password))
                 .andReturn();
         assertEquals(302, result.getResponse().getStatus());
     }
 
     @Test
     public void getUserinfo() throws Exception {
-        MvcResult result = mvc.perform(get("/api/user")
-                .with(httpBasic("martin2", password))).andReturn();
+        MvcResult result = this.mvc.perform(get("/api/user")
+                .with(httpBasic("martin2", this.password))).andReturn();
         String response = result.getResponse().getContentAsString();
-        User user = objectMapper.readValue(response, User.class);
+        User user = this.objectMapper.readValue(response, User.class);
         assertEquals(user.getName(), "martin2");
         assertEquals(user.getEmail(), "test123@gmail.com");
         assertEquals(user.getPwHash(), null);
