@@ -74,7 +74,8 @@ public class RssFeedController {
     @RequestMapping(path = "{feed}", method = RequestMethod.POST)
     public List<FeedItem> refresh(@PathVariable RssFeed feed) {
         if (feed != null) {
-            return feed.refresh(this.feedItemRepository);
+            User user = getUser();
+            return feed.refresh(this.feedItemRepository, user);
         } else {
             return null;
         }

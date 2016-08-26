@@ -67,7 +67,7 @@ public class RssFeed {
         f.setTitle(feed.getTitle());
         List<FeedItem> items = feed.getEntries()
                 .stream()
-                .map(e -> FeedItem.fromEntry(f, e))
+                .map(e -> FeedItem.fromEntry(f, e, user))
                 .collect(Collectors.toList());
         f.setItems(items);
         String hash = DigestUtils.sha256Hex(imageUrl);
@@ -76,7 +76,7 @@ public class RssFeed {
         return f;
     }
 
-    public List<FeedItem> refresh(FeedItemRepository itemRepository) {
+    public List<FeedItem> refresh(FeedItemRepository itemRepository, User user) {
         SyndFeedInput input = new SyndFeedInput();
         SyndFeed feed;
         try {
@@ -89,7 +89,7 @@ public class RssFeed {
         for (SyndEntry entry : feed.getEntries()) {
             FeedItem item = itemRepository.findByLink(entry.getLink());
             if (item == null) {
-                item = FeedItem.fromEntry(this, entry);
+                item = FeedItem.fromEntry(this, entry, user);
                 itemRepository.save(item);
                 newItems.add(item);
             }

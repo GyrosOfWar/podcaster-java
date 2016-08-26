@@ -44,7 +44,7 @@ public class FeedItem {
     private boolean isFavorite;
     private String hashedImageUrl;
 
-    public static FeedItem fromEntry(RssFeed feed, SyndEntry entry) {
+    public static FeedItem fromEntry(RssFeed feed, SyndEntry entry, User owner) {
         FeedItem item = new FeedItem();
         item.setTitle(entry.getTitle());
         item.setLink(entry.getLink());
@@ -56,7 +56,7 @@ public class FeedItem {
             duration = Duration.ofSeconds(enc.getLength());
         }
         item.setMp3Url(mp3Url);
-        // item.setOwner(owner);
+        item.setOwner(owner);
         item.setDuration(duration);
         item.setLink(entry.getLink());
         Date pubDate = entry.getPublishedDate();
