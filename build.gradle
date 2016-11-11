@@ -41,6 +41,7 @@ dependencies {
     compile('commons-codec:commons-codec:1.10')
     compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.1')
     compile('org.projectlombok:lombok:1.16.6')
+    compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '4.27'
 
     runtime('org.postgresql:postgresql')
 

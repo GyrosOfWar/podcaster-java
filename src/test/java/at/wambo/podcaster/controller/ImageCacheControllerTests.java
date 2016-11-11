@@ -73,7 +73,7 @@ public class ImageCacheControllerTests {
         int size = feed.getItems().size();
         assertEquals(size, 0);
     }
-
+ 
     @Test
     public void testFeedImage() throws Exception {
         String url = "/api/image/" + RSS_URL;

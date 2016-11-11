@@ -25,6 +25,8 @@ import javax.validation.Valid;
  * @author Martin
  *         13.08.2016
  */
+
+// TODO make me a RestController, remove form stuff
 @Controller
 public class UserController {
     public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
@@ -83,9 +85,8 @@ public class UserController {
     }
 
     @RequestMapping(path = "/api/user", method = RequestMethod.GET)
-    public
-    @ResponseBody
-    User getUserInfo() {
+    public @ResponseBody User getUserInfo() {
         return ((CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
     }
+
 }
