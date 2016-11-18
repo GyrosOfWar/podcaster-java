@@ -47,7 +47,7 @@ public class RssFeedController {
     }
 
     private User getUser() {
-        return (User) SecurityContextHolder.getContext().getAuthentication();
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     @RequestMapping(method = RequestMethod.POST)

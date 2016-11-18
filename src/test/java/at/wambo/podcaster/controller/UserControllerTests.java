@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.Assert.assertEquals;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -48,11 +47,22 @@ public class UserControllerTests {
 
     @Test
     public void registerUser() throws Exception {
+//        CreateUserRequest request = new CreateUserRequest();
+//        request.setEmail("test123@gmail.com");
+//        request.setUsername("martin2");
+//        request.setPassword(this.password);
+//        request.setPasswordRepeated(this.password);
+//        String json = objectMapper.writeValueAsString(request);
+//        this.mvc.perform(post("/auth/register")
+//                .content(json))
+//                .andReturn();
+//
+//
         MvcResult result = this.mvc.perform(post("/register")
                 .param("email", "test123@gmail.com")
                 .param("username", "martin2")
                 .param("password", this.password)
-                .param("passwordRepeated", this.password).with(csrf()))
+                .param("passwordRepeated", this.password))
                 .andReturn();
 
         assertEquals(result.getResponse().getStatus(), 302);
