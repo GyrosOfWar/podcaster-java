@@ -1,6 +1,5 @@
 package at.wambo.podcaster.controller;
 
-import at.wambo.podcaster.configuration.CurrentUser;
 import at.wambo.podcaster.model.FeedItem;
 import at.wambo.podcaster.model.RssFeed;
 import at.wambo.podcaster.model.User;
@@ -36,11 +35,6 @@ public class RssFeedController {
         this.feedItemRepository = feedItemRepository;
         this.feedRepository = feedRepository;
     }
-
-    private User getUser() {
-        return ((CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
-    }
-
     @RequestMapping(method = RequestMethod.GET)
     public List<RssFeed> getFeeds() {
         List<RssFeed> feeds = new ArrayList<>();
@@ -50,6 +44,10 @@ public class RssFeedController {
             feeds.add(f);
         });
         return feeds;
+    }
+
+    private User getUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication();
     }
 
     @RequestMapping(method = RequestMethod.POST)

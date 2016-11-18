@@ -2,8 +2,12 @@ package at.wambo.podcaster.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author Martin
@@ -13,7 +17,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 @EqualsAndHashCode
-public class User {
+public class User implements UserDetails {
+    private static final GrantedAuthority AUTHORITY = (GrantedAuthority) () -> "USER";
+
     @GeneratedValue
     @Id
     private int id;
@@ -67,5 +73,47 @@ public class User {
 
     public void setPwHash(String pwHash) {
         this.pwHash = pwHash;
+    }
+
+    @JsonIgnore
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(AUTHORITY);
+    }
+
+    @JsonIgnore
+    @Override
+    public String getPassword() {
+        return this.pwHash;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getUsername() {
+        return this.name;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

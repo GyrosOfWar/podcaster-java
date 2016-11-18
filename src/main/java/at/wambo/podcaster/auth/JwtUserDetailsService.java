@@ -1,29 +1,26 @@
-package at.wambo.podcaster.configuration;
+package at.wambo.podcaster.auth;
 
-import at.wambo.podcaster.model.User;
 import at.wambo.podcaster.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 /**
- * @author Martin
- *         13.08.2016
+ * Created by martin on 18.11.16.
  */
-@Service
-public class CurrentUserDetailsService implements UserDetailsService {
+@Component
+public class JwtUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Autowired
-    public CurrentUserDetailsService(UserRepository userRepository) {
+    public JwtUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = this.userRepository.findByName(username).orElseThrow(() -> new UsernameNotFoundException(String.format("User with username %s not found", username)));
-        return new CurrentUser(user);
+        return userRepository.findByName(username).orElseThrow(() -> new UsernameNotFoundException("No user with name " + username));
     }
 }

@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.NotEmpty;
  *         Created on 01.07.16.
  */
 @Data
-public class CreateUserForm {
+public class CreateUserRequest {
     @NotEmpty
     private String email;
     @NotEmpty

@@ -1,92 +1,133 @@
 package at.wambo.podcaster.controller;
 
-import at.wambo.podcaster.configuration.CurrentUser;
-import at.wambo.podcaster.forms.CreateUserForm;
-import at.wambo.podcaster.forms.CreateUserFormValidator;
+import at.wambo.podcaster.auth.JwtResponse;
+import at.wambo.podcaster.forms.CreateUserRequest;
+import at.wambo.podcaster.model.LoginRequest;
 import at.wambo.podcaster.model.User;
 import at.wambo.podcaster.repository.UserRepository;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
+import java.util.Date;
 
 /**
  * @author Martin
  *         13.08.2016
  */
 
-// TODO make me a RestController, remove form stuff
-@Controller
+@RestController
 public class UserController {
     public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
+    public static final int JWT_DURATION = 12 * 60 * 60 * 1000;
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UserRepository userRepository;
-    private final CreateUserFormValidator createUserFormValidator;
+    private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
+
+    @Value("${jwt.secret}")
+    private String secret;
 
     @Autowired
-    public UserController(CreateUserFormValidator createUserFormValidator, UserRepository userRepository) {
-        Assert.notNull(createUserFormValidator);
+    public UserController(UserRepository userRepository, AuthenticationManager authenticationManager, UserDetailsService userDetailsService) {
         Assert.notNull(userRepository);
-        this.createUserFormValidator = createUserFormValidator;
+        Assert.notNull(authenticationManager);
+        Assert.notNull(userDetailsService);
+
+        this.userDetailsService = userDetailsService;
+        this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
     }
 
-    @InitBinder("form")
-    public void initBinder(WebDataBinder binder) {
-        binder.addValidators(this.createUserFormValidator);
+    private String validateRequest(CreateUserRequest request) {
+        if (request.hasNullValues()) {
+            return "Request has null values.";
+        }
+
+        if (!request.getPassword().equals(request.getPasswordRepeated())) {
+            return "Passwords do not match!";
+        }
+        if (userRepository.findByName(request.getUsername()).isPresent()) {
+            return "User with this name already exists.";
+        }
+        return null;
     }
 
-    private User create(CreateUserForm form) {
+    private User create(CreateUserRequest request) {
         User user = new User();
-        user.setEmail(form.getEmail());
-        user.setName(form.getUsername());
-        user.setPwHash(PASSWORD_ENCODER.encode(form.getPassword()));
+        user.setEmail(request.getEmail());
+        user.setName(request.getUsername());
+        user.setPwHash(PASSWORD_ENCODER.encode(request.getPassword()));
         return this.userRepository.save(user);
     }
 
-    @RequestMapping(path = "/register", method = RequestMethod.GET)
-    public ModelAndView registerPage() {
-        return new ModelAndView("registerPage", "form", new CreateUserForm());
+    private String generateToken(UserDetails userDetails, byte[] secret) throws JOSEException {
+        JWSSigner signer = new MACSigner(secret);
+
+        Date now = new Date();
+        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                .subject(userDetails.getUsername())
+                .issueTime(now)
+                .expirationTime(new Date(now.getTime() + JWT_DURATION))
+                .issuer("podcaster")
+                .build();
+        SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
+        signedJWT.sign(signer);
+        return signedJWT.serialize();
     }
 
-    @RequestMapping(path = "/register", method = RequestMethod.POST)
-    public Object handleRegister(@Valid @ModelAttribute("form") CreateUserForm form, BindingResult bindingResult) {
-        User user;
-        if (bindingResult.hasErrors()) {
-            logger.debug("Found errors in form: {}", form);
-            return "registerPage";
+    @RequestMapping(path = "/auth/register", method = RequestMethod.POST)
+    public ResponseEntity<?> register(@RequestBody CreateUserRequest request) {
+        String error = validateRequest(request);
+        if (error == null) {
+            return ResponseEntity.ok(create(request));
+        } else {
+            return ResponseEntity.badRequest().body(error);
         }
-        try {
-            user = create(form);
-        } catch (DataIntegrityViolationException ex) {
-            bindingResult.reject("user.exists", "User already exists.");
-            logger.info("User alreadys exists: {}", form);
-            return "registerPage";
-        }
-        logger.debug("Successfully created user {}", user);
-        return "redirect:/login";
-    }
-
-    @RequestMapping(path = "/login", method = RequestMethod.GET)
-    public ModelAndView showLoginPage(@RequestParam String error) {
-        return new ModelAndView("login", "error", error);
     }
 
     @RequestMapping(path = "/api/user", method = RequestMethod.GET)
-    public @ResponseBody User getUserInfo() {
-        return ((CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+    public User getUserInfo() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
+    @RequestMapping(path = "/auth/token", method = RequestMethod.POST)
+    public JwtResponse getToken(@RequestBody LoginRequest loginRequest) throws JOSEException {
+        final Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getUsername(),
+                        loginRequest.getPassword()
+                )
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // Reload password post-security so we can generate token
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
+        final String token = generateToken(userDetails, secret.getBytes());
+
+        return new JwtResponse(token);
+    }
 }

@@ -21,12 +21,12 @@ public class CreateUserFormValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return clazz.equals(CreateUserForm.class);
+        return clazz.equals(CreateUserRequest.class);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        CreateUserForm form = (CreateUserForm) target;
+        CreateUserRequest form = (CreateUserRequest) target;
         if (form.hasNullValues()) {
             errors.reject("value.empty", "One of the values in the form is empty.");
             return;
@@ -37,13 +37,13 @@ public class CreateUserFormValidator implements Validator {
     }
 
 
-    private void validatePasswords(Errors errors, CreateUserForm form) {
+    private void validatePasswords(Errors errors, CreateUserRequest form) {
         if (!form.getPassword().equals(form.getPasswordRepeated())) {
             errors.reject("password.no_match", "Passwords do not match.");
         }
     }
 
-    private void validateEmail(Errors errors, CreateUserForm form) {
+    private void validateEmail(Errors errors, CreateUserRequest form) {
         if (this.userRepository.findByEmail(form.getEmail()).isPresent()) {
             errors.reject("user.exists", "User already exists.");
         }
