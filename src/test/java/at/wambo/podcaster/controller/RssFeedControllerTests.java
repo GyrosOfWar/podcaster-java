@@ -17,8 +17,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.Assert.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -38,9 +36,10 @@ public class RssFeedControllerTests {
     private WebApplicationContext context;
     @Autowired
     private ObjectMapper objectMapper;
-    private User user = new User("martin", "martin.tomasi@gmail.com", UserController.PASSWORD_ENCODER.encode(password));
+    private User user = new User("martin", "martin@gmail.com", UserController.PASSWORD_ENCODER.encode(password));
     private MockMvc mvc;
     private boolean userRegistered = false;
+    private String token;
 
     @Before
     public void setup() {
@@ -52,7 +51,8 @@ public class RssFeedControllerTests {
 
     private int hasFeeds() throws Exception {
         MvcResult result = this.mvc.perform(get("/api/feeds")
-                .with(httpBasic(this.user.getName(), password))).andReturn();
+                .header("Authorization", "Bearer " + token))
+                .andReturn();
 
         assertEquals(200, result.getResponse().getStatus());
         String response = result.getResponse().getContentAsString();
@@ -63,13 +63,9 @@ public class RssFeedControllerTests {
 
     private void registerUser() throws Exception {
         if (!this.userRegistered) {
-            MvcResult result = this.mvc.perform(post("/register")
-                    .param("email", this.user.getEmail())
-                    .param("username", this.user.getName())
-                    .param("password", password)
-                    .param("passwordRepeated", password).with(csrf()))
-                    .andReturn();
+            TestUtil.registerUser(this.mvc, this.user.getUsername(), password);
             this.userRegistered = true;
+            this.token = TestUtil.getToken(this.mvc, this.user.getUsername(), password);
         }
     }
 
@@ -79,7 +75,8 @@ public class RssFeedControllerTests {
         if (feedId == -1) {
             MvcResult result = this.mvc.perform(post("/api/feeds")
                     .param("url", FEED_URL)
-                    .with(httpBasic(this.user.getName(), password))).andReturn();
+                    .header("Authorization", "Bearer " + token))
+                    .andReturn();
             assertEquals(200, result.getResponse().getStatus());
             String response = result.getResponse().getContentAsString();
             RssFeed feed = this.objectMapper.readValue(response, RssFeed.class);
@@ -94,7 +91,8 @@ public class RssFeedControllerTests {
         registerUser();
         MvcResult result = this.mvc.perform(post("/api/feeds")
                 .param("url", FEED_URL)
-                .with(httpBasic(this.user.getName(), password))).andReturn();
+                .header("Authorization", "Bearer " + token))
+                .andReturn();
         String response = result.getResponse().getContentAsString();
         RssFeed feed = this.objectMapper.readValue(response, RssFeed.class);
         int size = feed.getItems().size();
@@ -105,7 +103,8 @@ public class RssFeedControllerTests {
     public void feedWithId() throws Exception {
         int id = getFeedId();
         MvcResult result = this.mvc.perform(get("/api/feeds/" + id)
-                .with(httpBasic(this.user.getName(), password))).andReturn();
+                .header("Authorization", "Bearer " + token))
+                .andReturn();
         String response = result.getResponse().getContentAsString();
         RssFeed feed = this.objectMapper.readValue(response, RssFeed.class);
         assertEquals(feed.getItems().size(), 0);
@@ -118,7 +117,8 @@ public class RssFeedControllerTests {
         int id = getFeedId();
         String url = String.format("/api/feeds/%s/0/15", id);
         MvcResult result = this.mvc.perform(get(url)
-                .with(httpBasic(this.user.getName(), password))).andReturn();
+                .header("Authorization", "Bearer " + token))
+                .andReturn();
         String response = result.getResponse().getContentAsString();
         FeedItem[] items = this.objectMapper.readValue(response, FeedItem[].class);
         assertEquals(items.length, 15);
@@ -130,7 +130,7 @@ public class RssFeedControllerTests {
         String url = String.format("/api/feeds/%s/search", id);
         MvcResult result = this.mvc.perform(get(url)
                 .param("query", "dota")
-                .with(httpBasic(this.user.getName(), password)))
+                .header("Authorization", "Bearer " + token))
                 .andReturn();
         String response = result.getResponse().getContentAsString();
         FeedItem[] items = this.objectMapper.readValue(response, FeedItem[].class);
@@ -144,7 +144,9 @@ public class RssFeedControllerTests {
     public void randomItem() throws Exception {
         int id = getFeedId();
         String url = String.format("/api/feeds/%s/random", id);
-        MvcResult result = this.mvc.perform(get(url).with(httpBasic(this.user.getName(), password))).andReturn();
+        MvcResult result = this.mvc.perform(get(url)
+                .header("Authorization", "Bearer " + token))
+                .andReturn();
         String response = result.getResponse().getContentAsString();
         FeedItem item = this.objectMapper.readValue(response, FeedItem.class);
 
@@ -155,7 +157,9 @@ public class RssFeedControllerTests {
     public void favorites() throws Exception {
         int id = getFeedId();
         String url = String.format("/api/feeds/%s/0/15", id);
-        MvcResult result = this.mvc.perform(get(url).with(httpBasic(this.user.getName(), password))).andReturn();
+        MvcResult result = this.mvc.perform(get(url)
+                .header("Authorization", "Bearer " + token))
+                .andReturn();
         String response = result.getResponse().getContentAsString();
         FeedItem[] items = this.objectMapper.readValue(response, FeedItem[].class);
 
@@ -165,10 +169,13 @@ public class RssFeedControllerTests {
             String itemUrl = String.format("/api/feed_items/%s", item.getId());
             this.mvc.perform(post(itemUrl)
                     .param("item", this.objectMapper.writeValueAsString(item))
-                    .with(httpBasic(this.user.getName(), password))).andReturn();
+                    .header("Authorization", "Bearer " + token))
+                    .andReturn();
         }
         String favUrl = String.format("/api/feeds/%s/favorites", id);
-        result = this.mvc.perform(get(favUrl).with(httpBasic(this.user.getName(), password))).andReturn();
+        result = this.mvc.perform(get(favUrl)
+                .header("Authorization", "Bearer " + token))
+                .andReturn();
         response = result.getResponse().getContentAsString();
         FeedItem[] favorites = this.objectMapper.readValue(response, FeedItem[].class);
 
