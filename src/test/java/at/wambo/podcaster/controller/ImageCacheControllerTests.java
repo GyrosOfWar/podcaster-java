@@ -1,17 +1,11 @@
 package at.wambo.podcaster.controller;
 
-import at.wambo.podcaster.auth.JwtResponse;
-import at.wambo.podcaster.forms.CreateUserRequest;
-import at.wambo.podcaster.model.LoginRequest;
-import at.wambo.podcaster.model.RssFeed;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,7 +16,6 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 /**
  * @author martin
@@ -41,8 +34,6 @@ public class ImageCacheControllerTests {
     private MockMvc mvc;
     @Autowired
     private WebApplicationContext context;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     private String token;
 
@@ -52,56 +43,18 @@ public class ImageCacheControllerTests {
                 .webAppContextSetup(this.context)
                 .apply(springSecurity())
                 .build();
-
-        registerUser();
-        addPodcast();
-        this.token = getToken();
+        TestUtil.registerUser(this.mvc, USERNAME, PASSWORD);
+        this.token = TestUtil.getToken(this.mvc, USERNAME, PASSWORD);
+        TestUtil.addPodcast(this.mvc, this.token, RssFeedControllerTests.FEED_URL);
     }
 
-    private void registerUser() throws Exception {
-        CreateUserRequest request = new CreateUserRequest();
-        request.setEmail(USERNAME + "@gmail.com");
-        request.setUsername(USERNAME);
-        request.setPassword(PASSWORD);
-        request.setPasswordRepeated(PASSWORD);
-        String json = objectMapper.writeValueAsString(request);
-        MvcResult result = this.mvc.perform(post("/auth/register")
-                .content(json)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
-    }
-
-    private String getToken() throws Exception {
-        LoginRequest login = new LoginRequest();
-        login.setUsername(USERNAME);
-        login.setPassword(PASSWORD);
-        String json = objectMapper.writeValueAsString(login);
-        MvcResult result = this.mvc.perform(post("/auth/token")
-                .content(json)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
-        String content = result.getResponse().getContentAsString();
-        JwtResponse response = objectMapper.readValue(content, JwtResponse.class);
-        return response.getToken();
-    }
-
-    private void addPodcast() throws Exception {
-        String token = getToken();
-        String url = RssFeedControllerTests.FEED_URL;
-        MvcResult result = this.mvc.perform(post("/api/feeds")
-                .param("url", url)
-                .header("Authorization", "Bearer " + token))
-                .andReturn();
-        String response = result.getResponse().getContentAsString();
-        RssFeed feed = this.objectMapper.readValue(response, RssFeed.class);
-        int size = feed.getItems().size();
-        assertEquals(size, 0);
-    }
- 
     @Test
     public void testFeedImage() throws Exception {
         String url = "/api/image/" + RSS_URL;
-        MvcResult result = this.mvc.perform(get(url).param("size", "150").header("Authorization", "Bearer " + token)).andReturn();
+        MvcResult result = this.mvc.perform(get(url)
+                .param("size", "150")
+                .header("Authorization", "Bearer " + token))
+                .andReturn();
         assertEquals(result.getResponse().getStatus(), 200);
         assertEquals(result.getResponse().getContentType(), "image/jpeg");
     }
@@ -109,9 +62,10 @@ public class ImageCacheControllerTests {
     @Test
     public void testItemImage() throws Exception {
         String url = "/api/image/" + ITEM_URL;
-        MvcResult result = this.mvc.perform(get(url).param("size", "350")
-                .header("Authorization", "Bearer " + token)
-        ).andReturn();
+        MvcResult result = this.mvc.perform(get(url)
+                .param("size", "350")
+                .header("Authorization", "Bearer " + token))
+                .andReturn();
         assertEquals(result.getResponse().getStatus(), 200);
         assertEquals(result.getResponse().getContentType(), "image/jpeg");
     }
