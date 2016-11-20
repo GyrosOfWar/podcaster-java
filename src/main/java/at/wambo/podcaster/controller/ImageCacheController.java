@@ -28,6 +28,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api/image/")
 public class ImageCacheController {
+    private static final byte[] REDIS_KEY = "podcasterImageSet".getBytes();
 
     private final RedisConnectionFactory connectionFactory;
     private final FeedItemRepository itemRepository;
@@ -45,7 +46,7 @@ public class ImageCacheController {
     // TODO save different image sizes
     private byte[] getImage(String hashedUrl, int size) {
         RedisConnection connection = this.connectionFactory.getConnection();
-        byte[] result = connection.get(hashedUrl.getBytes());
+        byte[] result = connection.hGet(REDIS_KEY, hashedUrl.getBytes());
         if (result == null) {
             URL url;
             List<FeedItem> items = this.itemRepository.findByHashedImageUrl(hashedUrl);
@@ -62,7 +63,7 @@ public class ImageCacheController {
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 ImageIO.write(img, "jpg", stream);
                 byte[] imageBytes = stream.toByteArray();
-                connection.set(hashedUrl.getBytes(), imageBytes);
+                connection.hSet(REDIS_KEY, hashedUrl.getBytes(), imageBytes);
                 return imageBytes;
             } catch (IOException e) {
                 throw new RuntimeException(e);
