@@ -4,10 +4,11 @@ import at.wambo.podcaster.model.FeedItem;
 import at.wambo.podcaster.model.RssFeed;
 import at.wambo.podcaster.repository.FeedItemRepository;
 import at.wambo.podcaster.repository.RssFeedRepository;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,21 +28,13 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(path = "/api/image/")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ImageCacheController {
     private static final byte[] REDIS_KEY = "podcasterImageSet".getBytes();
 
-    private final RedisConnectionFactory connectionFactory;
-    private final FeedItemRepository itemRepository;
-    private final RssFeedRepository rssFeedRepository;
-
-    @Autowired
-    public ImageCacheController(RedisConnectionFactory connectionFactory, FeedItemRepository itemRepository, RssFeedRepository rssFeedRepository) {
-        this.rssFeedRepository = rssFeedRepository;
-        Assert.notNull(connectionFactory);
-        Assert.notNull(itemRepository);
-        this.itemRepository = itemRepository;
-        this.connectionFactory = connectionFactory;
-    }
+    private final @NonNull RedisConnectionFactory connectionFactory;
+    private final @NonNull FeedItemRepository itemRepository;
+    private final @NonNull RssFeedRepository rssFeedRepository;
 
     // TODO save different image sizes
     private byte[] getImage(String hashedUrl, int size) {

@@ -2,8 +2,9 @@ package at.wambo.podcaster.controller;
 
 import at.wambo.podcaster.model.FeedItem;
 import at.wambo.podcaster.repository.FeedItemRepository;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -12,14 +13,9 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping(path = "/api/feed_items")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FeedItemController {
-    private final FeedItemRepository feedItemRepository;
-
-    @Autowired
-    public FeedItemController(FeedItemRepository feedItemRepository) {
-        Assert.notNull(feedItemRepository);
-        this.feedItemRepository = feedItemRepository;
-    }
+    private final @NonNull FeedItemRepository feedItemRepository;
 
     @RequestMapping(path = "{id}", method = RequestMethod.GET)
     public FeedItem getFeedItem(@PathVariable FeedItem item) {

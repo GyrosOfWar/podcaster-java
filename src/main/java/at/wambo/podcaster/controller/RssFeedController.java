@@ -5,9 +5,10 @@ import at.wambo.podcaster.model.RssFeed;
 import at.wambo.podcaster.model.User;
 import at.wambo.podcaster.repository.FeedItemRepository;
 import at.wambo.podcaster.repository.RssFeedRepository;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -21,20 +22,14 @@ import java.util.Random;
  */
 @RestController
 @RequestMapping(path = "/api/feeds")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RssFeedController {
     private static final int MAX_COUNT = 30;
     private static final Random RANDOM = new Random();
 
-    private final RssFeedRepository feedRepository;
-    private final FeedItemRepository feedItemRepository;
+    private final @NonNull RssFeedRepository feedRepository;
+    private final @NonNull FeedItemRepository feedItemRepository;
 
-    @Autowired
-    public RssFeedController(FeedItemRepository feedItemRepository, RssFeedRepository feedRepository) {
-        Assert.notNull(feedItemRepository);
-        Assert.notNull(feedRepository);
-        this.feedItemRepository = feedItemRepository;
-        this.feedRepository = feedRepository;
-    }
     @RequestMapping(method = RequestMethod.GET)
     public List<RssFeed> getFeeds() {
         List<RssFeed> feeds = new ArrayList<>();

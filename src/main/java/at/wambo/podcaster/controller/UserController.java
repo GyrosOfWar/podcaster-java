@@ -29,5 +29,4 @@ public class UserController {
     public User getUserInfo() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
-
 }
