@@ -1,9 +1,15 @@
 package at.wambo.podcaster.controller;
 
+import at.wambo.podcaster.model.HistoryEntry;
 import at.wambo.podcaster.model.User;
+import at.wambo.podcaster.repository.HistoryEntryRepository;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,16 +23,24 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController
+@RequestMapping(path = "/api/users")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserController {
     public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
-
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private final @NonNull HistoryEntryRepository historyEntryRepository;
 
-    @Value("${jwt.secret}")
-    private String secret;
-
-    @RequestMapping(path = "/api/user", method = RequestMethod.GET)
-    public User getUserInfo() {
+    private User getUser() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
+    public User getUserInfo() {
+        return getUser();
+    }
+
+    @RequestMapping(path = "/history")
+    public Page<HistoryEntry> getHistoryForUser(Pageable page) {
+        return historyEntryRepository.getHistoryForUser(getUser(), page);
     }
 }

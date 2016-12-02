@@ -21,9 +21,6 @@ import java.util.Date;
 @Entity
 @Table(name = "feed_items")
 @ToString(exclude = "feed")
-@NamedNativeQuery(name = "FeedItem.findPaginated",
-        query = "SELECT * FROM feed_items WHERE feed_id = ? OFFSET ? LIMIT ?",
-        resultClass = FeedItem.class)
 public class FeedItem {
     @GeneratedValue
     @Id

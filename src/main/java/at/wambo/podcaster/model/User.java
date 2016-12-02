@@ -6,8 +6,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Martin
@@ -34,10 +36,16 @@ public class User implements UserDetails {
     @JsonIgnore
     private String pwHash;
 
+    // TODO limit number of entries
+    @OneToMany(targetEntity = FeedItem.class)
+    @JsonIgnore
+    private List<HistoryEntry> history;
+
     public User(String name, String email, String pwHash) {
         this.name = name;
         this.email = email;
         this.pwHash = pwHash;
+        this.history = new ArrayList<>();
     }
 
     public User() {
@@ -115,5 +123,13 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public List<HistoryEntry> getHistory() {
+        return history;
+    }
+
+    public void setHistory(List<HistoryEntry> history) {
+        this.history = history;
     }
 }

@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import static at.wambo.podcaster.controller.UserController.PASSWORD_ENCODER;
@@ -36,12 +37,15 @@ import static at.wambo.podcaster.controller.UserController.PASSWORD_ENCODER;
  * Created by martin on 19.11.16.
  */
 @RestController
+@RequestMapping(path = "/auth/")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthController {
     public static final int JWT_DURATION = 12 * 60 * 60 * 1000;
+
     private final @NonNull UserRepository userRepository;
     private final @NonNull AuthenticationManager authenticationManager;
     private final @NonNull UserDetailsService userDetailsService;
+
     @Value("${jwt.secret}")
     private String secret;
 
@@ -64,7 +68,6 @@ public class AuthController {
         if (request.hasNullValues()) {
             return "Request has null values.";
         }
-
         if (!request.getPassword().equals(request.getPasswordRepeated())) {
             return "Passwords do not match!";
         }
@@ -79,10 +82,11 @@ public class AuthController {
         user.setEmail(request.getEmail());
         user.setName(request.getUsername());
         user.setPwHash(PASSWORD_ENCODER.encode(request.getPassword()));
+        user.setHistory(new ArrayList<>());
         return this.userRepository.save(user);
     }
 
-    @RequestMapping(path = "/auth/register", method = RequestMethod.POST)
+    @RequestMapping(path = "register", method = RequestMethod.POST)
     public ResponseEntity<?> register(@RequestBody CreateUserRequest request) {
         String error = validateRequest(request);
         if (error == null) {
@@ -93,7 +97,7 @@ public class AuthController {
     }
 
 
-    @RequestMapping(path = "/auth/token", method = RequestMethod.POST)
+    @RequestMapping(path = "token", method = RequestMethod.POST)
     public JwtResponse getToken(@RequestBody LoginRequest loginRequest) throws JOSEException {
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

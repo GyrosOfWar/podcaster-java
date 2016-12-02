@@ -1,6 +1,7 @@
 package at.wambo.podcaster.controller;
 
 import at.wambo.podcaster.model.User;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +53,7 @@ public class UserControllerTests {
     @Test
     public void getUserinfo() throws Exception {
         String token = TestUtil.getToken(this.mvc, "martin2", this.password);
-        MvcResult result = this.mvc.perform(get("/api/user")
+        MvcResult result = this.mvc.perform(get("/api/users")
                 .header("Authorization", "Bearer " + token))
                 .andReturn();
         String response = result.getResponse().getContentAsString();
@@ -60,5 +61,18 @@ public class UserControllerTests {
         assertEquals(user.getName(), "martin2");
         assertEquals(user.getEmail(), "martin2@gmail.com");
         assertEquals(user.getPwHash(), null);
+    }
+
+
+    @Test
+    public void getHistoryTest() throws Exception {
+        String token = TestUtil.getToken(this.mvc, "martin2", this.password);
+        MvcResult result = this.mvc.perform(get("/api/users/history")
+                .param("page", String.valueOf(0))
+                .header("Authorization", "Bearer " + token))
+                .andReturn();
+        String response = result.getResponse().getContentAsString();
+        JsonNode node = objectMapper.readTree(response);
+        assertEquals(0, node.get("numberOfElements").asInt());
     }
 }

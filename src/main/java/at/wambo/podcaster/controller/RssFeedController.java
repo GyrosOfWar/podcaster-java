@@ -5,10 +5,12 @@ import at.wambo.podcaster.model.RssFeed;
 import at.wambo.podcaster.model.User;
 import at.wambo.podcaster.repository.FeedItemRepository;
 import at.wambo.podcaster.repository.RssFeedRepository;
+import at.wambo.podcaster.util.Util;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -41,13 +43,9 @@ public class RssFeedController {
         return feeds;
     }
 
-    private User getUser() {
-        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
-
     @RequestMapping(method = RequestMethod.POST)
     public RssFeed addFeed(@RequestParam(value = "url") String url) {
-        User user = getUser();
+        User user = Util.getUser();
         RssFeed feed = RssFeed.fromUrl(url, user);
         RssFeed savedFeed = this.feedRepository.save(feed);
         savedFeed.setItems(Collections.emptyList());
@@ -67,16 +65,16 @@ public class RssFeedController {
     @RequestMapping(path = "{feed}", method = RequestMethod.POST)
     public List<FeedItem> refresh(@PathVariable RssFeed feed) {
         if (feed != null) {
-            User user = getUser();
+            User user = Util.getUser();
             return feed.refresh(this.feedItemRepository, user);
         } else {
             return null;
         }
     }
 
-    @RequestMapping(path = "{feedId}/{offset}/{count}")
-    public List<FeedItem> getPaginated(@PathVariable Integer feedId, @PathVariable Integer offset, @PathVariable Integer count) {
-        return this.feedItemRepository.findByFeedIdPaginated(feedId, offset, count);
+    @RequestMapping(path = "{feedId}/items")
+    public Page<FeedItem> getPaginated(@PathVariable Integer feedId, Pageable pageable) {
+        return this.feedItemRepository.findByFeedId(feedId, pageable);
     }
 
     @RequestMapping(path = "{feed}/search", method = RequestMethod.GET)

@@ -2,6 +2,8 @@ package at.wambo.podcaster.controller;
 
 import at.wambo.podcaster.model.FeedItem;
 import at.wambo.podcaster.repository.FeedItemRepository;
+import at.wambo.podcaster.service.HistoryService;
+import at.wambo.podcaster.util.Util;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FeedItemController {
     private final @NonNull FeedItemRepository feedItemRepository;
+    private final @NonNull HistoryService historyService;
 
     @RequestMapping(path = "{id}", method = RequestMethod.GET)
     public FeedItem getFeedItem(@PathVariable FeedItem item) {
@@ -36,6 +39,7 @@ public class FeedItemController {
         existing.setLastPosition(newItem.getLastPosition());
 
         this.feedItemRepository.save(existing);
+        this.historyService.addToHistory(Util.getUser(), newItem);
         return "OK";
     }
 
