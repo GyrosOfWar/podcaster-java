@@ -23,10 +23,7 @@ public class HistoryService {
     private final @NonNull HistoryEntryRepository historyEntryRepository;
 
     public HistoryEntry addToHistory(User user, FeedItem item) {
-        HistoryEntry entry = new HistoryEntry();
-        entry.setFeedItem(item);
-        entry.setUser(user);
-        entry.setTime(Instant.now());
+        HistoryEntry entry = new HistoryEntry(item, user, Instant.now(), 0);
         return historyEntryRepository.save(entry);
     }
 

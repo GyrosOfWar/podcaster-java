@@ -27,6 +27,7 @@ public class FeedItem {
     private int id;
     private String title;
     private String link;
+    @Column(columnDefinition = "varchar")
     private String description;
     private String mp3Url;
     private Instant pubDate;

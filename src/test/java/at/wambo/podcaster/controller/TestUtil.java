@@ -1,9 +1,9 @@
 package at.wambo.podcaster.controller;
 
 import at.wambo.podcaster.auth.JwtResponse;
-import at.wambo.podcaster.forms.CreateUserRequest;
-import at.wambo.podcaster.model.LoginRequest;
 import at.wambo.podcaster.model.RssFeed;
+import at.wambo.podcaster.requests.CreateUserRequest;
+import at.wambo.podcaster.requests.LoginRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;

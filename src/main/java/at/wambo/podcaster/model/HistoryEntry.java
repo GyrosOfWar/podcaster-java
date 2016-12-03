@@ -1,6 +1,8 @@
 package at.wambo.podcaster.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -10,6 +12,8 @@ import java.time.Instant;
  *         02.12.2016
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "history")
 public class HistoryEntry {

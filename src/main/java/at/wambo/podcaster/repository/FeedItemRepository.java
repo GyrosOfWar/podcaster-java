@@ -16,6 +16,6 @@ public interface FeedItemRepository extends PagingAndSortingRepository<FeedItem,
 
     List<FeedItem> findByHashedImageUrl(String hashedImageUrl);
 
-    Page<FeedItem> findByFeedId(Integer feedId, Pageable pageable);
+    Page<FeedItem> findByFeedIdOrderByPubDateDesc(Integer feedId, Pageable pageable);
 
 }

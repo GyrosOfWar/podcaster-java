@@ -4,10 +4,8 @@ import at.wambo.podcaster.model.FeedItem;
 import at.wambo.podcaster.model.HistoryEntry;
 import at.wambo.podcaster.model.RssFeed;
 import at.wambo.podcaster.model.User;
+import at.wambo.podcaster.requests.ChangeFeedItemRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.DoubleNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +19,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.Duration;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -174,11 +173,11 @@ public class RssFeedControllerTests {
         for (int i = 0; i < 5; i++) {
             FeedItem item = items.get(i);
             String itemUrl = String.format("/api/feed_items/%s", item.getId());
-            ObjectNode request = objectMapper.createObjectNode();
-            request.set("favorite", BooleanNode.TRUE);
-            request.set("lastPosition", DoubleNode.valueOf(10.0));
+            ChangeFeedItemRequest request = new ChangeFeedItemRequest();
+            request.setFavorite(true);
+            request.setLastPosition(Duration.ofSeconds(10));
             MvcResult res = this.mvc.perform(post(itemUrl)
-                    .param("data", objectMapper.writeValueAsString(request))
+                    .content(objectMapper.writeValueAsString(request))
                     .contentType(MediaType.APPLICATION_JSON)
                     .header("Authorization", "Bearer " + token))
                     .andReturn();

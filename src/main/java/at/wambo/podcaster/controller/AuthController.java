@@ -1,10 +1,10 @@
 package at.wambo.podcaster.controller;
 
 import at.wambo.podcaster.auth.JwtResponse;
-import at.wambo.podcaster.forms.CreateUserRequest;
-import at.wambo.podcaster.model.LoginRequest;
 import at.wambo.podcaster.model.User;
 import at.wambo.podcaster.repository.UserRepository;
+import at.wambo.podcaster.requests.CreateUserRequest;
+import at.wambo.podcaster.requests.LoginRequest;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;

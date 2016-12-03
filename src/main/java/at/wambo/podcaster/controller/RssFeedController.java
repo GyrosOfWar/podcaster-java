@@ -65,7 +65,7 @@ public class RssFeedController {
 
     @RequestMapping(path = "{feedId}/items")
     public Page<FeedItem> getPaginated(@PathVariable Integer feedId, Pageable pageable) {
-        return this.feedItemRepository.findByFeedId(feedId, pageable);
+        return this.feedItemRepository.findByFeedIdOrderByPubDateDesc(feedId, pageable);
     }
 
     @RequestMapping(path = "{feed}/search", method = RequestMethod.GET)
