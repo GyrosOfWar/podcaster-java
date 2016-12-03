@@ -7,6 +7,8 @@ import at.wambo.podcaster.repository.HistoryEntryRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -28,4 +30,7 @@ public class HistoryService {
         return historyEntryRepository.save(entry);
     }
 
+    public Page<HistoryEntry> getHistoryForUser(User user, Pageable page) {
+        return historyEntryRepository.getHistoryForUser(user, page);
+    }
 }

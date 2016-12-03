@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -33,23 +32,15 @@ public class RssFeedController {
     private final @NonNull FeedItemRepository feedItemRepository;
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<RssFeed> getFeeds() {
-        List<RssFeed> feeds = new ArrayList<>();
-        // Ugly solution, fix with lazy loading
-        this.feedRepository.findAll().forEach(f -> {
-            f.setItems(Collections.emptyList());
-            feeds.add(f);
-        });
-        return feeds;
+    public Iterable<RssFeed> getFeeds() {
+        return this.feedRepository.findAll();
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public RssFeed addFeed(@RequestParam(value = "url") String url) {
         User user = Util.getUser();
         RssFeed feed = RssFeed.fromUrl(url, user);
-        RssFeed savedFeed = this.feedRepository.save(feed);
-        savedFeed.setItems(Collections.emptyList());
-        return savedFeed;
+        return this.feedRepository.save(feed);
     }
 
     @RequestMapping(path = "{feed}", method = RequestMethod.GET)
@@ -91,6 +82,6 @@ public class RssFeedController {
 
     @RequestMapping(path = "{feed}/favorites")
     public List<FeedItem> favorites(@PathVariable RssFeed feed) {
-        return this.feedRepository.findByItemsIsFavoriteTrueAndId(feed.getId());
+        return this.feedRepository.findFavoriteItems(feed);
     }
 }

@@ -1,6 +1,7 @@
 package at.wambo.podcaster.model;
 
 import at.wambo.podcaster.repository.FeedItemRepository;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
@@ -43,6 +44,7 @@ public class RssFeed {
     private User owner;
     private String hashedImageUrl;
     @OneToMany(targetEntity = FeedItem.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<FeedItem> items;
 
     public static RssFeed fromUrl(String url, User user) {

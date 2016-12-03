@@ -1,21 +1,27 @@
 package at.wambo.podcaster.controller;
 
 import at.wambo.podcaster.model.FeedItem;
+import at.wambo.podcaster.model.HistoryEntry;
 import at.wambo.podcaster.model.RssFeed;
 import at.wambo.podcaster.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.fasterxml.jackson.databind.node.DoubleNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -96,8 +102,7 @@ public class RssFeedControllerTests {
                 .andReturn();
         String response = result.getResponse().getContentAsString();
         RssFeed feed = this.objectMapper.readValue(response, RssFeed.class);
-        int size = feed.getItems().size();
-        assertEquals(size, 0);
+        assertEquals(null, feed.getItems());
     }
 
     @Test
@@ -108,7 +113,7 @@ public class RssFeedControllerTests {
                 .andReturn();
         String response = result.getResponse().getContentAsString();
         RssFeed feed = this.objectMapper.readValue(response, RssFeed.class);
-        assertEquals(feed.getItems().size(), 0);
+        assertEquals(feed.getItems(), null);
         assertEquals(feed.getTitle(), "The Giant Beastcast");
     }
 
@@ -123,9 +128,8 @@ public class RssFeedControllerTests {
                 .param("size", "15"))
                 .andReturn();
         String response = result.getResponse().getContentAsString();
-        // FeedItem[] items = this.objectMapper.readValue(response, FeedItem[].class);
-        Page<FeedItem> page = this.objectMapper.readValue(response, Page.class);
-        assertEquals(15, page.getSize());
+        List<FeedItem> page = TestUtil.deserializePage(response, FeedItem.class);
+        assertEquals(15, page.size());
     }
 
     @Test
@@ -165,28 +169,41 @@ public class RssFeedControllerTests {
                 .header("Authorization", "Bearer " + token))
                 .andReturn();
         String response = result.getResponse().getContentAsString();
-        Page<FeedItem> page = objectMapper.readValue(response, Page.class);
-        // FeedItem[] items = this.objectMapper.readValue(response, FeedItem[].class);
-//
-//        for (int i = 0; i < 5; i++) {
-//            FeedItem item = items[i];
-//            item.setFavorite(true);
-//            String itemUrl = String.format("/api/feed_items/%s", item.getId());
-//            this.mvc.perform(post(itemUrl)
-//                    .param("item", this.objectMapper.writeValueAsString(item))
-//                    .header("Authorization", "Bearer " + token))
-//                    .andReturn();
-//        }
-//        String favUrl = String.format("/api/feeds/%s/favorites", id);
-//        result = this.mvc.perform(get(favUrl)
-//                .header("Authorization", "Bearer " + token))
-//                .andReturn();
-//        response = result.getResponse().getContentAsString();
-//        FeedItem[] favorites = this.objectMapper.readValue(response, FeedItem[].class);
-//
-//        for (FeedItem item : favorites) {
-//            assertTrue(item.isFavorite());
-//
-//        }
+        List<FeedItem> items = TestUtil.deserializePage(response, FeedItem.class);
+
+        for (int i = 0; i < 5; i++) {
+            FeedItem item = items.get(i);
+            String itemUrl = String.format("/api/feed_items/%s", item.getId());
+            ObjectNode request = objectMapper.createObjectNode();
+            request.set("favorite", BooleanNode.TRUE);
+            request.set("lastPosition", DoubleNode.valueOf(10.0));
+            MvcResult res = this.mvc.perform(post(itemUrl)
+                    .param("data", objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", "Bearer " + token))
+                    .andReturn();
+            if (res.getResolvedException() != null) {
+                throw res.getResolvedException();
+            }
+            String resp = res.getResponse().getContentAsString();
+            assertEquals("OK", resp);
+        }
+        String favUrl = String.format("/api/feeds/%s/favorites", id);
+        result = this.mvc.perform(get(favUrl)
+                .header("Authorization", "Bearer " + token))
+                .andReturn();
+        response = result.getResponse().getContentAsString();
+        FeedItem[] favorites = this.objectMapper.readValue(response, FeedItem[].class);
+
+        for (FeedItem item : favorites) {
+            assertTrue(item.isFavorite());
+        }
+
+        result = this.mvc.perform(get("/api/users/history")
+                .header("Authorization", "Bearer " + token))
+                .andReturn();
+        response = result.getResponse().getContentAsString();
+        List<HistoryEntry> history = TestUtil.deserializePage(response, HistoryEntry.class);
+        assertEquals(5, history.size());
     }
 }

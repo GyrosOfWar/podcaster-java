@@ -2,7 +2,7 @@ package at.wambo.podcaster.controller;
 
 import at.wambo.podcaster.model.HistoryEntry;
 import at.wambo.podcaster.model.User;
-import at.wambo.podcaster.repository.HistoryEntryRepository;
+import at.wambo.podcaster.service.HistoryService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-    private final @NonNull HistoryEntryRepository historyEntryRepository;
+    private final @NonNull HistoryService historyEntryRepository;
 
     private User getUser() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

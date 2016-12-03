@@ -5,6 +5,7 @@ import at.wambo.podcaster.model.FeedItem;
 import at.wambo.podcaster.model.RssFeed;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -16,7 +17,8 @@ public interface RssFeedRepository extends PagingAndSortingRepository<RssFeed, I
     @Query(name = "RssFeed.fullTextSearch")
     List<FeedItem> fullTextSearch(Integer id, String query);
 
-    List<FeedItem> findByItemsIsFavoriteTrueAndId(Integer feedId);
-
     List<RssFeed> findByHashedImageUrl(String hashedImageUrl);
+
+    @Query("from FeedItem i where i.feed = :feed and i.isFavorite = true")
+    List<FeedItem> findFavoriteItems(@Param("feed") RssFeed feed);
 }
