@@ -50,7 +50,7 @@ public class ImageCacheControllerTests {
 
     @Test
     public void testFeedImage() throws Exception {
-        String url = "/api/image/" + RSS_URL;
+        String url = "/api/images/" + RSS_URL;
         MvcResult result = this.mvc.perform(get(url)
                 .param("size", "150")
                 .header("Authorization", "Bearer " + token))
@@ -61,7 +61,7 @@ public class ImageCacheControllerTests {
 
     @Test
     public void testItemImage() throws Exception {
-        String url = "/api/image/" + ITEM_URL;
+        String url = "/api/images/" + ITEM_URL;
         MvcResult result = this.mvc.perform(get(url)
                 .param("size", "350")
                 .header("Authorization", "Bearer " + token))
