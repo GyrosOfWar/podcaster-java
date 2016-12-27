@@ -185,7 +185,6 @@ public class RssFeedControllerTests {
                 throw res.getResolvedException();
             }
             String resp = res.getResponse().getContentAsString();
-            // assertEquals("OK", resp);
             assertTrue(resp.length() > 0);
         }
         String favUrl = String.format("/api/feeds/%s/favorites", id);
