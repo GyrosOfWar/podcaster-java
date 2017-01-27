@@ -49,8 +49,8 @@ export default class FeedItem {
         this.hashedImageUrl = hashedImageUrl;
     }
 
-    getThumbnailUrl(): string {
-        return "/api/images/" + this.hashedImageUrl;
+    getThumbnailUrl(size: number): string {
+        return "/api/images/" + this.hashedImageUrl + "?size=" + size;
     }
 
 }

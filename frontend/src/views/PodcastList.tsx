@@ -1,13 +1,16 @@
 import * as React from "react";
-// import {Link} from "react-router";
 import RssFeed from "../model/RssFeed";
 import Error from "../model/Error";
 import * as ajax from "../common/ajax";
 import "../styles/podcast-list.css";
+import User from "../model/User";
+import {capitalize} from "../common/util";
+import {Link} from "react-router";
 
 interface PodcastListState {
     items: Array<RssFeed>;
     error: Error |  null;
+    user: User | null;
 }
 
 export default class PodcastList extends React.Component<{}, PodcastListState> {
@@ -15,7 +18,8 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
         super(props);
         this.state = {
             items: [],
-            error: null
+            error: null,
+            user: null
         };
     }
 
@@ -28,17 +32,35 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
             },
             error => this.setState({error: error}));
 
+        ajax.getWithAuth("/api/users",
+            result => {
+                this.setState({
+                    user: User.fromJSON(result)
+                });
+            }, error => this.setState({error: error}));
     }
 
     render() {
         if (this.state.error !== null) {
-            return <div><p>{this.state.error}</p></div>;
+            return <div><p>{this.state.error.status}: {this.state.error.message}</p></div>;
         }
 
-        return <div className="podcast-list">
-            <h1>Podcasts</h1>
-            {this.state.items.map(item => <PodcastListItem feed={item}/>)}
-        </div>;
+        const user = this.state.user;
+        if (user === null) {
+            return <p>Please wait</p>;
+        }
+
+        return (
+            <div>
+                <div className="row">
+                    <h1>{capitalize(user.name)}s Podcasts</h1>
+                    <button className="button">+</button>
+                </div>
+                <div className="podcast-list">
+                    {this.state.items.map(item => <PodcastListItem key={item.id} feed={item}/>)}
+                </div>
+            </div>
+        );
     }
 }
 
@@ -48,9 +70,14 @@ interface PodcastListItemProps {
 
 class PodcastListItem extends React.Component<PodcastListItemProps, null> {
     render() {
+        const item = this.props.feed;
         return <div className="podcast-list-item">
-            <img className="podcast-image" src={this.props.feed.getThumbnailUrl(300)}/>
-            {this.props.feed.title}
+            <figure>
+                <Link to={`/podcasts/${item.id}/page/0`}>
+                    <img className="podcast-image" src={item.getThumbnailUrl(300)}/>
+                </Link>
+                <figcaption>{item.title}</figcaption>
+            </figure>
         </div>;
     }
 }

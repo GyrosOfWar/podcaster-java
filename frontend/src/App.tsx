@@ -7,6 +7,7 @@ import "./styles/nav.css";
 import Navigation from "./Navigation";
 import PodcastList from "./views/PodcastList";
 import * as auth from "./common/auth";
+import PodcastDetails from "./views/PodcastDetails";
 
 class App extends React.Component<{}, {}> {
   render() {
@@ -35,6 +36,7 @@ class Routes extends React.Component<null, null> {
         <IndexRoute component={PodcastList} onEnter={requireAuth}/>
         <Route path="/login" component={Login}/>
         <Route path="/logout" component={Logout}/>
+        <Route path="/podcasts/:id/page/:page" component={PodcastDetails}/>
       </Route>
     </Router>;
   }

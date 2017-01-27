@@ -15,6 +15,7 @@
     font-size: 16px;
     text-decoration: none;
     border: 1px solid black;
+    height: 40px;
 }
 
 .button:hover {
