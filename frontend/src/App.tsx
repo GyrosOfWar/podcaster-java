@@ -1,16 +1,41 @@
-import * as React from 'react';
-import './App.css';
-
+import * as React from "react";
+import {Router, Route, browserHistory, IndexRoute, RouterState, RedirectFunction} from "react-router";
 import Login from "./auth/Login";
+import "./styles/base.css";
+import "./styles/nav.css";
+import Navigation from "./Navigation";
+import PodcastList from "./views/PodcastList";
+import * as auth from "./auth/auth";
 
-class App extends React.Component<null, null> {
+class App extends React.Component<{}, {}> {
   render() {
     return (
-      <div className="App">
-        <Login />
-      </div>
+        <div id="main">
+          <Navigation />
+          {this.props.children}
+        </div>
     );
   }
 }
 
-export default App;
+function requireAuth(nextState: RouterState, replace: RedirectFunction) {
+  if (!auth.isLoggedIn()) {
+    replace({
+      pathname: "/login",
+      state: {nextPathname: nextState.location.pathname}
+    });
+  }
+}
+
+class Routes extends React.Component<null, null> {
+  render() {
+    return <Router history={browserHistory}>
+      <Route path="/" component={App}>
+        <IndexRoute component={PodcastList} onEnter={requireAuth}/>
+        <Route path="/login" component={Login}/>
+      </Route>
+    </Router>;
+  }
+}
+
+export default Routes;

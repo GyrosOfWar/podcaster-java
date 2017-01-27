@@ -1,5 +1,7 @@
-import * as React from 'react';
+import * as React from "react";
 import * as auth from "../auth/auth";
+import "../styles/forms.css";
+import {browserHistory} from "react-router";
 
 interface LoginState {
     error: string | null
@@ -14,26 +16,37 @@ export default class Login extends React.Component<any, LoginState> {
         this.state = {
             error: null
         };
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         const username = this.username.value;
         const password = this.password.value;
-        auth.login(username, password, response => {
-
-        }, error => {
-
-        })
+        if (username !== null && password !== null) {
+            auth.login(username, password, response => {
+                browserHistory.push("/");
+            }, error => {
+                this.setState({
+                    error: error
+                })
+            });
+        }
     }
 
     render() {
-        return <form onSubmit={this.handleSubmit}>
-            <label htmlFor="username">Username:</label>
-            <input type="text" id="username" ref={(el) => this.username = el} />
-
-            <label htmlFor="password">Password</label>
-            <input type="password" id="password" ref={(el) => this.password = el} />
+        return <form className="form" onSubmit={this.handleSubmit}>
+            <div className="form-group">
+                <label className="form-label" htmlFor="username">Username:</label>
+                <input className="text-input" type="text" id="username" ref={(el) => this.username = el}/>
+            </div>
+            <div className="form-group">
+                <label className="form-label" htmlFor="password">Password</label>
+                <input className="text-input" type="password" id="password" ref={(el) => this.password = el}/>
+            </div>
+            <div className="form-group">
+                <button className="button">Login</button>
+            </div>
         </form>
     }
 }

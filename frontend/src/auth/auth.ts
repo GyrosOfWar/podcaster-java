@@ -10,11 +10,11 @@ export class Token {
     }
 }
 
-export function login(username: string, password: string, success: (t: Token) => void, error: (s: String) => void): void {
+export function login(username: string, password: string, success: (t: Token) => void, error: (s: string) => void): void {
     const data = {username: username, password: password};
     const xhr = new XMLHttpRequest();
-    xhr.setRequestHeader("Content-Type", "application/json");
     xhr.open("POST", "/auth/token");
+    xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onload = function () {
         if (xhr.status == 200) {
             const tokenObj = Token.fromJSON(xhr.responseText);
