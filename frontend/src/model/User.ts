@@ -6,13 +6,6 @@ export default class User {
     email: string;
     history: Array<HistoryEntry>;
 
-    constructor(id: number, name: string, email: string, history: Array<HistoryEntry>) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.history = history;
-    }
-
     static fromJSON(obj: any): User {
         return new User(
             obj.id,
@@ -20,5 +13,12 @@ export default class User {
             obj.email,
             obj.history ? obj.history.map((h: any) => HistoryEntry.fromJSON(h)) : []
         );
+    }
+
+    constructor(id: number, name: string, email: string, history: Array<HistoryEntry>) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.history = history;
     }
 }

@@ -1,9 +1,10 @@
-import * as auth from "../auth/auth";
+import * as auth from "./auth";
+import Error from "../model/Error";
 
-export function getWithAuth(url: string, success: (a: any) => void, error: (s: string) => void) {
+export function getWithAuth(url: string, success: (a: any) => void, error: (e: Error) => void) {
     const token = auth.getToken();
     if (token === null) {
-        error("Not logged in!");
+        error(Error.notLoggedIn());
         return;
     }
 
@@ -14,22 +15,21 @@ export function getWithAuth(url: string, success: (a: any) => void, error: (s: s
         if (xhr.status < 400) {
             success(JSON.parse(xhr.responseText));
         } else {
-            error("Error: " + xhr.responseText);
+            error(Error.fromJSON(JSON.parse(xhr.responseText)));
         }
     };
     xhr.onerror = function () {
-        error("Error: " + xhr.responseText);
+        error(Error.fromJSON(JSON.parse(xhr.responseText)));
     };
     xhr.send();
 }
 
-export function postWithAuth(url: string, body: string, success: (a: any) => void, error: (s: string) => void) {
+export function postWithAuth(url: string, body: string, success: (a: any) => void, error: (e: Error) => void) {
     const token = auth.getToken();
     if (token === null) {
-        error("Not logged in!");
+        error(Error.notLoggedIn());
         return;
     }
-
     const xhr = new XMLHttpRequest();
     xhr.open("POST", url);
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -38,12 +38,12 @@ export function postWithAuth(url: string, body: string, success: (a: any) => voi
         if (xhr.status < 400) {
             success(JSON.parse(xhr.responseText));
         } else {
-            error("Error: " + xhr.responseText);
+            error(Error.fromJSON(JSON.parse(xhr.responseText)));
         }
-    }
+    };
     xhr.onerror = function () {
-        error("Error: " + xhr.responseText);
-    }
+        error(Error.fromJSON(JSON.parse(xhr.responseText)));
+    };
 
     xhr.send(body);
 }

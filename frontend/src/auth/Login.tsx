@@ -1,10 +1,11 @@
 import * as React from "react";
-import * as auth from "../auth/auth";
+import * as auth from "../common/auth";
 import "../styles/forms.css";
 import {browserHistory} from "react-router";
+import Error from "../model/Error";
 
 interface LoginState {
-    error: string | null
+    error: Error | null;
 }
 
 export default class Login extends React.Component<any, LoginState> {
@@ -24,18 +25,26 @@ export default class Login extends React.Component<any, LoginState> {
         const username = this.username.value;
         const password = this.password.value;
         if (username !== null && password !== null) {
-            auth.login(username, password, response => {
-                browserHistory.push("/");
-            }, error => {
-                this.setState({
-                    error: error
-                })
-            });
+            auth.login(username, password,
+                response => {
+                    browserHistory.push("/");
+                },
+                error => {
+                    this.setState({
+                        error: error
+                    });
+                });
         }
     }
 
     render() {
+        let error = null;
+        if (this.state.error) {
+            error = <span className="form-error">{this.state.error.message}</span>;
+        }
+
         return <form className="form" onSubmit={this.handleSubmit}>
+            {error}
             <div className="form-group">
                 <label className="form-label" htmlFor="username">Username:</label>
                 <input className="text-input" type="text" id="username" ref={(el) => this.username = el}/>
@@ -47,6 +56,6 @@ export default class Login extends React.Component<any, LoginState> {
             <div className="form-group">
                 <button className="button">Login</button>
             </div>
-        </form>
+        </form>;
     }
 }

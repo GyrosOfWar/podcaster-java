@@ -1,32 +1,36 @@
+import Error from "../model/Error";
+
 export class Token {
     token: string;
-
-    constructor(token: string) {
-        this.token = token;
-    }
 
     static fromJSON(json: string) {
         return new Token(JSON.parse(json).token);
     }
+
+    constructor(token: string) {
+        this.token = token;
+    }
 }
 
-export function login(username: string, password: string, success: (t: Token) => void, error: (s: string) => void): void {
+export function login(username: string, password: string,
+                      success: (t: Token) => void,
+                      error: (e: Error) => void): void {
     const data = {username: username, password: password};
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "/auth/token");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onload = function () {
-        if (xhr.status == 200) {
+        if (xhr.status === 200) {
             const tokenObj = Token.fromJSON(xhr.responseText);
             localStorage.setItem("token", tokenObj.token);
             success(tokenObj);
         } else {
-            error(xhr.responseText);
+            error(Error.fromJSON(JSON.parse(xhr.responseText)));
         }
     };
     xhr.onerror = function () {
-        error(xhr.responseText);
-    }
+        error(Error.fromJSON(JSON.parse(xhr.responseText)));
+    };
     xhr.send(JSON.stringify(data));
 }
 
@@ -43,9 +47,6 @@ export function getToken(): Token | null {
     }
 }
 
-export function logout(callback: Function | undefined): void {
+export function logout(): void {
     localStorage.removeItem("token");
-    if (callback) {
-        callback();
-    }
 }

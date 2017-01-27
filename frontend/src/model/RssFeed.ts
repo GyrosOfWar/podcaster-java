@@ -10,16 +10,6 @@ export default class RssFeed {
     items: Array<FeedItem>;
     hashedImageUrl: string;
 
-    constructor(id: number, feedUrl: string, title: string, imageUrl: string, owner: User, items: Array<FeedItem>, hashedImageUrl: string) {
-        this.id = id;
-        this.feedUrl = feedUrl;
-        this.title = title;
-        this.imageUrl = imageUrl;
-        this.owner = owner;
-        this.items = items;
-        this.hashedImageUrl = hashedImageUrl;
-    }
-
     static fromJSON(obj: any): RssFeed {
         return new RssFeed(
             obj.id,
@@ -30,5 +20,20 @@ export default class RssFeed {
             obj.items ? obj.items.map((i: any) => FeedItem.fromJSON(i)) : [],
             obj.hashedImageUrl
         );
+    }
+
+    constructor(id: number, feedUrl: string, title: string, imageUrl: string,
+                owner: User, items: Array<FeedItem>, hashedImageUrl: string) {
+        this.id = id;
+        this.feedUrl = feedUrl;
+        this.title = title;
+        this.imageUrl = imageUrl;
+        this.owner = owner;
+        this.items = items;
+        this.hashedImageUrl = hashedImageUrl;
+    }
+
+    getThumbnailUrl(size: number): string {
+        return "/api/images/" + this.hashedImageUrl + "?size=" + size;
     }
 }

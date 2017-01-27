@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 @Data
 @Entity
-@Table(name = "feeds")
+@Table(name = "feeds", uniqueConstraints = {@UniqueConstraint(columnNames = "feedUrl")})
 @NamedNativeQuery(name = "RssFeed.fullTextSearch",
         query = "SELECT * FROM feed_items WHERE feed_id = ?1 AND to_tsvector('english', title || ' ' || description) @@ to_tsquery(?2)",
         resultClass = FeedItem.class)
