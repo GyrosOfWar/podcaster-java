@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '1.4.1.RELEASE'
+        springBootVersion = '1.4.3.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -41,11 +41,11 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-freemarker')
     compile('org.springframework.boot:spring-boot-starter-web')
 
-    compile('com.rometools:rome:1.5.1')
+    compile('com.rometools:rome:1.7.1')
     compile('commons-codec:commons-codec:1.10')
-    compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.1')
-    compile('org.projectlombok:lombok:1.16.6')
-    compile('com.nimbusds:nimbus-jose-jwt:4.27')
+    compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.5')
+    compile('org.projectlombok:lombok:1.16.12')
+    compile('com.nimbusds:nimbus-jose-jwt:4.34')
 
     runtime('org.postgresql:postgresql')
 
