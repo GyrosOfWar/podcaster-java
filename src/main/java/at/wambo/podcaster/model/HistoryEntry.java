@@ -1,5 +1,6 @@
 package at.wambo.podcaster.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class HistoryEntry {
     private FeedItem feedItem;
 
     @OneToOne
+    @JsonIgnoreProperties("history")
     private User user;
 
     @Column(nullable = false)
