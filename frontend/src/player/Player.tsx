@@ -2,6 +2,7 @@ import * as React from "react";
 import FeedItem from "../model/FeedItem";
 import * as moment from "moment";
 import "../styles/player.css";
+import "../styles/icons.css";
 
 interface PlayerProps {
     item?: FeedItem;
@@ -104,25 +105,25 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
             duration = moment.duration(this.player.duration, "seconds");
         }
 
-        let buttonText = "Play";
+        let buttonEl = <span className="icon-play"/>;
         if (this.state.state === State.Playing) {
-            buttonText = "Pause";
+            buttonEl = <span className="icon-pause"/>;
         }
         if (this.state.state === State.Loading) {
-            buttonText = "Loading";
+            buttonEl = <span className="icon-spinner"/>;
         }
 
         return (
             <div className="player row">
                 <div className="player-buttons row">
-                    <button className="button-small step-backward" onClick={this.onStepBack.bind(this)}>
-                        &lt;&lt; 10
+                    <button className="button is-small step-backward" onClick={this.onStepBack.bind(this)}>
+                        <span className="icon-fast-bw"/>
                     </button>
-                    <button className="button-small play-button" onClick={this.onPlayPause.bind(this)}>
-                        {buttonText}
+                    <button className="button is-small play-button" onClick={this.onPlayPause.bind(this)}>
+                        {buttonEl}
                     </button>
-                    <button className="button-small step-forward" onClick={this.onStepForward.bind(this)}>
-                        10 &gt;&gt;
+                    <button className="button is-small step-forward" onClick={this.onStepForward.bind(this)}>
+                        <span className="icon-fast-fw"/>
                     </button>
                 </div>
                 <Progress duration={duration} played={played} title={item.title} seekTo={this.seek.bind(this)}/>

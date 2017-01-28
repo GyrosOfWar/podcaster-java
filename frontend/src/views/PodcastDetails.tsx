@@ -3,13 +3,11 @@ import Error from "../model/Error";
 import * as ajax from "../common/ajax";
 import FeedItem from "../model/FeedItem";
 import Page from "../model/Page";
-import Player from "../player/Player";
 
 interface PodcastDetailsState {
     items?: Page<FeedItem>;
     error?: Error;
     currentPage: number;
-    selectedItem?: FeedItem;
 }
 
 export default class PodcastDetails extends React.Component<any, PodcastDetailsState> {
@@ -35,12 +33,6 @@ export default class PodcastDetails extends React.Component<any, PodcastDetailsS
             });
     }
 
-    handleItemClicked(item: FeedItem) {
-        this.setState({
-            selectedItem: item
-        });
-    }
-
     render() {
         if (this.state.error) {
             return <div>{this.state.error.message}</div>;
@@ -51,9 +43,9 @@ export default class PodcastDetails extends React.Component<any, PodcastDetailsS
         }
 
         return <div>
-            <Player item={this.state.selectedItem}/>
+            <button className="button">Refresh</button>
             {this.state.items.content.map(i =>
-                <PodcastDetailsItem item={i} key={i.id} itemClicked={this.handleItemClicked.bind(this)}/>)}
+                <PodcastDetailsItem item={i} key={i.id} itemClicked={this.props.itemClicked}/>)}
         </div>;
     }
 }
@@ -70,17 +62,19 @@ class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> 
 
     render() {
         const item = this.props.item;
-        return <div className="podcast-details-item">
-            <div className="row with-margins">
+        return (
+            <div className="podcast-details-item">
                 <img className="podcast-details-image" src={item.getThumbnailUrl(120)}/>
-                <div className="podcast-title">{item.title}</div>
-            </div>
-            <div className="row with-margins">
-                <div className="podcast-details-description">{item.description}</div>
+                <div className="column grow">
+                    <div className="podcast-title">{item.title}</div>
+                    <div className="podcast-details-description">{item.description}</div>
+                </div>
                 <div className="buttons">
-                    <button onClick={this.clickItem.bind(this)} className="button-small">Play</button>
+                    <button onClick={this.clickItem.bind(this)} className="button is-small">
+                        <span className="icon-play"/>
+                    </button>
                 </div>
             </div>
-        </div>;
+        );
     }
 }

@@ -8,13 +8,37 @@ import Navigation from "./Navigation";
 import PodcastList from "./views/PodcastList";
 import * as auth from "./common/auth";
 import PodcastDetails from "./views/PodcastDetails";
+import Player from "./player/Player";
+import FeedItem from "./model/FeedItem";
 
-class App extends React.Component<{}, {}> {
+interface AppState {
+  selectedItem?: FeedItem;
+}
+
+class App extends React.Component<{}, AppState> {
+  constructor(props: {}) {
+    super(props);
+    this.state = {};
+    this.handleItemSelected = this.handleItemSelected.bind(this);
+  }
+
+  handleItemSelected(item: FeedItem) {
+    this.setState({selectedItem: item});
+  }
+
   render() {
+    const children = React.Children.map(this.props.children, child => {
+      return React.cloneElement(child as React.ReactElement<any>, {
+        itemClicked: this.handleItemSelected
+      });
+    });
     return (
         <div id="main">
           <Navigation />
-          {this.props.children}
+          <div className="grow">
+            <Player item={this.state.selectedItem}/>
+            {children}
+          </div>
         </div>
     );
   }

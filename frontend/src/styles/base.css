@@ -1,5 +1,7 @@
 body {
-    font: 16px Helvetica;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 300;
+    font-size: 16px;
 }
 
 #main {
@@ -28,8 +30,16 @@ h1 {
     align-items: center;
 }
 
+.column {
+    flex-direction: column;
+}
+
 .with-margins > * {
     margin: 3px;
+}
+
+.grow {
+    flex-grow: 1;
 }
 
 @media all and (max-width: 640px) {
