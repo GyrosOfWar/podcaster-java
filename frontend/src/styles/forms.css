@@ -18,7 +18,17 @@
     height: 40px;
 }
 
-.button:hover {
+.button-small {
+    color: black;
+    background-color: lightgrey;
+    padding: 5px 10px 5px 10px;
+    font-size: 16px;
+    text-decoration: none;
+    border: 1px solid black;
+    height: 28px;
+}
+
+.button:hover, .button-small:hover {
     color: white;
     background-color: black;
 }

@@ -15,17 +15,6 @@ div {
     flex-direction: column;
 }
 
-.article-container {
-    margin: 4px;
-    padding: 5px;
-    flex: 3 1 85%;
-
-    display: flex;
-    order: 2;
-    align-items: flex-start;
-    flex-flow: column;
-}
-
 .timestamp {
     align-self: flex-end;
 }
@@ -39,9 +28,21 @@ h1 {
     align-items: center;
 }
 
+.with-margins > * {
+    margin: 3px;
+}
+
 @media all and (max-width: 640px) {
     #main {
         flex-direction: column;
+    }
+
+    .podcast-list {
+        flex-direction: column !important;
+    }
+
+    img.podcast-details-image {
+        height: 40px;
     }
 
     #main > article,

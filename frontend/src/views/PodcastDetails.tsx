@@ -70,12 +70,16 @@ class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> 
 
     render() {
         const item = this.props.item;
-        return <div className="row podcast-details-item">
-            <img className="podcast-details-image" src={item.getThumbnailUrl(120)}/>
-            <div className="podcast-title">{item.title}</div>
-            <div className="podcast-details-description">{item.description}</div>
-            <div className="buttons">
-                <button onClick={this.clickItem.bind(this)} className="button">Play</button>
+        return <div className="podcast-details-item">
+            <div className="row with-margins">
+                <img className="podcast-details-image" src={item.getThumbnailUrl(120)}/>
+                <div className="podcast-title">{item.title}</div>
+            </div>
+            <div className="row with-margins">
+                <div className="podcast-details-description">{item.description}</div>
+                <div className="buttons">
+                    <button onClick={this.clickItem.bind(this)} className="button-small">Play</button>
+                </div>
             </div>
         </div>;
     }

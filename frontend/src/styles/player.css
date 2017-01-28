@@ -1,0 +1,48 @@
+.player {
+    background-color: lightgrey;
+    padding: 5px;
+}
+
+.player > * {
+    margin: 2px;
+}
+
+.progress-container {
+    flex-grow: 1;
+}
+
+.progress {
+    height: 1.5em;
+    width: 100%;
+    margin-bottom: 5px;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    display: block;
+    overflow: hidden;
+    padding: 0;
+}
+
+.progress::-webkit-progress-bar {
+    background-color: white;
+}
+
+.progress::-webkit-progress-value {
+    background-color: #4a4a4a;
+}
+
+.progress::-moz-progress-bar {
+    background-color: #4a4a4a;
+}
+
+.play-button {
+    width: 70px;
+}
+
+.progress-title {
+    flex-grow: 1;
+}
+
+.progress-text {
+    flex-grow: 0;
+}
