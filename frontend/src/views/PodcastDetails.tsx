@@ -3,6 +3,7 @@ import Error from "../model/Error";
 import * as ajax from "../common/ajax";
 import FeedItem from "../model/FeedItem";
 import Page from "../model/Page";
+import {plainToClass} from "class-transformer";
 
 interface PodcastDetailsState {
     items?: Page<FeedItem>;
@@ -23,7 +24,8 @@ export default class PodcastDetails extends React.Component<any, PodcastDetailsS
 
         ajax.getWithAuth(`/api/feeds/${id}/items?page=${this.state.currentPage}`,
             response => {
-                const page = Page.fromJSON<FeedItem>(response);
+                const type = new Page<FeedItem>();
+                const page = plainToClass(type, response);
                 this.setState({
                     items: page
                 });
