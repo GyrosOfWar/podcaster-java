@@ -3,11 +3,11 @@ import FeedItem from "../model/FeedItem";
 import * as moment from "moment";
 
 interface PlayerProps {
-    item: FeedItem;
+    item?: FeedItem;
 }
 
 interface PlayerState {
-    state: State,
+    state: State;
 }
 
 enum State {
@@ -26,7 +26,13 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
 
     render() {
         const item = this.props.item;
-        const played = moment.duration(this.player.currentTime, "seconds");
+        if (!item) {
+            return <div/>;
+        }
+        let played = moment.duration(1);
+        if (this.player) {
+            played = moment.duration(this.player.currentTime, "seconds");
+        }
         return (
             <div className="player">
                 <Progress duration={item.duration} played={played}/>
@@ -42,7 +48,15 @@ interface ProgressProps {
 }
 
 function formatDuration(duration: moment.Duration): string {
-    return moment.utc(duration.as('milliseconds')).format('mm:ss');
+    function pad(n: number): string {
+        // return n<10 ? '0' + n : n;
+        return n < 10 ? "0" + n : n.toString();
+    }
+
+    const hr = duration.hours();
+    const min = duration.minutes();
+    const secs = duration.seconds();
+    return `${pad(hr)}:${pad(min)}:${pad(secs)}`;
 }
 
 class Progress extends React.Component<ProgressProps, any> {

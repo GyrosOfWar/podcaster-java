@@ -11,3 +11,31 @@ figcaption {
     font-weight: bold;
     margin-top: 5px;
 }
+
+.podcast-details-item {
+    background-color: white;
+    box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+    padding: 0.5rem;
+    margin: 3px;
+}
+
+.podcast-details-item > * {
+    margin: 2px;
+}
+
+.podcast-title {
+    flex: 0 0 200px;
+    font-weight: bold;
+}
+
+.podcast-details-image {
+    border: 1px solid black;
+}
+
+.podcast-details-description {
+    flex-grow: 1;
+}
+
+.buttons {
+    flex-grow: 0;
+}
