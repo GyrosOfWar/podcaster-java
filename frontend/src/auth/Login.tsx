@@ -54,7 +54,7 @@ export default class Login extends React.Component<any, LoginState> {
                 <input className="text-input" type="password" id="password" ref={(el) => this.password = el}/>
             </div>
             <div className="form-group">
-                <button className="button">Login</button>
+                <button className="button button-outline">Login</button>
             </div>
         </form>;
     }

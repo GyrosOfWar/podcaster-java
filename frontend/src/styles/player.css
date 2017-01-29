@@ -1,5 +1,4 @@
 .player {
-    background-color: lightgrey;
     padding: 5px;
 }
 
@@ -19,7 +18,7 @@
     margin: 0 -1px -1px 0;
 }
 
-.progress {
+.player-progress {
     height: 1.5em;
     width: 100%;
     margin-bottom: 5px;
@@ -31,15 +30,15 @@
     padding: 0;
 }
 
-.progress::-webkit-progress-bar {
+.player-progress::-webkit-progress-bar {
     background-color: #dbdbdb;
 }
 
-.progress::-webkit-progress-value {
+.player-progress::-webkit-progress-value {
     background-color: #4a4a4a;
 }
 
-.progress::-moz-progress-bar {
+.player-progress::-moz-progress-bar {
     background-color: #4a4a4a;
 }
 

@@ -43,7 +43,10 @@ export default class PodcastDetails extends React.Component<any, PodcastDetailsS
         }
 
         return <div>
-            <button className="button">Refresh</button>
+            <div className="flex-row">
+                <button className="button button-outline"><span className="icon-spinner"/> Refresh</button>
+                <button className="button button-outline"><span className="icon-shuffle"/> Random podcast</button>
+            </div>
             {this.state.items.content.map(i =>
                 <PodcastDetailsItem item={i} key={i.id} itemClicked={this.props.itemClicked}/>)}
         </div>;
@@ -65,12 +68,12 @@ class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> 
         return (
             <div className="podcast-details-item">
                 <img className="podcast-details-image" src={item.getThumbnailUrl(120)}/>
-                <div className="column grow">
+                <div className="flex-column grow">
                     <div className="podcast-title">{item.title}</div>
                     <div className="podcast-details-description">{item.description}</div>
                 </div>
                 <div className="buttons">
-                    <button onClick={this.clickItem.bind(this)} className="button is-small">
+                    <button onClick={this.clickItem.bind(this)} className="button button-outline">
                         <span className="icon-play"/>
                     </button>
                 </div>

@@ -1,31 +1,3 @@
-#main > nav {
-    margin: 4px;
-    padding: 5px;
-    flex: 0 0 15%;
-    order: 0;
-}
-
-#main > nav > ul {
-    list-style-type: none;
-    -webkit-margin-before: 0;
-    -webkit-margin-after: 0;
-    -webkit-margin-start: 0;
-    -webkit-margin-end: 0;
-    -webkit-padding-start: 0;
-}
-
-#main > nav ul li a {
-    text-decoration: none;
-    color: black;
-    padding: 11px;
-    background-color: lightgrey;
-    display: block;
-    border: 1px solid black;
-    margin: -1px 0 0 -1px;
-}
-
-#main > nav ul li a:hover,
-#main > nav ul li .current {
-    color: white;
-    background-color: black;
+.menu-list {
+    list-style: none;
 }

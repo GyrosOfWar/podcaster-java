@@ -52,9 +52,9 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
 
         return (
             <div>
-                <div className="row">
-                    <h1>{capitalize(user.name)}s Podcasts</h1>
-                    <button className="button">+</button>
+                <div className="flex-row">
+                    <h1 className="title">{capitalize(user.name)}s Podcasts</h1>
+                    <button className="button"><span className="icon-plus"/></button>
                 </div>
                 <div className="podcast-list">
                     {this.state.items.map(item => <PodcastListItem key={item.id} feed={item}/>)}

@@ -2,14 +2,14 @@ import * as React from "react";
 import {Router, Route, browserHistory, IndexRoute, RouterState, RedirectFunction} from "react-router";
 import Login from "./auth/Login";
 import Logout from "./auth/Logout";
-import "./styles/base.css";
-import "./styles/nav.css";
 import Navigation from "./Navigation";
 import PodcastList from "./views/PodcastList";
 import * as auth from "./common/auth";
 import PodcastDetails from "./views/PodcastDetails";
 import Player from "./player/Player";
 import FeedItem from "./model/FeedItem";
+import "./styles/base.css";
+import "../node_modules/milligram/dist/milligram.css";
 
 interface AppState {
   selectedItem?: FeedItem;
@@ -33,7 +33,7 @@ class App extends React.Component<{}, AppState> {
       });
     });
     return (
-        <div id="main">
+        <div id="main" className="container">
           <Navigation />
           <div className="grow">
             <Player item={this.state.selectedItem}/>

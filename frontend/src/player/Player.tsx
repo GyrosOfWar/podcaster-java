@@ -114,15 +114,15 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
         }
 
         return (
-            <div className="player row">
-                <div className="player-buttons row">
-                    <button className="button is-small step-backward" onClick={this.onStepBack.bind(this)}>
+            <div className="player flex-row">
+                <div className="player-buttons flex-row">
+                    <button className="button button-outline step-backward" onClick={this.onStepBack.bind(this)}>
                         <span className="icon-fast-bw"/>
                     </button>
-                    <button className="button is-small play-button" onClick={this.onPlayPause.bind(this)}>
+                    <button className="button button-outline play-button" onClick={this.onPlayPause.bind(this)}>
                         {buttonEl}
                     </button>
-                    <button className="button is-small step-forward" onClick={this.onStepForward.bind(this)}>
+                    <button className="button button-outline step-forward" onClick={this.onStepForward.bind(this)}>
                         <span className="icon-fast-fw"/>
                     </button>
                 </div>
@@ -168,10 +168,10 @@ class Progress extends React.Component<ProgressProps, any> {
         return (
             <div className="progress-container">
                 <progress ref={(el) => this.progressBar = el} max="1" value={progress}
-                          className="progress" onClick={this.progressBarClick.bind(this)}>
+                          className="player-progress" onClick={this.progressBarClick.bind(this)}>
                     {Math.floor(progress * 100)} %
                 </progress>
-                <div className="row">
+                <div className="flex-row">
                     <span className="progress-title">{this.props.title}</span>
                     <span className="progress-text">{playedText} / {durationText}</span>
                 </div>

@@ -35,3 +35,8 @@ figcaption {
 .buttons {
     flex-grow: 0;
 }
+
+.podcast-list-item {
+    margin: 5px;
+    max-width: 95%;
+}
