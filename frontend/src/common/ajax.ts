@@ -24,7 +24,7 @@ export function getWithAuth(url: string, success: (a: any) => void, error: (e: E
     xhr.send();
 }
 
-export function postWithAuth(url: string, body: string, success: (a: any) => void, error: (e: Error) => void) {
+export function postWithAuth(url: string, body: string | null, success: (a: any) => void, error: (e: Error) => void) {
     const token = auth.getToken();
     if (token === null) {
         error(Error.notLoggedIn());
@@ -44,6 +44,9 @@ export function postWithAuth(url: string, body: string, success: (a: any) => voi
     xhr.onerror = function () {
         error(Error.fromJSON(JSON.parse(xhr.responseText)));
     };
-
-    xhr.send(body);
+    if (body === null) {
+        xhr.send();
+    } else {
+        xhr.send(body);
+    }
 }

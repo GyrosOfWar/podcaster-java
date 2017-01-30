@@ -6,6 +6,8 @@ import "../styles/icons.css";
 
 interface PlayerProps {
     item?: FeedItem;
+    callbackInterval: number;
+    callbackHandler: (f: FeedItem) => void;
 }
 
 interface PlayerState {
@@ -19,7 +21,8 @@ enum State {
 
 export default class Player extends React.Component<PlayerProps, PlayerState> {
     player: HTMLAudioElement;
-    interval?: number;
+    timePlayedInterval?: number;
+    callbackInterval?: number;
 
     constructor(props: PlayerProps) {
         super(props);
@@ -33,18 +36,32 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
 
     play(): State {
         this.player.play();
-        this.interval = window.setInterval(() => {
+        this.timePlayedInterval = window.setInterval(() => {
             this.setState({
                 played: this.player.currentTime
             });
         }, 1000);
+
+        this.callbackInterval = window.setInterval(() => {
+            if (this.props.item) {
+                this.props.item.lastPosition = moment.duration(Math.round(this.player.currentTime), "seconds");
+                this.props.callbackHandler(this.props.item);
+            } else {
+                throw Error("Missing item");
+            }
+        }, this.props.callbackInterval * 1000);
+
         return State.Playing;
     }
 
     pause(): State {
-        if (this.interval) {
-            window.clearInterval(this.interval);
+        if (this.timePlayedInterval) {
+            window.clearInterval(this.timePlayedInterval);
         }
+        if (this.callbackInterval) {
+            window.clearInterval(this.callbackInterval);
+        }
+
         this.player.pause();
         return State.Paused;
     }
@@ -155,7 +172,8 @@ class Progress extends React.Component<ProgressProps, any> {
     progressBar: HTMLProgressElement;
 
     progressBarClick(event: React.MouseEvent<HTMLProgressElement>) {
-        const x = event.pageX - this.progressBar.offsetLeft;
+        const offset = this.progressBar.offsetLeft + (this.progressBar.offsetParent as HTMLBodyElement).offsetLeft;
+        const x = event.pageX - offset;
         const width = this.progressBar.clientWidth;
         const percent = x / width;
         this.props.seekTo(percent);

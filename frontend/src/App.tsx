@@ -10,9 +10,21 @@ import Player from "./player/Player";
 import FeedItem from "./model/FeedItem";
 import "./styles/base.css";
 import "../node_modules/milligram/dist/milligram.css";
+import {postWithAuth} from "./common/ajax";
 
 interface AppState {
   selectedItem?: FeedItem;
+}
+
+function updateItem(item: FeedItem) {
+  postWithAuth(`/api/feed_items/${item.id}`,
+      JSON.stringify(item),
+      result => {
+
+      },
+      error => {
+
+      });
 }
 
 class App extends React.Component<{}, AppState> {
@@ -36,7 +48,7 @@ class App extends React.Component<{}, AppState> {
         <div id="main" className="container">
           <Navigation />
           <div className="grow">
-            <Player item={this.state.selectedItem}/>
+            <Player callbackInterval={15} callbackHandler={updateItem} item={this.state.selectedItem}/>
             {children}
           </div>
         </div>

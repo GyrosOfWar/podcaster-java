@@ -40,6 +40,25 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
             }, error => this.setState({error: error}));
     }
 
+    addPodcast(event: React.FormEvent<HTMLButtonElement>) {
+        const url = prompt("Enter URL:");
+        if (url) {
+            ajax.postWithAuth(`/api/feeds?url=${encodeURIComponent(url)}`,
+                null,
+                result => {
+                    const feed = RssFeed.fromJSON(result);
+                    this.setState({
+                        items: [...this.state.items, feed]
+                    })
+                },
+                error => {
+                    this.setState({
+                        error: error
+                    });
+                });
+        }
+    }
+
     render() {
         if (this.state.error !== null) {
             return <div><p>{this.state.error.status}: {this.state.error.message}</p></div>;
@@ -54,7 +73,7 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
             <div>
                 <div className="flex-row">
                     <h1 className="title">{capitalize(user.name)}s Podcasts</h1>
-                    <button className="button"><span className="icon-plus"/></button>
+                    <button className="button" onClick={this.addPodcast}><span className="icon-plus"/></button>
                 </div>
                 <div className="podcast-list">
                     {this.state.items.map(item => <PodcastListItem key={item.id} feed={item}/>)}
