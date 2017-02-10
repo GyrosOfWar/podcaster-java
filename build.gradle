@@ -29,7 +29,7 @@ repositories {
 }
 
 springBoot {
-	executable = true
+    executable = true
 }
 
 dependencies {

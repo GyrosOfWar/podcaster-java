@@ -14,17 +14,7 @@ import {postWithAuth} from "./common/ajax";
 
 interface AppState {
   selectedItem?: FeedItem;
-}
-
-function updateItem(item: FeedItem) {
-  postWithAuth(`/api/feed_items/${item.id}`,
-      JSON.stringify(item),
-      result => {
-
-      },
-      error => {
-
-      });
+  error?: any;
 }
 
 class App extends React.Component<{}, AppState> {
@@ -32,6 +22,18 @@ class App extends React.Component<{}, AppState> {
     super(props);
     this.state = {};
     this.handleItemSelected = this.handleItemSelected.bind(this);
+    this.updateItem = this.updateItem.bind(this);
+  }
+
+  updateItem(item: FeedItem) {
+    postWithAuth(`/api/feed_items/${item.id}`,
+      JSON.stringify(item),
+      undefined,
+      error => {
+        this.setState({
+          error: error
+        });
+      });
   }
 
   handleItemSelected(item: FeedItem) {
@@ -45,13 +47,14 @@ class App extends React.Component<{}, AppState> {
       });
     });
     return (
-        <div id="main" className="container">
-          <Navigation />
-          <div className="grow">
-            <Player callbackInterval={15} callbackHandler={updateItem} item={this.state.selectedItem}/>
-            {children}
-          </div>
+      <div id="main" className="container">
+        <Navigation />
+        <div className="grow">
+          <Player callbackInterval={15} callbackHandler={this.updateItem} item={this.state.selectedItem}/>
+          {this.state.error && <div className="error">{JSON.stringify(this.state.error)}</div>}
+          {children}
         </div>
+      </div>
     );
   }
 }
