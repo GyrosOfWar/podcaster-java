@@ -33,7 +33,22 @@ div {
     flex-grow: 1;
 }
 
+.error {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    padding: 7px;
+}
+
+.error strong {
+    color: #843534;
+}
+
 @media all and (max-width: 640px) {
+    .menu {
+        margin-right: 0;
+    }
+
     #main {
         flex-direction: column;
     }
@@ -58,5 +73,13 @@ div {
 
     #main > nav {
         min-height: 50px;
+    }
+
+    .mobile-hidden {
+        display: none;
+    }
+
+    .podcast-details-item {
+        flex-direction: column;
     }
 }

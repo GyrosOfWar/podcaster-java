@@ -42,12 +42,12 @@ export default class PodcastDetails extends React.Component<any, PodcastDetailsS
         const feeds = result.map(FeedItem.fromJSON);
         this.setState({
           items: this.state.items && this.state.items.withNewContent(feeds)
-        })
+        });
       },
       error => {
         this.setState({
-          error: Error.fromJSON(error)
-        })
+          error: error
+        });
       });
   }
 

@@ -58,8 +58,7 @@ public class RssFeed {
         try {
             feed = input.build(new XmlReader(new URL(url)));
         } catch (FeedException | IOException e) {
-            logger.error("Error fetching or decoding feed: ", e);
-            return null;
+            throw new RuntimeException(e);
         }
 
         RssFeed f = new RssFeed();

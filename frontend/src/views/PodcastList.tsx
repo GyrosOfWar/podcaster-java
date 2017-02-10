@@ -9,18 +9,18 @@ import {Link} from "react-router";
 
 interface PodcastListState {
   items: Array<RssFeed>;
-  error: Error |  null;
-  user: User | null;
+  error?: Error;
+  user?: User;
 }
 
 export default class PodcastList extends React.Component<{}, PodcastListState> {
   constructor(props: {}) {
     super(props);
     this.state = {
-      items: [],
-      error: null,
-      user: null
+      items: []
     };
+
+    this.addPodcast = this.addPodcast.bind(this);
   }
 
   componentDidMount() {
@@ -39,6 +39,7 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
         });
       }, error => this.setState({error: error}));
   }
+
   addPodcast(event: React.FormEvent<HTMLButtonElement>) {
     const url = prompt("Enter URL:");
     if (url) {
@@ -48,7 +49,7 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
           const feed = RssFeed.fromJSON(result);
           this.setState({
             items: [...this.state.items, feed]
-          })
+          });
         },
         error => {
           this.setState({
@@ -59,12 +60,8 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
   }
 
   render() {
-    if (this.state.error !== null) {
-      return <div><p>{this.state.error.status}: {this.state.error.message}</p></div>;
-    }
-
     const user = this.state.user;
-    if (user === null) {
+    if (!user) {
       return <p>Please wait</p>;
     }
 
@@ -74,6 +71,7 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
           <h1 className="title">{capitalize(user.name)}s Podcasts</h1>
           <button className="button" onClick={this.addPodcast}><span className="icon-plus"/></button>
         </div>
+        {this.state.error && <div className="error"><strong>Error:</strong> {this.state.error.message}</div>}
         <div className="podcast-list">
           {this.state.items.map(item => <PodcastListItem key={item.id} feed={item}/>)}
         </div>
