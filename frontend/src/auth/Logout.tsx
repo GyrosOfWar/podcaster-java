@@ -6,7 +6,7 @@ import {browserHistory} from "react-router";
 export default class Logout extends React.Component<any, any> {
   componentDidMount() {
     auth.logout();
-    browserHistory.push("/");
+    browserHistory.push("/app");
   }
 
   render() {

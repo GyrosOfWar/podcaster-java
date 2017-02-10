@@ -27,7 +27,7 @@ export default class Login extends React.Component<any, LoginState> {
     if (username !== null && password !== null) {
       auth.login(username, password,
         response => {
-          browserHistory.push("/");
+          browserHistory.push("/app/");
         },
         error => {
           this.setState({

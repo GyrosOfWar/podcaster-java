@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Router, Route, browserHistory, IndexRoute, RouterState, RedirectFunction} from "react-router";
+import {Router, Route, browserHistory, IndexRoute, RouterState, RedirectFunction, IndexRedirect} from "react-router";
 import Login from "./auth/Login";
 import Logout from "./auth/Logout";
 import Navigation from "./Navigation";
@@ -62,7 +62,7 @@ class App extends React.Component<{}, AppState> {
 function requireAuth(nextState: RouterState, replace: RedirectFunction) {
   if (!auth.isLoggedIn()) {
     replace({
-      pathname: "/login",
+      pathname: "/app/login",
       state: {nextPathname: nextState.location.pathname}
     });
   }
@@ -72,10 +72,13 @@ class Routes extends React.Component<null, null> {
   render() {
     return <Router history={browserHistory}>
       <Route path="/" component={App}>
-        <IndexRoute component={PodcastList} onEnter={requireAuth}/>
-        <Route path="/login" component={Login}/>
-        <Route path="/logout" component={Logout}/>
-        <Route path="/podcasts/:id/page/:page" component={PodcastDetails}/>
+        <IndexRedirect to="/app"/>
+        <Route path="app">
+          <IndexRoute component={PodcastList} onEnter={requireAuth}/>
+          <Route path="login" component={Login}/>
+          <Route path="logout" component={Logout}/>
+          <Route path="podcasts/:id/page/:page" component={PodcastDetails}/>
+        </Route>
       </Route>
     </Router>;
   }

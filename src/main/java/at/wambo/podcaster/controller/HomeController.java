@@ -2,7 +2,6 @@ package at.wambo.podcaster.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * @author Martin
@@ -10,8 +9,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @Controller
 public class HomeController {
-    @RequestMapping(path = "/", method = RequestMethod.GET)
-    public String home() {
-        return "index";
+
+    @RequestMapping("/")
+    public String index() {
+        return "forward:/index.html";
+    }
+
+    @RequestMapping("/app/**")
+    public String app() {
+        return "forward:/index.html";
     }
 }

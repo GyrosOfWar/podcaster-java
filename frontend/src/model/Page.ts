@@ -24,7 +24,7 @@ export default class Page<T> {
   }
 
   withNewContent(data: Array<T>): Page<T> {
-    const newData: Array<T> = [...this.content, ... data];
+    const newData: Array<T> = [... data, ...this.content].slice(0, this.size);
     return new Page<T>(
       newData,
       this.totalPages,

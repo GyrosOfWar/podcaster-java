@@ -89,7 +89,7 @@ class PodcastListItem extends React.Component<PodcastListItemProps, null> {
     const item = this.props.feed;
     return <div className="podcast-list-item">
       <figure>
-        <Link to={`/podcasts/${item.id}/page/0`}>
+        <Link to={`/app/podcasts/${item.id}/page/0`}>
           <img className="podcast-image" src={item.getThumbnailUrl(300)}/>
         </Link>
         <figcaption>{item.title}</figcaption>
