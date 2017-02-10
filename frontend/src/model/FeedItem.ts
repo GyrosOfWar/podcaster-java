@@ -22,7 +22,7 @@ export default class FeedItem {
       obj.link,
       obj.description,
       obj.mp3Url,
-      moment(obj.pubDate),
+      moment.unix(obj.pubDate),
       moment.duration(obj.duration, "seconds"),
       obj.imageUrl,
       moment.duration(obj.lastPosition, "seconds"),
