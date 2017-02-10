@@ -39,12 +39,11 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
         });
       }, error => this.setState({error: error}));
   }
-
   addPodcast(event: React.FormEvent<HTMLButtonElement>) {
     const url = prompt("Enter URL:");
     if (url) {
       ajax.postWithAuth(`/api/feeds?url=${encodeURIComponent(url)}`,
-        null,
+        undefined,
         result => {
           const feed = RssFeed.fromJSON(result);
           this.setState({

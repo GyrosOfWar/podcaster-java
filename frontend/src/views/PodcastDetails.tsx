@@ -16,6 +16,8 @@ export default class PodcastDetails extends React.Component<any, PodcastDetailsS
     this.state = {
       currentPage: props.params.page,
     };
+
+    this.refreshPodcast = this.refreshPodcast.bind(this);
   }
 
   componentDidMount() {
@@ -33,6 +35,22 @@ export default class PodcastDetails extends React.Component<any, PodcastDetailsS
       });
   }
 
+  refreshPodcast() {
+    ajax.postWithAuth(`/api/feeds/${this.props.params.id}`,
+      undefined,
+      result => {
+        const feeds = result.map(FeedItem.fromJSON);
+        this.setState({
+          items: this.state.items && this.state.items.withNewContent(feeds)
+        })
+      },
+      error => {
+        this.setState({
+          error: Error.fromJSON(error)
+        })
+      });
+  }
+
   render() {
     if (this.state.error) {
       return <div>{this.state.error.message}</div>;
@@ -44,8 +62,12 @@ export default class PodcastDetails extends React.Component<any, PodcastDetailsS
 
     return <div>
       <div className="flex-row">
-        <button className="button button-outline"><span className="icon-spinner"/> Refresh</button>
-        <button className="button button-outline"><span className="icon-shuffle"/> Random podcast</button>
+        <button className="button button-outline" onClick={this.refreshPodcast}>
+          <span className="icon-spinner"/> Refresh
+        </button>
+        <button className="button button-outline">
+          <span className="icon-shuffle"/> Random podcast
+        </button>
       </div>
       {this.state.items.content.map(i =>
         <PodcastDetailsItem item={i} key={i.id} itemClicked={this.props.itemClicked}/>)}
@@ -62,14 +84,16 @@ class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> 
   clickItem(event: React.FormEvent<HTMLButtonElement>) {
     this.props.itemClicked(this.props.item);
   }
-  
+
   render() {
     const item = this.props.item;
     return (
       <div className="podcast-details-item">
         <img className="podcast-details-image" src={item.getThumbnailUrl(120)}/>
         <div className="flex-column grow">
-          <div className="podcast-title">{item.title}</div>
+          <div className="podcast-title">{item.title}
+            <small>{item.pubDate.format("DD-MM-YYYY")}</small>
+          </div>
           <div className="podcast-details-description">{item.description}</div>
         </div>
         <div className="buttons">

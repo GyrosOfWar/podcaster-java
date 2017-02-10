@@ -23,6 +23,21 @@ export default class Page<T> {
     );
   }
 
+  withNewContent(data: Array<T>): Page<T> {
+    const newData: Array<T> = [...this.content, ... data];
+    return new Page<T>(
+      newData,
+      this.totalPages,
+      this.totalElements,
+      this.last,
+      this.size,
+      this.number,
+      this.sort,
+      this.numberOfElements,
+      this.first
+    );
+  }
+
   constructor(content: Array<T>, totalPages: number, totalElements: number, last: boolean, size: number,
               _number: number, sort: string, numberOfElements: number, first: boolean) {
     this.content = content;
