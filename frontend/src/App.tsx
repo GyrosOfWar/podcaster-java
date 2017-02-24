@@ -44,6 +44,11 @@ class App extends React.Component<{}, AppState> {
 
   handleItemSelected(item: FeedItem) {
     this.setState({selectedItem: item});
+    const pos = item.lastPosition.asSeconds();
+    const player = document.getElementById("player-audio") as HTMLAudioElement;
+    if (player.currentTime !== pos) {
+      player.currentTime = pos;
+    }
   }
 
   componentDidMount() {
@@ -63,7 +68,7 @@ class App extends React.Component<{}, AppState> {
       <div id="main" className="container">
         <Navigation />
         <div className="grow">
-          <Player callbackInterval={15} callbackHandler={this.updateItem} item={this.state.selectedItem}/>
+          <Player callbackInterval={10} callbackHandler={this.updateItem} item={this.state.selectedItem}/>
           {lastSync && <p>Last sync: {lastSync.fromNow()}</p>}
           {this.state.error && <div className="error">{JSON.stringify(this.state.error)}</div>}
           {children}

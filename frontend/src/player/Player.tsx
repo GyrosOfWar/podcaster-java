@@ -8,6 +8,7 @@ interface PlayerProps {
   item?: FeedItem;
   callbackInterval: number;
   callbackHandler: (f: FeedItem) => void;
+  loadFinishedCallback?: (player: HTMLAudioElement) => void;
 }
 
 interface PlayerState {
@@ -32,6 +33,7 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
     };
     this.play = this.play.bind(this);
     this.pause = this.pause.bind(this);
+    this.onCanPlay = this.onCanPlay.bind(this);
   }
 
   play(): State {
@@ -93,6 +95,9 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
   }
 
   onCanPlay() {
+    if (this.props.loadFinishedCallback) {
+      this.props.loadFinishedCallback(this.player);
+    }
     this.setState({
       state: State.LoadFinished
     });
@@ -112,9 +117,6 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
 
   render() {
     const item = this.props.item;
-    if (!item) {
-      return <div/>;
-    }
     let played = moment.duration(0);
     let duration = moment.duration(0);
     if (this.player) {
@@ -129,6 +131,8 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
     if (this.state.state === State.Loading) {
       buttonEl = <span className="icon-spinner"/>;
     }
+    const mp3Url = item ? item.mp3Url : "";
+    const title = item ? item.title : "";
 
     return (
       <div className="player flex-row">
@@ -143,8 +147,9 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
             <span className="icon-fast-fw"/>
           </button>
         </div>
-        <Progress duration={duration} played={played} title={item.title} seekTo={this.seek.bind(this)}/>
-        <audio src={item.mp3Url} ref={(el) => this.player = el} onCanPlay={this.onCanPlay.bind(this)}/>
+        <Progress duration={duration} played={played} title={title} seekTo={this.seek.bind(this)}/>
+        <audio id="player-audio" src={mp3Url} ref={(el) => this.player = el}
+               onCanPlay={this.onCanPlay.bind(this)}/>
       </div>
     );
   }

@@ -32,11 +32,10 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     ajax.getWithAuth(`/api/feeds/${id}/items?page=${this.state.currentPage}`,
       response => {
         const page = Page.fromJSON(response, FeedItem.fromJSON);
-        const title = page.content[0].feed.title;
-        document.title = title;
         this.setState({
           items: page
         });
+        document.title = page.content[0].feed.title;
       },
       error => {
         this.setState({error: error});

@@ -1,6 +1,6 @@
 ﻿$STATIC_FOLDER = "..\src\main\resources\static"
 
-# npm run build
+npm run build
 $index = Get-Content .\build\index.html
 $index = $index.Replace("/static/js", "/js").Replace("/static/css", "/css");
 Out-File -FilePath .\build\index.html -Encoding utf8 -InputObject $index
