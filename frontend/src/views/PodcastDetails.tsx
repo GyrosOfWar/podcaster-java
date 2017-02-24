@@ -32,6 +32,8 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     ajax.getWithAuth(`/api/feeds/${id}/items?page=${this.state.currentPage}`,
       response => {
         const page = Page.fromJSON(response, FeedItem.fromJSON);
+        const title = page.content[0].feed.title;
+        document.title = title;
         this.setState({
           items: page
         });
@@ -112,7 +114,7 @@ class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> 
         <img className="podcast-details-image" src={item.getThumbnailUrl(120)}/>
         <div className="flex-column grow">
           <div className="podcast-title">{item.title}
-            <small>{item.pubDate.format("DD-MM-YYYY")}</small>
+            <small>{item.pubDate.format("DD.MM.YYYY")}</small>
           </div>
           <div className="podcast-details-description" dangerouslySetInnerHTML={description}/>
         </div>

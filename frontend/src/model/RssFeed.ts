@@ -16,7 +16,7 @@ export default class RssFeed {
       obj.feedUrl,
       obj.title,
       obj.imageUrl,
-      User.fromJSON(obj.owner),
+      obj.owner && User.fromJSON(obj.owner),
       obj.items ? obj.items.map((i: any) => FeedItem.fromJSON(i)) : [],
       obj.hashedImageUrl
     );

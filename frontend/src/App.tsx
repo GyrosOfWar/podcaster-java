@@ -46,6 +46,10 @@ class App extends React.Component<{}, AppState> {
     this.setState({selectedItem: item});
   }
 
+  componentDidMount() {
+    document.title = "Podcaster";
+  }
+
   render() {
     const children = React.Children.map(this.props.children, child => {
       return React.cloneElement(child as React.ReactElement<any>, {

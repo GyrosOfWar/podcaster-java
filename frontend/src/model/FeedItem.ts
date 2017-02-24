@@ -1,5 +1,6 @@
 import User from "./User";
 import * as moment from "moment";
+import RssFeed from "./RssFeed";
 
 // const TAG_RE: RegExp = /<\/?(.*)\/?>/g.compile();
 
@@ -22,6 +23,7 @@ export default class FeedItem {
   owner: User;
   isFavorite: boolean;
   hashedImageUrl: String;
+  feed: RssFeed;
 
   static fromJSON(obj: any): FeedItem {
     return new FeedItem(
@@ -36,13 +38,14 @@ export default class FeedItem {
       moment.duration(obj.lastPosition, "seconds"),
       User.fromJSON(obj.owner),
       obj.isFavorite,
-      obj.hashedImageUrl
+      obj.hashedImageUrl,
+      RssFeed.fromJSON(obj.feed)
     );
   }
 
   constructor(id: number, title: string, link: string, description: string, mp3Url: string,
               pubDate: moment.Moment, duration: moment.Duration, imageUrl: string, lastPosition: moment.Duration,
-              owner: User, isFavorite: boolean, hashedImageUrl: String) {
+              owner: User, isFavorite: boolean, hashedImageUrl: String, feed: RssFeed) {
     this.id = id;
     this.title = title;
     this.link = link;
@@ -55,6 +58,7 @@ export default class FeedItem {
     this.owner = owner;
     this.isFavorite = isFavorite;
     this.hashedImageUrl = hashedImageUrl;
+    this.feed = feed;
   }
 
   getThumbnailUrl(size: number): string {

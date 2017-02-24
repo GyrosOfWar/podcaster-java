@@ -1,6 +1,6 @@
 package at.wambo.podcaster.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.rometools.rome.feed.synd.SyndEnclosure;
 import com.rometools.rome.feed.synd.SyndEntry;
 import lombok.Data;
@@ -33,7 +33,7 @@ public class FeedItem {
     private Instant pubDate;
     private Duration duration;
     @ManyToOne(targetEntity = RssFeed.class)
-    @JsonIgnore
+    @JsonIgnoreProperties({"items", "owner"})
     private RssFeed feed;
     private Duration lastPosition;
     private String imageUrl;
