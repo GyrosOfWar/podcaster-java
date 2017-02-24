@@ -12,6 +12,7 @@ import "./styles/base.css";
 import "../node_modules/milligram/dist/milligram.css";
 import {postWithAuth} from "./common/ajax";
 import * as moment from "moment";
+import History from "./views/History";
 
 interface AppState {
   selectedItem?: FeedItem;
@@ -68,7 +69,9 @@ class App extends React.Component<{}, AppState> {
       <div id="main" className="container">
         <Navigation />
         <div className="grow">
-          <Player callbackInterval={10} callbackHandler={this.updateItem} item={this.state.selectedItem}/>
+          {auth.isLoggedIn() && <Player callbackInterval={10}
+                                        callbackHandler={this.updateItem}
+                                        item={this.state.selectedItem}/>}
           {lastSync && <p>Last sync: {lastSync.fromNow()}</p>}
           {this.state.error && <div className="error">{JSON.stringify(this.state.error)}</div>}
           {children}
@@ -97,6 +100,7 @@ class Routes extends React.Component<null, null> {
           <Route path="login" component={Login}/>
           <Route path="logout" component={Logout}/>
           <Route path="podcasts/:id/page/:page" component={PodcastDetails}/>
+          <Route path="history" component={History}/>
         </Route>
       </Route>
     </Router>;

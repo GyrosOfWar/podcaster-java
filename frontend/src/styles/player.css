@@ -1,5 +1,7 @@
 .player {
     padding: 5px;
+    flex-direction: row;
+    align-items: center;
 }
 
 .player > * {
@@ -12,6 +14,7 @@
 
 .player-buttons {
     margin-right: 5px;
+    flex-direction: column;
 }
 
 .player-buttons > button {
@@ -48,4 +51,15 @@
 
 .progress-text {
     flex-grow: 0;
+}
+
+@media all and (max-width: 640px) {
+    .player {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .player-buttons {
+        align-self: center;
+    }
 }

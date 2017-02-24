@@ -101,7 +101,7 @@ interface PodcastDetailsItemProps {
 }
 
 class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> {
-  clickItem(event: React.FormEvent<HTMLButtonElement>) {
+  clickItem() {
     this.props.itemClicked(this.props.item);
   }
 
@@ -112,9 +112,10 @@ class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> 
       <div className="podcast-details-item">
         <img className="podcast-details-image" src={item.getThumbnailUrl(120)}/>
         <div className="flex-column grow">
-          <div className="podcast-title">{item.title}
+          <div className="podcast-title">{item.title}&nbsp;
             <small>{item.pubDate.format("DD.MM.YYYY")}</small>
           </div>
+          <span>{item.getFormattedElapsedTime()}</span>
           <div className="podcast-details-description" dangerouslySetInnerHTML={description}/>
         </div>
         <div className="buttons">

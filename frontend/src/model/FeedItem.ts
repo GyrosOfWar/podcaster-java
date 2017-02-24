@@ -1,6 +1,7 @@
 import User from "./User";
 import * as moment from "moment";
 import RssFeed from "./RssFeed";
+import {formatDuration} from "../common/util";
 
 // const TAG_RE: RegExp = /<\/?(.*)\/?>/g.compile();
 
@@ -63,6 +64,10 @@ export default class FeedItem {
 
   getThumbnailUrl(size: number): string {
     return "/api/images/" + this.hashedImageUrl + "?size=" + size;
+  }
+
+  getFormattedElapsedTime(): string {
+    return `${formatDuration(this.lastPosition)} / ${formatDuration(this.duration)}`;
   }
 
 }

@@ -25,6 +25,7 @@ figcaption {
 }
 
 .podcast-title {
+    display: inline-block;
     font-weight: bold;
 }
 

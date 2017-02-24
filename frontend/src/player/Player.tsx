@@ -3,6 +3,7 @@ import FeedItem from "../model/FeedItem";
 import * as moment from "moment";
 import "../styles/player.css";
 import "../styles/icons.css";
+import {formatDuration} from "../common/util";
 
 interface PlayerProps {
   item?: FeedItem;
@@ -135,7 +136,7 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
     const title = item ? item.title : "";
 
     return (
-      <div className="player flex-row">
+      <div className="player">
         <div className="player-buttons flex-row">
           <button className="button button-outline step-backward" onClick={this.onStepBack.bind(this)}>
             <span className="icon-fast-bw"/>
@@ -160,17 +161,6 @@ interface ProgressProps {
   duration: moment.Duration;
   seekTo: (p: number) => void;
   title: string;
-}
-
-function formatDuration(duration: moment.Duration): string {
-  function pad(n: number): string {
-    return n < 10 ? "0" + n : n.toString();
-  }
-
-  const hr = duration.hours();
-  const min = duration.minutes();
-  const secs = duration.seconds();
-  return `${pad(hr)}:${pad(min)}:${pad(secs)}`;
 }
 
 class Progress extends React.Component<ProgressProps, any> {

@@ -12,7 +12,7 @@ export default class HistoryEntry {
     return new HistoryEntry(
       FeedItem.fromJSON(obj.feedItem),
       User.fromJSON(obj.user),
-      moment(obj.time),
+      moment.unix(obj.time),
       obj.id
     );
   }
