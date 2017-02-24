@@ -11,10 +11,12 @@ import FeedItem from "./model/FeedItem";
 import "./styles/base.css";
 import "../node_modules/milligram/dist/milligram.css";
 import {postWithAuth} from "./common/ajax";
+import * as moment from "moment";
 
 interface AppState {
   selectedItem?: FeedItem;
   error?: any;
+  lastSync?: moment.Moment;
 }
 
 class App extends React.Component<{}, AppState> {
@@ -28,7 +30,11 @@ class App extends React.Component<{}, AppState> {
   updateItem(item: FeedItem) {
     postWithAuth(`/api/feed_items/${item.id}`,
       JSON.stringify(item),
-      undefined,
+      () => {
+        this.setState({
+          lastSync: moment()
+        });
+      },
       error => {
         this.setState({
           error: error
@@ -46,11 +52,15 @@ class App extends React.Component<{}, AppState> {
         itemClicked: this.handleItemSelected
       });
     });
+
+    const lastSync = this.state.lastSync;
+
     return (
       <div id="main" className="container">
         <Navigation />
         <div className="grow">
           <Player callbackInterval={15} callbackHandler={this.updateItem} item={this.state.selectedItem}/>
+          {lastSync && <p>Last sync: {lastSync.fromNow()}</p>}
           {this.state.error && <div className="error">{JSON.stringify(this.state.error)}</div>}
           {children}
         </div>

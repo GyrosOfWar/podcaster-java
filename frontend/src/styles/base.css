@@ -57,10 +57,6 @@ div {
         flex-direction: column !important;
     }
 
-    img.podcast-details-image {
-        height: 40px;
-    }
-
     #main > article,
     #main > nav {
         order: 0;

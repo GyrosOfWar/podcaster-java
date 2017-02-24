@@ -30,6 +30,9 @@ figcaption {
 
 .podcast-details-image {
     border: 1px solid black;
+    max-height: 120px;
+    max-width: 120px;
+    align-self: center;
 }
 
 .buttons {

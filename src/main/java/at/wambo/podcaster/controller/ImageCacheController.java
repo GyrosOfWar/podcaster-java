@@ -40,14 +40,28 @@ public class ImageCacheController {
     private final @NonNull FeedItemRepository itemRepository;
     private final @NonNull RssFeedRepository rssFeedRepository;
 
-    // TODO save different image sizes
+    private byte[] resizeImage(URL url, int width) throws IOException {
+        BufferedImage originalImage = ImageIO.read(url);
+        double q = originalImage.getHeight() / (double) originalImage.getWidth();
+        int height = (int) (width * q);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        img.createGraphics().drawImage(originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0, null);
+        logger.debug("Resized image to {}x{} px", width, height);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        ImageIO.write(img, "jpg", stream);
+        return stream.toByteArray();
+    }
+
     private byte[] getImage(String hashedUrl, int width) {
-        logger.debug("getImage: start");
+        logger.debug("getImage: start (url = {}, width = {})", hashedUrl, width);
         RedisConnection connection = null;
+
+        byte[] key = String.format("url=%s,width=%s", hashedUrl, width).getBytes();
+
         try {
             connection = this.connectionFactory.getConnection();
             logger.debug("getImage: acquired Redis connection: {}", connection);
-            byte[] result = connection.hGet(REDIS_KEY, hashedUrl.getBytes());
+            byte[] result = connection.hGet(REDIS_KEY, key);
             if (result == null) {
                 logger.debug("Found no image in Redis");
                 URL url;
@@ -60,22 +74,13 @@ public class ImageCacheController {
                         url = new URL(feeds.get(0).getImageUrl());
                     }
                     logger.debug("Found URL {} for hash {}", url, hashedUrl);
-                    BufferedImage originalImage = ImageIO.read(url);
-                    double q = originalImage.getHeight() / (double) originalImage.getWidth();
-                    int height = (int) (width * q);
-                    BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-                    img.createGraphics().drawImage(originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0, null);
-                    logger.debug("Resized image");
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    ImageIO.write(img, "jpg", stream);
-                    byte[] imageBytes = stream.toByteArray();
-                    connection.hSet(REDIS_KEY, hashedUrl.getBytes(), imageBytes);
+                    byte[] imageBytes = resizeImage(url, width);
+                    connection.hSet(REDIS_KEY, key, imageBytes);
                     logger.debug("Wrote image to Redis, returning");
                     return imageBytes;
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-
             } else {
                 logger.debug("Found image in redis, returing");
                 return result;

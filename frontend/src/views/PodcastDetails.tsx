@@ -10,14 +10,20 @@ interface PodcastDetailsState {
   currentPage: number;
 }
 
-export default class PodcastDetails extends React.Component<any, PodcastDetailsState> {
+interface PodcastDetailsProps {
+  params: any;
+  itemClicked: (item: FeedItem) => void;
+}
+
+export default class PodcastDetails extends React.Component<PodcastDetailsProps, PodcastDetailsState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      currentPage: props.params.page,
+      currentPage: props.params.page
     };
 
     this.refreshPodcast = this.refreshPodcast.bind(this);
+    this.randomPodcast = this.randomPodcast.bind(this);
   }
 
   componentDidMount() {
@@ -51,6 +57,19 @@ export default class PodcastDetails extends React.Component<any, PodcastDetailsS
       });
   }
 
+  randomPodcast() {
+    const id = this.props.params.id;
+    ajax.getWithAuth(`/api/feeds/${id}/random`,
+      response => {
+        this.props.itemClicked(response);
+      },
+      error => {
+        this.setState({
+          error: error
+        });
+      });
+  }
+
   render() {
     if (this.state.error) {
       return <div>{this.state.error.message}</div>;
@@ -65,7 +84,7 @@ export default class PodcastDetails extends React.Component<any, PodcastDetailsS
         <button className="button button-outline" onClick={this.refreshPodcast}>
           <span className="icon-spinner"/> Refresh
         </button>
-        <button className="button button-outline">
+        <button className="button button-outline" onClick={this.randomPodcast}>
           <span className="icon-shuffle"/> Random podcast
         </button>
       </div>
@@ -87,6 +106,7 @@ class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> 
 
   render() {
     const item = this.props.item;
+    const description = {__html: item.description};
     return (
       <div className="podcast-details-item">
         <img className="podcast-details-image" src={item.getThumbnailUrl(120)}/>
@@ -94,7 +114,7 @@ class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> 
           <div className="podcast-title">{item.title}
             <small>{item.pubDate.format("DD-MM-YYYY")}</small>
           </div>
-          <div className="podcast-details-description">{item.description}</div>
+          <div className="podcast-details-description" dangerouslySetInnerHTML={description}/>
         </div>
         <div className="buttons">
           <button onClick={this.clickItem.bind(this)} className="button button-outline">

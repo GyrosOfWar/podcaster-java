@@ -1,6 +1,14 @@
 import User from "./User";
 import * as moment from "moment";
 
+// const TAG_RE: RegExp = /<\/?(.*)\/?>/g.compile();
+
+function removeTags(text: string): string {
+  const tmp = document.createElement("div");
+  tmp.innerHTML = text;
+  return tmp.textContent || tmp.innerText || "";
+}
+
 export default class FeedItem {
   id: number;
   title: string;
