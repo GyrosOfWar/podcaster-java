@@ -36,7 +36,6 @@ dependencies {
     compile('org.springframework.boot:spring-boot-devtools')
 
     compile('org.springframework.boot:spring-boot-starter-security')
-    compile('org.springframework.boot:spring-boot-starter-freemarker')
     compile('org.springframework.boot:spring-boot-starter-web')
 
     compile('com.rometools:rome:1.7.1')
