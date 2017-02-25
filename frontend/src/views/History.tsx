@@ -3,6 +3,7 @@ import * as ajax from "../common/ajax";
 import Page from "../model/Page";
 import HistoryEntry from "../model/HistoryEntry";
 import Error from "../model/Error";
+import DateTimeComponent, {DisplayType} from "../common/DateTimeComponent";
 
 interface HistoryState {
   entries?: Page<HistoryEntry>;
@@ -25,7 +26,7 @@ export default class Histoty extends React.Component<null, HistoryState> {
       },
       error => {
         this.setState({
-          error: Error.fromJSON(error)
+          error: error
         });
       });
   }
@@ -39,7 +40,7 @@ export default class Histoty extends React.Component<null, HistoryState> {
     }
 
     return <div>
-      {this.state.entries.content.map(e => <HistoryEntryView entry={e}/>)}
+      {this.state.entries.content.map(e => <HistoryEntryView key={e.id} entry={e}/>)}
     </div>;
   }
 }
@@ -49,9 +50,12 @@ interface HistoryEntryViewProps {
 }
 
 class HistoryEntryView extends React.Component<HistoryEntryViewProps, null> {
+
   render() {
-    return <div>
-      {this.props.entry.time.format()}: {this.props.entry.feedItem.title}
+    const date = this.props.entry.time;
+
+    return <div style={{"display": "inline-block"}}>
+      <DateTimeComponent date={date} type={DisplayType.FromNow}/>: {this.props.entry.feedItem.title}
     </div>;
   }
 }

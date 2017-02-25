@@ -43,6 +43,8 @@ dependencies {
     compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.5')
     compile('org.projectlombok:lombok:1.16.12')
     compile('com.nimbusds:nimbus-jose-jwt:4.34')
+    compile group: 'org.hibernate', name: 'hibernate-java8', version: '5.0.11.Final'
+
 
     runtime('org.postgresql:postgresql')
 

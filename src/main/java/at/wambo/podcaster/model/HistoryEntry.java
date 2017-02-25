@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.Instant;
+import java.time.ZonedDateTime;
 
 /**
  * @author Martin
@@ -17,6 +17,9 @@ import java.time.Instant;
 @NoArgsConstructor
 @Entity
 @Table(name = "history")
+@NamedNativeQuery(name = "HistoryEntry.historyForUser",
+        query = "SELECT * FROM history h GROUP BY date(h.time)",
+        resultClass = HistoryEntry.class)
 public class HistoryEntry {
     @OneToOne
     private FeedItem feedItem;
@@ -26,7 +29,7 @@ public class HistoryEntry {
     private User user;
 
     @Column(nullable = false)
-    private Instant time;
+    private ZonedDateTime time;
 
     @Id
     @GeneratedValue

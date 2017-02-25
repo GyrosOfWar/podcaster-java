@@ -13,6 +13,6 @@ import org.springframework.data.repository.query.Param;
  *         02.12.2016
  */
 public interface HistoryEntryRepository extends CrudRepository<HistoryEntry, Integer> {
-    @Query("from HistoryEntry h where h.user = :user")
+    @Query(name = "HistoryEntry.historyForUser")
     Page<HistoryEntry> getHistoryForUser(@Param("user") User user, Pageable page);
 }

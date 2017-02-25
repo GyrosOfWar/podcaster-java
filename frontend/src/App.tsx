@@ -50,6 +50,7 @@ class App extends React.Component<{}, AppState> {
     if (player.currentTime !== pos) {
       player.currentTime = pos;
     }
+    document.title = item.title;
   }
 
   componentDidMount() {
