@@ -77,7 +77,7 @@ public class AuthController {
         return null;
     }
 
-    private User create(CreateUserRequest request) {
+    private User createAndPersist(CreateUserRequest request) {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setName(request.getUsername());
@@ -90,7 +90,7 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody CreateUserRequest request) {
         String error = validateRequest(request);
         if (error == null) {
-            return ResponseEntity.ok(create(request));
+            return ResponseEntity.ok(createAndPersist(request));
         } else {
             return ResponseEntity.badRequest().body(error);
         }

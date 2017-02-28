@@ -17,9 +17,6 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "history")
-@NamedNativeQuery(name = "HistoryEntry.historyForUser",
-        query = "SELECT * FROM history h GROUP BY date(h.time)",
-        resultClass = HistoryEntry.class)
 public class HistoryEntry {
     @OneToOne
     private FeedItem feedItem;
