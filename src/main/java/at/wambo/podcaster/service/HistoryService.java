@@ -23,8 +23,14 @@ public class HistoryService {
     private final @NonNull HistoryEntryRepository historyEntryRepository;
 
     public HistoryEntry addToHistory(User user, FeedItem item) {
-        HistoryEntry entry = new HistoryEntry(item, user, ZonedDateTime.now(), 0);
-        return historyEntryRepository.save(entry);
+        HistoryEntry last = historyEntryRepository.findFirstByUserOrderByTimeDesc(user);
+        if (last != null && last.getFeedItem().equals(item)) {
+            last.setTime(ZonedDateTime.now());
+            return historyEntryRepository.save(last);
+        } else {
+            HistoryEntry entry = new HistoryEntry(item, user, ZonedDateTime.now(), 0);
+            return historyEntryRepository.save(entry);
+        }
     }
 
     public Page<HistoryEntry> getHistoryForUser(User user, Pageable page) {

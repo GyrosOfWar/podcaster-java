@@ -15,4 +15,6 @@ import org.springframework.data.repository.query.Param;
 public interface HistoryEntryRepository extends CrudRepository<HistoryEntry, Integer> {
     @Query("from HistoryEntry h where h.user = :user order by h.time desc")
     Page<HistoryEntry> getHistoryForUser(@Param("user") User user, Pageable page);
+
+    HistoryEntry findFirstByUserOrderByTimeDesc(User user);
 }

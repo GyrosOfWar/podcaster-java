@@ -4,6 +4,8 @@ import Page from "../model/Page";
 import HistoryEntry from "../model/HistoryEntry";
 import Error from "../model/Error";
 import DateTimeComponent, {DisplayType} from "../common/DateTimeComponent";
+import {Link} from "react-router";
+import "../styles/history.css";
 
 interface HistoryState {
   entries?: Map<string, Array<HistoryEntry>>;
@@ -12,10 +14,8 @@ interface HistoryState {
 
 function groupBy<Type, Key>(array: Array<Type>, keyFunc: (t: Type) => Key): Map<Key, Array<Type>> {
   const map = new Map<Key, Array<Type>>();
-
   for (const value of array) {
     const key = keyFunc(value);
-
     const entry = map.get(key);
     if (entry) {
       entry.push(value);
@@ -61,7 +61,7 @@ export default class Histoty extends React.Component<null, HistoryState> {
     const views: React.ReactElement<any>[] = [];
     entries.forEach((v, k) => {
       views.push(<div>
-        <h2>{k}</h2>
+        <b>{k}</b>
         {v.map(e => <HistoryEntryView entry={e}/>)}
       </div>);
     });
@@ -77,12 +77,15 @@ interface HistoryEntryViewProps {
 }
 
 class HistoryEntryView extends React.Component<HistoryEntryViewProps, null> {
-
   render() {
-    const date = this.props.entry.time;
-
+    const entry = this.props.entry;
+    const date = entry.time;
+    const feedId = entry.feedItem.feed.id;
+    const itemId = entry.feedItem.id;
     return <div style={{"display": "inline-block"}}>
-      <DateTimeComponent date={date} type={DisplayType.Time}/>: {this.props.entry.feedItem.title}
+      <Link to={`/app/podcasts/${feedId}/item/${itemId}`}>{entry.feedItem.title}</Link>&nbsp;
+      <small><DateTimeComponent date={date} type={DisplayType.FromNow}/></small>
+      <span className="history-elapsed">{entry.feedItem.getFormattedElapsedTime()}</span>
     </div>;
   }
 }

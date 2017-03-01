@@ -101,6 +101,7 @@ class Routes extends React.Component<null, null> {
           <Route path="login" component={Login}/>
           <Route path="logout" component={Logout}/>
           <Route path="podcasts/:id/page/:page" component={PodcastDetails}/>
+          <Route path="podcasts/:id/item/:itemId" component={PodcastDetails}/>
           <Route path="history" component={History}/>
         </Route>
       </Route>

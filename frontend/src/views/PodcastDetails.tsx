@@ -40,6 +40,20 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
       error => {
         this.setState({error: error});
       });
+
+    const itemId = this.props.params.itemId;
+    if (itemId) {
+      ajax.getWithAuth(`/api/feed_items/${itemId}`,
+        response => {
+          const item = FeedItem.fromJSON(response);
+          this.props.itemClicked(item);
+        },
+        error => {
+          this.setState({
+            error: error
+          });
+        });
+    }
   }
 
   refreshPodcast() {

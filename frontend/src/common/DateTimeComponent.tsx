@@ -16,7 +16,7 @@ interface DateTimeComponentProps {
 export default class DateTimeComponent extends React.Component<DateTimeComponentProps, null> {
   render() {
     const date = this.props.date;
-    const type = this.props.type || DisplayType.DateTime;
+    const type = this.props.type;
     let fmt;
 
     switch (type) {
