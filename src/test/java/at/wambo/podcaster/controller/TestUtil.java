@@ -14,8 +14,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
 /**
  * Created by martin on 19.11.16.
  */
@@ -49,7 +49,18 @@ public class TestUtil {
                 .andReturn();
     }
 
+    public static RssFeed[] getFeeds(MockMvc mvc, String token) throws Exception {
+        MvcResult result = mvc.perform(get("/api/feeds")
+                .header("Authorization", "Bearer " + token))
+                .andReturn();
+        return OBJECT_MAPPER.readValue(result.getResponse().getContentAsString(), RssFeed[].class);
+    }
+
     public static RssFeed addPodcast(MockMvc mvc, String token, String feedUrl) throws Exception {
+        RssFeed[] existing = getFeeds(mvc, token);
+        if (existing.length != 0) {
+            return existing[0];
+        }
         MvcResult result = mvc.perform(post("/api/feeds")
                 .param("url", feedUrl)
                 .header("Authorization", "Bearer " + token))

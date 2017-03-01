@@ -7,6 +7,7 @@ import at.wambo.podcaster.model.User;
 import at.wambo.podcaster.requests.ChangeFeedItemRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +93,7 @@ public class RssFeedControllerTests {
         }
     }
 
-    @Test
+    @Ignore
     public void addFeed() throws Exception {
         registerUser();
         MvcResult result = this.mvc.perform(post("/api/feeds")
