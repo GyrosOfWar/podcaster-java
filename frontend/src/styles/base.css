@@ -40,6 +40,14 @@ div {
     flex-grow: 1;
 }
 
+.pagination {
+    margin-top: 0.75rem;
+}
+
+.pull-right {
+    float: right;
+}
+
 .error {
     color: #a94442;
     background-color: #f2dede;

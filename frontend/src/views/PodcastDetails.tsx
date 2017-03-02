@@ -3,6 +3,7 @@ import Error from "../model/Error";
 import * as ajax from "../common/ajax";
 import FeedItem from "../model/FeedItem";
 import Page from "../model/Page";
+import Pagination from "../common/Pagination";
 
 interface PodcastDetailsState {
   items?: Page<FeedItem>;
@@ -56,6 +57,22 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     }
   }
 
+  componentWillReceiveProps?(nextProps: Readonly<PodcastDetailsProps>, nextContext: any): void {
+    const id = this.props.params.id;
+
+    ajax.getWithAuth(`/api/feeds/${id}/items?page=${this.state.currentPage}`,
+      response => {
+        const page = Page.fromJSON(response, FeedItem.fromJSON);
+        this.setState({
+          items: page
+        });
+        document.title = page.content[0].feed.title;
+      },
+      error => {
+        this.setState({error: error});
+      });
+  }
+
   refreshPodcast() {
     ajax.postWithAuth(`/api/feeds/${this.props.params.id}`,
       undefined,
@@ -93,6 +110,8 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     if (!this.state.items) {
       return <div>...</div>;
     }
+    const id = this.props.params.id;
+    const page = parseInt(this.props.params.page, 10);
 
     return <div>
       <div className="flex-row">
@@ -105,6 +124,9 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
       </div>
       {this.state.items.content.map(i =>
         <PodcastDetailsItem item={i} key={i.id} itemClicked={this.props.itemClicked}/>)}
+      <Pagination page={this.state.items}
+                  nextLink={`/app/podcasts/${id}/page/${page + 1}`}
+                  prevLink={`/app/podcasts/${id}/page/${page - 1}`}/>
     </div>;
   }
 }
