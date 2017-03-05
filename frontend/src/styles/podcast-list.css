@@ -1,5 +1,6 @@
 .podcast-list {
     flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .podcast-image {
@@ -14,7 +15,6 @@ figcaption {
 
 .podcast-details-item {
     background-color: white;
-    box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
     padding: 0.5rem;
     margin: 3px;
     flex-direction: row;
