@@ -13,10 +13,11 @@ import "../node_modules/milligram/dist/milligram.css";
 import {postWithAuth} from "./common/ajax";
 import * as moment from "moment";
 import History from "./views/History";
+import Error from "./model/Error";
 
 interface AppState {
   selectedItem?: FeedItem;
-  error?: any;
+  error?: Error;
   lastSync?: moment.Moment;
 }
 
@@ -72,9 +73,9 @@ class App extends React.Component<{}, AppState> {
         <div className="grow">
           {auth.isLoggedIn() && <Player callbackInterval={10}
                                         callbackHandler={this.updateItem}
-                                        item={this.state.selectedItem}/>}
+                                        getInitialItem={() => this.state.selectedItem} />}
           {lastSync && <p>Last sync: {lastSync.fromNow()}</p>}
-          {this.state.error && <div className="error">{JSON.stringify(this.state.error)}</div>}
+          {this.state.error && <div className="error">{this.state.error.message}</div>}
           {children}
         </div>
       </div>

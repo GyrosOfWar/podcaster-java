@@ -5,6 +5,7 @@ import at.wambo.podcaster.model.RssFeed;
 import at.wambo.podcaster.model.User;
 import at.wambo.podcaster.repository.FeedItemRepository;
 import at.wambo.podcaster.repository.RssFeedRepository;
+import at.wambo.podcaster.service.HistoryService;
 import at.wambo.podcaster.util.Util;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class RssFeedController {
 
     private final @NonNull RssFeedRepository feedRepository;
     private final @NonNull FeedItemRepository feedItemRepository;
+    private final @NonNull HistoryService historyService;
 
     @RequestMapping(method = RequestMethod.GET)
     public Iterable<RssFeed> getFeeds() {
@@ -51,6 +53,17 @@ public class RssFeedController {
         } else {
             return null;
         }
+    }
+
+    @RequestMapping(path = "{id}", method = RequestMethod.DELETE)
+    public String deleteFeed(@PathVariable Integer id) {
+        if (id != null) {
+            RssFeed feed = feedRepository.findOne(id);
+            historyService.deleteForFeed(id);
+            feedItemRepository.delete(feed.getItems());
+            feedRepository.delete(id);
+        }
+        return "OK";
     }
 
     @RequestMapping(path = "{feed}", method = RequestMethod.POST)

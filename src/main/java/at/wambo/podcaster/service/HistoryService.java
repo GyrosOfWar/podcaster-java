@@ -36,4 +36,8 @@ public class HistoryService {
     public Page<HistoryEntry> getHistoryForUser(User user, Pageable page) {
         return historyEntryRepository.getHistoryForUser(user, page);
     }
+
+    public void deleteForFeed(Integer id) {
+        historyEntryRepository.delete(historyEntryRepository.findByFeedItemFeedId(id));
+    }
 }

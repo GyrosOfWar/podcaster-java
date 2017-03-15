@@ -12,6 +12,7 @@ import javax.persistence.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Martin
@@ -22,6 +23,8 @@ import java.util.Date;
 @Table(name = "feed_items")
 @ToString(exclude = "feed")
 public class FeedItem {
+    private static final long MAX_LENGTH = 60 * 60 * 10;
+
     @GeneratedValue
     @Id
     private int id;
@@ -51,7 +54,24 @@ public class FeedItem {
         Duration duration = Duration.ZERO;
         for (SyndEnclosure enc : entry.getEnclosures()) {
             mp3Url = enc.getUrl();
-            duration = Duration.ofSeconds(enc.getLength());
+            long seconds = enc.getLength();
+            // Guess if the length attribute is the length in bytes or the length in seconds.
+            if (seconds < MAX_LENGTH) {
+                duration = Duration.ofSeconds(seconds);
+            } else {
+                for (Element el: entry.getForeignMarkup()) {
+                    if ("duration".equals(el.getName())) {
+                        String value = el.getText();
+                        try {
+                            seconds = Long.parseLong(value);
+                            duration = Duration.ofSeconds(seconds);
+                        } catch (NumberFormatException ignored) {
+                            duration = parseDuration(value);
+                        }
+                    }
+                }
+            }
+
         }
         item.setMp3Url(mp3Url);
         item.setOwner(owner);
@@ -74,5 +94,24 @@ public class FeedItem {
         item.setHashedImageUrl(hash);
 
         return item;
+    }
+
+    private static Duration parseDuration(String value) {
+        String[] tokens = value.split(":");
+        int hours = 0;
+        int minutes = 0;
+        int seconds = 0;
+
+        if (tokens.length == 3) {
+            hours = Integer.parseInt(tokens[0]);
+            minutes = Integer.parseInt(tokens[1]);
+            seconds = Integer.parseInt(tokens[2]);
+        }
+        if (tokens.length == 2) {
+            minutes = Integer.parseInt(tokens[0]);
+            seconds = Integer.parseInt(tokens[1]);
+        }
+
+        return Duration.ofHours(hours).plusMinutes(minutes).plusSeconds(seconds);
     }
 }

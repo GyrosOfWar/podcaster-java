@@ -12,6 +12,7 @@ interface PodcastDetailsState {
 }
 
 interface PodcastDetailsProps {
+  history: any;
   params: any;
   itemClicked: (item: FeedItem) => void;
 }
@@ -25,6 +26,8 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
 
     this.refreshPodcast = this.refreshPodcast.bind(this);
     this.randomPodcast = this.randomPodcast.bind(this);
+    this.deletePodcast = this.deletePodcast.bind(this);
+    this.onSearch = this.onSearch.bind(this);
   }
 
   componentDidMount() {
@@ -102,6 +105,22 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
       });
   }
 
+  deletePodcast() {
+    if (confirm("Are you sure?")) {
+      const items = this.state.items;
+      if (items) {
+        const id = items.content[0].feed.id;
+        ajax.deleteWithAuth(`/api/feeds/${id}`, res => {
+          this.props.history.push("/app");
+        });
+      }
+    }
+  }
+
+  onSearch(query: string) {
+    console.log(query);
+  }
+
   render() {
     if (this.state.error) {
       return <div>{this.state.error.message}</div>;
@@ -115,11 +134,17 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
 
     return <div>
       <div className="flex-row">
+        <SearchBox callback={this.onSearch} />
+      </div>
+      <div className="flex-row button-bar">
         <button className="button button-outline" onClick={this.refreshPodcast}>
           <span className="icon-spinner"/> Refresh
         </button>
         <button className="button button-outline" onClick={this.randomPodcast}>
           <span className="icon-shuffle"/> Random podcast
+        </button>
+        <button id="delete-button" className="button button-outline" onClick={this.deletePodcast}>
+          Delete
         </button>
       </div>
       {this.state.items.content.map(i =>
@@ -161,5 +186,27 @@ class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> 
         </div>
       </div>
     );
+  }
+}
+
+interface SearchBoxProps {
+  callback: (s: string) => void;
+}
+
+class SearchBox extends React.Component<SearchBoxProps, null> {
+  constructor(props: SearchBoxProps) {
+    super(props);
+    this.state = null;
+  }
+
+  onInput(event: React.FocusEvent<HTMLInputElement>) {
+    const text = event.currentTarget.value;
+    if (text) {
+      this.props.callback(text);
+    }
+  }
+
+  render() {
+    return <input placeholder="Search" id="search-input" className="" onBlur={this.onInput} type="search" />;
   }
 }

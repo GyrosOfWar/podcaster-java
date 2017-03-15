@@ -6,15 +6,17 @@ import "../styles/icons.css";
 import {formatDuration} from "../common/util";
 
 interface PlayerProps {
-  item?: FeedItem;
   callbackInterval: number;
   callbackHandler: (f: FeedItem) => void;
+  getInitialItem: () => FeedItem | undefined;
   loadFinishedCallback?: (player: HTMLAudioElement) => void;
+  getNextItem?: (lastItem?: FeedItem) => FeedItem;
 }
 
 interface PlayerState {
   state: State;
   played: number;
+  item?: FeedItem;
 }
 
 enum State {
@@ -35,6 +37,16 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
     this.play = this.play.bind(this);
     this.pause = this.pause.bind(this);
     this.onCanPlay = this.onCanPlay.bind(this);
+    this.onEnded = this.onEnded.bind(this)
+  }
+
+  onEnded() {
+    if (this.props.getNextItem) {
+      this.setState({
+        state: State.None,
+        item: this.props.getNextItem(this.state.item)
+      });
+    }
   }
 
   play(): State {
@@ -46,9 +58,9 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
     }, 1000);
 
     this.callbackInterval = window.setInterval(() => {
-      if (this.props.item) {
-        this.props.item.lastPosition = moment.duration(Math.round(this.player.currentTime), "seconds");
-        this.props.callbackHandler(this.props.item);
+      if (this.state.item) {
+        this.state.item.lastPosition = moment.duration(Math.round(this.player.currentTime), "seconds");
+        this.props.callbackHandler(this.state.item);
       } else {
         throw Error("Missing item");
       }
@@ -117,7 +129,7 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
   }
 
   render() {
-    const item = this.props.item;
+    const item = this.state.item;
     let played = moment.duration(0);
     let duration = moment.duration(0);
     if (this.player) {
@@ -150,7 +162,7 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
         </div>
         <Progress duration={duration} played={played} title={title} seekTo={this.seek.bind(this)}/>
         <audio id="player-audio" src={mp3Url} ref={(el) => this.player = el}
-               onCanPlay={this.onCanPlay.bind(this)}/>
+               onCanPlay={this.onCanPlay.bind(this)} onEnded={this.onEnded}/>
       </div>
     );
   }

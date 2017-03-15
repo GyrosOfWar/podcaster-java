@@ -44,3 +44,18 @@ figcaption {
     margin: 5px;
     max-width: 95%;
 }
+
+.button-bar > button {
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+#delete-button {
+    margin-left: auto;
+}
+
+#search-input {
+    margin-bottom: 1.0rem;
+    width: 300px;
+    margin-left: auto;
+}

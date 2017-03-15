@@ -28,7 +28,9 @@ export function getWithAuth(url: string, success: (a: any) => void, error: (e: E
 export function postWithAuth(url: string, body?: string, success?: (a: any) => void, error?: (e: Error) => void) {
   const token = auth.getToken();
   if (token === null) {
-    error && error(Error.notLoggedIn());
+    if (error) {
+      error(Error.notLoggedIn());
+    }
     return;
   }
   const xhr = new XMLHttpRequest();
@@ -37,14 +39,40 @@ export function postWithAuth(url: string, body?: string, success?: (a: any) => v
   xhr.setRequestHeader("Authorization", "Bearer " + token.token);
   xhr.onload = function () {
     if (xhr.status < 400) {
-      success && success(JSON.parse(xhr.responseText));
+      if (success) { success(JSON.parse(xhr.responseText)); }
     } else {
-      error && error(Error.fromJSON(JSON.parse(xhr.responseText)));
+      if (error) { error(Error.fromJSON(JSON.parse(xhr.responseText))); }
     }
   };
   xhr.onerror = function () {
-    error && error(Error.fromJSON(JSON.parse(xhr.responseText)));
+    if (error) { error(Error.fromJSON(JSON.parse(xhr.responseText))); }
   };
 
   xhr.send(body);
+}
+
+export function deleteWithAuth(url: string, success?: (a: any) => void, error?: (e: Error) => void) {
+  const token = auth.getToken();
+  if (token === null) {
+    if (error) {
+      error(Error.notLoggedIn());
+    }
+    return;
+  }
+  const xhr = new XMLHttpRequest();
+  xhr.open("DELETE", url);
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.setRequestHeader("Authorization", "Bearer " + token.token);
+  xhr.onload = function () {
+    if (xhr.status < 400) {
+      if (success) { success(JSON.parse(xhr.responseText)); }
+    } else {
+      if (error) { error(Error.fromJSON(JSON.parse(xhr.responseText))); }
+    }
+  };
+  xhr.onerror = function () {
+    if (error) { error(Error.fromJSON(JSON.parse(xhr.responseText))); }
+  };
+
+  xhr.send();
 }

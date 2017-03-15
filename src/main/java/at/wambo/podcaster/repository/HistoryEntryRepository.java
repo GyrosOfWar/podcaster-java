@@ -17,4 +17,6 @@ public interface HistoryEntryRepository extends CrudRepository<HistoryEntry, Int
     Page<HistoryEntry> getHistoryForUser(@Param("user") User user, Pageable page);
 
     HistoryEntry findFirstByUserOrderByTimeDesc(User user);
+
+    Iterable<HistoryEntry> findByFeedItemFeedId(Integer feedId);
 }
