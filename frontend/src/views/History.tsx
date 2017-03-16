@@ -3,7 +3,8 @@ import * as ajax from "../common/ajax";
 import Page from "../model/Page";
 import HistoryEntry from "../model/HistoryEntry";
 import Error from "../model/Error";
-import {DisplayType} from "../common/DateTimeComponent";
+//noinspection ES6UnusedImports
+import DateTimeComponent, {DisplayType} from "../common/DateTimeComponent";
 import {Link} from "react-router";
 import {Alert} from "reactstrap";
 

@@ -4,12 +4,14 @@ import * as ajax from "../common/ajax";
 import FeedItem from "../model/FeedItem";
 import Page from "../model/Page";
 import Pagination from "../common/Pagination";
+import {UncontrolledAlert} from "reactstrap";
 
 interface PodcastDetailsState {
   items?: Page<FeedItem>;
   error?: Error;
   currentPage: number;
   doingRefresh: boolean;
+  info?: string;
 }
 
 interface PodcastDetailsProps {
@@ -85,6 +87,13 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
       undefined,
       result => {
         const feeds = result.map(FeedItem.fromJSON);
+        if (feeds.length === 0) {
+          this.setState({
+            info: "Feed has no new items."
+          });
+
+        }
+
         this.setState({
           items: this.state.items && this.state.items.withNewContent(feeds),
           doingRefresh: false
@@ -138,6 +147,7 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     }
 
     return <div className="d-flex flex-column">
+      {this.state.info && <UncontrolledAlert color="info">{this.state.info}</UncontrolledAlert>}
       <div className="flex-row mt-2">
         <button className="btn btn-sm mr-1" onClick={this.refreshPodcast}>
           <i className={refreshClasses}/> Refresh
