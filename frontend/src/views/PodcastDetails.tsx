@@ -186,6 +186,7 @@ export class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps,
         <img
           className="pr-2 hidden-md-down"
           src={item.getThumbnailUrl(120)}
+          style={{maxHeight: "120px"}}
         />
         <div className="d-flex flex-column">
           <div className="podcast-title">
