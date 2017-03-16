@@ -1,14 +1,12 @@
 import * as React from "react";
 import FeedItem from "../model/FeedItem";
 import * as moment from "moment";
-import "../styles/player.css";
-import "../styles/icons.css";
 import {formatDuration} from "../common/util";
 
 interface PlayerProps {
   callbackInterval: number;
   callbackHandler: (f: FeedItem) => void;
-  getInitialItem: () => FeedItem | undefined;
+
   loadFinishedCallback?: (player: HTMLAudioElement) => void;
   getNextItem?: (lastItem?: FeedItem) => FeedItem;
 }
@@ -81,7 +79,7 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
     return State.Paused;
   }
 
-  onPlayPause(event: React.FormEvent<HTMLButtonElement>) {
+  onPlayPause() {
     let newState;
     switch (this.state.state) {
       case State.None:
@@ -137,27 +135,27 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
       duration = moment.duration(this.player.duration, "seconds");
     }
 
-    let buttonEl = <span className="icon-play"/>;
+    let buttonEl = <i className="fa fa-play"/>;
     if (this.state.state === State.Playing) {
-      buttonEl = <span className="icon-pause"/>;
+      buttonEl = <i className="fa fa-pause"/>;
     }
     if (this.state.state === State.Loading) {
-      buttonEl = <span className="icon-spinner"/>;
+      buttonEl = <i className="fa fa-spinner fa-spin fa-3x fa-fw"/>;
     }
     const mp3Url = item ? item.mp3Url : "";
     const title = item ? item.title : "";
 
     return (
-      <div className="player">
+      <div className="player d-flex">
         <div className="player-buttons flex-row">
-          <button className="button button-outline step-backward" onClick={this.onStepBack.bind(this)}>
-            <span className="icon-fast-bw"/>
+          <button className="btn mr-1 step-backward" onClick={this.onStepBack.bind(this)}>
+            <i className="fa fa-fast-backward"/>
           </button>
-          <button className="button button-outline play-button" onClick={this.onPlayPause.bind(this)}>
+          <button className="btn mr-1 play-button btn-primary" onClick={this.onPlayPause.bind(this)}>
             {buttonEl}
           </button>
-          <button className="button button-outline step-forward" onClick={this.onStepForward.bind(this)}>
-            <span className="icon-fast-fw"/>
+          <button className="btn step-forward" onClick={this.onStepForward.bind(this)}>
+            <i className="fa fa-fast-forward"/>
           </button>
         </div>
         <Progress duration={duration} played={played} title={title} seekTo={this.seek.bind(this)}/>
@@ -191,9 +189,9 @@ class Progress extends React.Component<ProgressProps, any> {
     const playedText = formatDuration(this.props.played);
     const durationText = formatDuration(this.props.duration);
     return (
-      <div className="progress-container">
+      <div className="progress-container ml-2" style={{flex: "1"}}>
         <progress ref={(el) => this.progressBar = el} max="1" value={progress}
-                  className="player-progress" onClick={this.progressBarClick.bind(this)}>
+                  className="progress-bar w-100" onClick={this.progressBarClick.bind(this)}>
           {Math.floor(progress * 100)} %
         </progress>
         <div className="flex-row">

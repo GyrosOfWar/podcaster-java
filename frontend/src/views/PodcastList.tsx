@@ -2,10 +2,10 @@ import * as React from "react";
 import RssFeed from "../model/RssFeed";
 import Error from "../model/Error";
 import * as ajax from "../common/ajax";
-import "../styles/podcast-list.css";
 import User from "../model/User";
 import {capitalize} from "../common/util";
 import {Link} from "react-router";
+import {Alert} from "reactstrap";
 
 interface PodcastListState {
   items: Array<RssFeed>;
@@ -66,13 +66,13 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
     }
 
     return (
-      <div>
-        <div className="flex-row">
-          <h1 className="title">{capitalize(user.name)}s Podcasts</h1>
-          <button className="button" onClick={this.addPodcast}><span className="icon-plus"/></button>
+      <div className="d-flex flex-column">
+        <div className="d-flex flex-row">
+          <h1>{capitalize(user.name)}s Podcasts</h1>
+          <button className="btn ml-auto p-3" onClick={this.addPodcast}><i className="fa fa-plus"/></button>
         </div>
-        {this.state.error && <div className="error"><strong>Error:</strong> {this.state.error.message}</div>}
-        <div className="podcast-list">
+        {this.state.error && <Alert color="danger"><strong>Error:</strong> {this.state.error.message}</Alert>}
+        <div className="flex-row">
           {this.state.items.map(item => <PodcastListItem key={item.id} feed={item}/>)}
         </div>
       </div>
@@ -87,13 +87,8 @@ interface PodcastListItemProps {
 class PodcastListItem extends React.Component<PodcastListItemProps, null> {
   render() {
     const item = this.props.feed;
-    return <div className="podcast-list-item">
-      <figure>
-        <Link to={`/app/podcasts/${item.id}/page/0`}>
-          <img className="podcast-image" src={item.getThumbnailUrl(300)}/>
-        </Link>
-        <figcaption>{item.title}</figcaption>
-      </figure>
-    </div>;
+    return <Link to={`/app/podcasts/${item.id}/page/0`}>
+      <img className="img-thumbnail" src={item.getThumbnailUrl(300)}/>
+    </Link>;
   }
 }

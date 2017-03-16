@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public class RssFeed {
         SyndFeedInput input = new SyndFeedInput();
         SyndFeed feed;
         try {
-            feed = input.build(new XmlReader(new URL(url)));
+            feed = input.build(new XmlReader(fixUrl(url)));
         } catch (FeedException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -75,6 +76,14 @@ public class RssFeed {
         f.setHashedImageUrl(hash);
         f.setOwner(user);
         return f;
+    }
+
+    private static URL fixUrl(String url) throws MalformedURLException {
+        if (url.startsWith("http")) {
+            return new URL(url);
+        } else {
+            return new URL("http://" + url);
+        }
     }
 
     public List<FeedItem> refresh(FeedItemRepository itemRepository, User user) {

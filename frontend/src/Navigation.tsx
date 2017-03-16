@@ -1,16 +1,47 @@
 import * as React from "react";
-import {Link} from "react-router";
 import * as auth from "./common/auth";
-import "./styles/nav.css";
+import {Navbar, Collapse, NavbarBrand, NavbarToggler, Nav, NavLink, NavItem} from "reactstrap";
 
-export default class Navigation extends React.Component<null, null> {
+interface NavigationState {
+  isOpen: boolean;
+}
+
+export default class Navigation extends React.Component<null, NavigationState> {
+  constructor(props: null) {
+    super(props);
+
+    this.toggle = this.toggle.bind(this);
+    this.state = {
+      isOpen: false
+    };
+  }
+
+  toggle() {
+    this.setState({
+      isOpen: !this.state.isOpen
+    });
+  }
+
   render() {
-    return <aside className="menu">
-      <big><Link to="/app"><p className="menu-label">Podcaster</p></Link></big>
-      <ul className="menu-list">
-        <li><Link to="/app/history">History</Link></li>
-        <li>{auth.isLoggedIn() ? <Link to="/app/logout">Logout</Link> : <Link to="/app/login">Login</Link>}</li>
-      </ul>
-    </aside>;
+    return (
+      <div>
+        <Navbar color="primary" toggleable>
+          <NavbarToggler right onClick={this.toggle}/>
+          <NavbarBrand href="/">Podcaster</NavbarBrand>
+          <Collapse isOpen={this.state.isOpen} navbar>
+            <Nav className="ml-auto" navbar>
+              <NavItem>
+                <NavLink href="/app/history">History</NavLink>
+              </NavItem>
+              <NavItem>
+                {auth.isLoggedIn() ?
+                  <NavLink href="/app/logout">Logout</NavLink> :
+                  <NavLink href="/app/login">Login</NavLink>}
+              </NavItem>
+            </Nav>
+          </Collapse>
+        </Navbar>
+      </div>
+    );
   }
 }

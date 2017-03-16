@@ -8,12 +8,11 @@ import * as auth from "./common/auth";
 import PodcastDetails from "./views/PodcastDetails";
 import Player from "./player/Player";
 import FeedItem from "./model/FeedItem";
-import "./styles/base.css";
-import "../node_modules/milligram/dist/milligram.css";
 import {postWithAuth} from "./common/ajax";
 import * as moment from "moment";
 import History from "./views/History";
 import Error from "./model/Error";
+import {Alert} from "reactstrap";
 
 interface AppState {
   selectedItem?: FeedItem;
@@ -25,8 +24,14 @@ class App extends React.Component<{}, AppState> {
   constructor(props: {}) {
     super(props);
     this.state = {};
+
     this.handleItemSelected = this.handleItemSelected.bind(this);
     this.updateItem = this.updateItem.bind(this);
+    this.setItem = this.setItem.bind(this);
+  }
+
+  setItem(item: FeedItem) {
+
   }
 
   updateItem(item: FeedItem) {
@@ -71,11 +76,13 @@ class App extends React.Component<{}, AppState> {
       <div id="main" className="container">
         <Navigation />
         <div className="grow">
-          {auth.isLoggedIn() && <Player callbackInterval={10}
-                                        callbackHandler={this.updateItem}
-                                        getInitialItem={() => this.state.selectedItem} />}
+          {auth.isLoggedIn() &&
+          <Player callbackInterval={10}
+                  callbackHandler={this.updateItem}
+                  setItem={this.setItem}
+          />}
           {lastSync && <p>Last sync: {lastSync.fromNow()}</p>}
-          {this.state.error && <div className="error">{this.state.error.message}</div>}
+          {this.state.error && <Alert color="danger">{this.state.error.message}</Alert>}
           {children}
         </div>
       </div>

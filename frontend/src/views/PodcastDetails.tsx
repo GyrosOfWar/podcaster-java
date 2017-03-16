@@ -132,19 +132,22 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     const id = this.props.params.id;
     const page = parseInt(this.props.params.page, 10);
 
-    return <div>
-      <div className="flex-row">
+    return <div className="d-flex flex-column">
+      <div className="flex-row mt-2 input-group">
+        <div className="input-group-addon">
+          <i className="fa fa-search"/>
+        </div>
         <SearchBox callback={this.onSearch} />
       </div>
-      <div className="flex-row button-bar">
-        <button className="button button-outline" onClick={this.refreshPodcast}>
-          <span className="icon-spinner"/> Refresh
+      <div className="flex-row mt-2">
+        <button className="btn btn-sm mr-1" onClick={this.refreshPodcast}>
+          <i className="fa fa-spinner"/> Refresh
         </button>
-        <button className="button button-outline" onClick={this.randomPodcast}>
-          <span className="icon-shuffle"/> Random podcast
+        <button className="btn btn-sm mr-1" onClick={this.randomPodcast}>
+          <i className="fa fa-random"/> Random podcast
         </button>
-        <button id="delete-button" className="button button-outline" onClick={this.deletePodcast}>
-          Delete
+        <button className="btn btn-sm btn-danger float-right" onClick={this.deletePodcast}>
+          <i className="fa fa-trash"/> Delete
         </button>
       </div>
       {this.state.items.content.map(i =>
@@ -170,18 +173,19 @@ class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> 
     const item = this.props.item;
     const description = {__html: item.description};
     return (
-      <div className="podcast-details-item">
-        <img className="podcast-details-image" src={item.getThumbnailUrl(120)}/>
-        <div className="flex-column grow">
-          <div className="podcast-title">{item.title}&nbsp;
+      <div className="d-flex my-2">
+        <img className="pr-2" src={item.getThumbnailUrl(120)}/>
+        <div className="d-flex flex-column">
+          <div className="podcast-title">
+            <strong className="text-primary">{item.title}</strong>&nbsp;
             <small>{item.pubDate.format("DD.MM.YYYY")}</small>
           </div>
           <span>{item.getFormattedElapsedTime()}</span>
           <div className="podcast-details-description" dangerouslySetInnerHTML={description}/>
         </div>
         <div className="buttons">
-          <button onClick={this.clickItem.bind(this)} className="button button-outline">
-            <span className="icon-play"/>
+          <button onClick={this.clickItem.bind(this)} className="btn btn-sm">
+            <i className="fa fa-play"/>
           </button>
         </div>
       </div>
@@ -207,6 +211,6 @@ class SearchBox extends React.Component<SearchBoxProps, null> {
   }
 
   render() {
-    return <input placeholder="Search" id="search-input" className="" onBlur={this.onInput} type="search" />;
+    return <input placeholder="Search" id="search-input" className="form-control" onBlur={this.onInput} type="search"/>;
   }
 }

@@ -5,7 +5,6 @@ import HistoryEntry from "../model/HistoryEntry";
 import Error from "../model/Error";
 import DateTimeComponent, {DisplayType} from "../common/DateTimeComponent";
 import {Link} from "react-router";
-import "../styles/history.css";
 
 interface HistoryState {
   entries?: Map<string, Array<HistoryEntry>>;
