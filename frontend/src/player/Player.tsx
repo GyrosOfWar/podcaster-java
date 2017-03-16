@@ -6,6 +6,7 @@ import {formatDuration} from "../common/util";
 interface PlayerProps {
   callbackInterval: number;
   callbackHandler: (f: FeedItem) => void;
+  item?: FeedItem;
 
   loadFinishedCallback?: (player: HTMLAudioElement) => void;
   getNextItem?: (lastItem?: FeedItem) => FeedItem;
@@ -14,7 +15,6 @@ interface PlayerProps {
 interface PlayerState {
   state: State;
   played: number;
-  item?: FeedItem;
 }
 
 enum State {
@@ -41,24 +41,25 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
   onEnded() {
     if (this.props.getNextItem) {
       this.setState({
-        state: State.None,
-        item: this.props.getNextItem(this.state.item)
+        state: State.None
       });
     }
   }
 
   play(): State {
     this.player.play();
-    this.timePlayedInterval = window.setInterval(() => {
-      this.setState({
-        played: this.player.currentTime
-      });
-    }, 1000);
+    this.timePlayedInterval = window.setInterval(
+      () => {
+        this.setState({
+          played: this.player.currentTime
+        });
+      },
+      1000);
 
     this.callbackInterval = window.setInterval(() => {
-      if (this.state.item) {
-        this.state.item.lastPosition = moment.duration(Math.round(this.player.currentTime), "seconds");
-        this.props.callbackHandler(this.state.item);
+      if (this.props.item) {
+        this.props.item.lastPosition = moment.duration(Math.round(this.player.currentTime), "seconds");
+        this.props.callbackHandler(this.props.item);
       } else {
         throw Error("Missing item");
       }
@@ -98,7 +99,7 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
         newState = this.play();
         break;
       default:
-        throw Error("Error: " + this.state.state);
+        throw Error("Invalid state enum: " + this.state.state);
     }
     this.setState({
       state: newState
@@ -127,7 +128,7 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
   }
 
   render() {
-    const item = this.state.item;
+    const item = this.props.item;
     let played = moment.duration(0);
     let duration = moment.duration(0);
     if (this.player) {
@@ -140,25 +141,25 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
       buttonEl = <i className="fa fa-pause"/>;
     }
     if (this.state.state === State.Loading) {
-      buttonEl = <i className="fa fa-spinner fa-spin fa-3x fa-fw"/>;
+      buttonEl = <i className="fa fa-spinner fa-spin fa-fw"/>;
     }
     const mp3Url = item ? item.mp3Url : "";
     const title = item ? item.title : "";
 
     return (
-      <div className="player d-flex">
-        <div className="player-buttons flex-row">
+      <div className="d-flex mt-1 flex-column flex-lg-row flex-xl-row">
+        <div className="flex-row mx-auto mx-lg-0 mx-xl-0 mb-1">
           <button className="btn mr-1 step-backward" onClick={this.onStepBack.bind(this)}>
-            <i className="fa fa-fast-backward"/>
+            10 <i className="fa fa-step-backward"/>
           </button>
           <button className="btn mr-1 play-button btn-primary" onClick={this.onPlayPause.bind(this)}>
             {buttonEl}
           </button>
           <button className="btn step-forward" onClick={this.onStepForward.bind(this)}>
-            <i className="fa fa-fast-forward"/>
+            <i className="fa fa-step-forward"/> 10
           </button>
         </div>
-        <Progress duration={duration} played={played} title={title} seekTo={this.seek.bind(this)}/>
+        <PlayerProgress duration={duration} played={played} title={title} seekTo={this.seek.bind(this)}/>
         <audio id="player-audio" src={mp3Url} ref={(el) => this.player = el}
                onCanPlay={this.onCanPlay.bind(this)} onEnded={this.onEnded}/>
       </div>
@@ -173,30 +174,49 @@ interface ProgressProps {
   title: string;
 }
 
-class Progress extends React.Component<ProgressProps, any> {
-  progressBar: HTMLProgressElement;
+class PlayerProgress extends React.Component<ProgressProps, any> {
+  constructor(props: ProgressProps) {
+    super(props);
 
-  progressBarClick(event: React.MouseEvent<HTMLProgressElement>) {
-    const offset = this.progressBar.offsetLeft + (this.progressBar.offsetParent as HTMLBodyElement).offsetLeft;
+    this.progressBarClick = this.progressBarClick.bind(this);
+  }
+
+  progressBarClick(event: React.MouseEvent<HTMLDivElement>) {
+    const element = event.currentTarget;
+
+    const offset = element.offsetLeft + (element.offsetParent as HTMLBodyElement).offsetLeft;
     const x = event.pageX - offset;
-    const width = this.progressBar.clientWidth;
+    const width = element.clientWidth;
     const percent = x / width;
     this.props.seekTo(percent);
   }
 
   render() {
-    const progress = this.props.played.asMilliseconds() / this.props.duration.asMilliseconds();
+    const progress = (this.props.played.asMilliseconds() / this.props.duration.asMilliseconds()) * 100.0;
     const playedText = formatDuration(this.props.played);
     const durationText = formatDuration(this.props.duration);
+    const style = {
+      width: `${Math.round(progress)}%`
+    };
     return (
       <div className="progress-container ml-2" style={{flex: "1"}}>
-        <progress ref={(el) => this.progressBar = el} max="1" value={progress}
-                  className="progress-bar w-100" onClick={this.progressBarClick.bind(this)}>
-          {Math.floor(progress * 100)} %
-        </progress>
+        <div
+          className="progress w-100"
+          onClick={this.progressBarClick}
+        >
+          <div
+            className="progress-bar"
+            role="progressbar"
+            aria-valuenow={progress}
+            aria-valuemin="0"
+            aria-valuemax="100"
+            style={style}
+          >
+          </div>
+        </div>
         <div className="flex-row">
           <span className="progress-title">{this.props.title}</span>
-          <span className="progress-text">{playedText} / {durationText}</span>
+          <span className="float-right">{playedText} / {durationText}</span>
         </div>
       </div>
     );

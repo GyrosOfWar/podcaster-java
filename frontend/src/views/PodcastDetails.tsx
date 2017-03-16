@@ -9,6 +9,7 @@ interface PodcastDetailsState {
   items?: Page<FeedItem>;
   error?: Error;
   currentPage: number;
+  doingRefresh: boolean;
 }
 
 interface PodcastDetailsProps {
@@ -21,13 +22,13 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
   constructor(props: any) {
     super(props);
     this.state = {
-      currentPage: props.params.page
+      currentPage: props.params.page,
+      doingRefresh: false
     };
 
     this.refreshPodcast = this.refreshPodcast.bind(this);
     this.randomPodcast = this.randomPodcast.bind(this);
     this.deletePodcast = this.deletePodcast.bind(this);
-    this.onSearch = this.onSearch.bind(this);
   }
 
   componentDidMount() {
@@ -77,12 +78,16 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
   }
 
   refreshPodcast() {
+    this.setState({
+      doingRefresh: true
+    });
     ajax.postWithAuth(`/api/feeds/${this.props.params.id}`,
       undefined,
       result => {
         const feeds = result.map(FeedItem.fromJSON);
         this.setState({
-          items: this.state.items && this.state.items.withNewContent(feeds)
+          items: this.state.items && this.state.items.withNewContent(feeds),
+          doingRefresh: false
         });
       },
       error => {
@@ -117,10 +122,6 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     }
   }
 
-  onSearch(query: string) {
-    console.log(query);
-  }
-
   render() {
     if (this.state.error) {
       return <div>{this.state.error.message}</div>;
@@ -131,17 +132,15 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     }
     const id = this.props.params.id;
     const page = parseInt(this.props.params.page, 10);
+    let refreshClasses = "fa fa-spinner";
+    if (this.state.doingRefresh) {
+      refreshClasses += " fa-spin fa-fw";
+    }
 
     return <div className="d-flex flex-column">
-      <div className="flex-row mt-2 input-group">
-        <div className="input-group-addon">
-          <i className="fa fa-search"/>
-        </div>
-        <SearchBox callback={this.onSearch} />
-      </div>
       <div className="flex-row mt-2">
         <button className="btn btn-sm mr-1" onClick={this.refreshPodcast}>
-          <i className="fa fa-spinner"/> Refresh
+          <i className={refreshClasses}/> Refresh
         </button>
         <button className="btn btn-sm mr-1" onClick={this.randomPodcast}>
           <i className="fa fa-random"/> Random podcast
@@ -164,7 +163,7 @@ interface PodcastDetailsItemProps {
   itemClicked: (i: FeedItem) => void;
 }
 
-class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> {
+export class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> {
   clickItem() {
     this.props.itemClicked(this.props.item);
   }
@@ -174,7 +173,10 @@ class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> 
     const description = {__html: item.description};
     return (
       <div className="d-flex my-2">
-        <img className="pr-2" src={item.getThumbnailUrl(120)}/>
+        <img
+          className="pr-2 hidden-md-down"
+          src={item.getThumbnailUrl(120)}
+        />
         <div className="d-flex flex-column">
           <div className="podcast-title">
             <strong className="text-primary">{item.title}</strong>&nbsp;
@@ -183,34 +185,12 @@ class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> 
           <span>{item.getFormattedElapsedTime()}</span>
           <div className="podcast-details-description" dangerouslySetInnerHTML={description}/>
         </div>
-        <div className="buttons">
+        <div className="ml-auto">
           <button onClick={this.clickItem.bind(this)} className="btn btn-sm">
             <i className="fa fa-play"/>
           </button>
         </div>
       </div>
     );
-  }
-}
-
-interface SearchBoxProps {
-  callback: (s: string) => void;
-}
-
-class SearchBox extends React.Component<SearchBoxProps, null> {
-  constructor(props: SearchBoxProps) {
-    super(props);
-    this.state = null;
-  }
-
-  onInput(event: React.FocusEvent<HTMLInputElement>) {
-    const text = event.currentTarget.value;
-    if (text) {
-      this.props.callback(text);
-    }
-  }
-
-  render() {
-    return <input placeholder="Search" id="search-input" className="form-control" onBlur={this.onInput} type="search"/>;
   }
 }

@@ -1,13 +1,44 @@
 import * as React from "react";
 import * as auth from "./common/auth";
-import {Navbar, Collapse, NavbarBrand, NavbarToggler, Nav, NavLink, NavItem} from "reactstrap";
+import {Navbar, Collapse, NavbarToggler, Nav, NavItem} from "reactstrap";
+import {Link, browserHistory} from "react-router";
+
+interface SearchBoxProps {
+}
+
+class SearchBox extends React.Component<SearchBoxProps, null> {
+  constructor(props: SearchBoxProps) {
+    super(props);
+    this.state = null;
+
+    this.onInput = this.onInput.bind(this);
+  }
+
+  onInput(event: React.FocusEvent<HTMLInputElement>) {
+    const text = event.currentTarget.value.replace(/\s/g, "&");
+    if (text) {
+      browserHistory.push("/app/search?q=" + encodeURIComponent(text));
+    }
+
+    if (!text) {
+      browserHistory.goBack();
+    }
+  }
+
+  render() {
+    return <input className="form-control mr-sm-2" type="search" placeholder="Search" onBlur={this.onInput}/>;
+  }
+}
 
 interface NavigationState {
   isOpen: boolean;
 }
 
-export default class Navigation extends React.Component<null, NavigationState> {
-  constructor(props: null) {
+interface NavigationProps {
+}
+
+export default class Navigation extends React.Component<NavigationProps, NavigationState> {
+  constructor(props: NavigationProps) {
     super(props);
 
     this.toggle = this.toggle.bind(this);
@@ -25,20 +56,23 @@ export default class Navigation extends React.Component<null, NavigationState> {
   render() {
     return (
       <div>
-        <Navbar color="primary" toggleable>
+        <Navbar light color="primary" toggleable>
           <NavbarToggler right onClick={this.toggle}/>
-          <NavbarBrand href="/">Podcaster</NavbarBrand>
+          <Link className="navbar-brand" to="/app/">Podcaster</Link>
           <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className="ml-auto" navbar>
+            <Nav navbar className="mr-auto">
               <NavItem>
-                <NavLink href="/app/history">History</NavLink>
+                <Link className="nav-link" to="/app/history">History</Link>
               </NavItem>
               <NavItem>
                 {auth.isLoggedIn() ?
-                  <NavLink href="/app/logout">Logout</NavLink> :
-                  <NavLink href="/app/login">Login</NavLink>}
+                  <Link className="nav-link" to="/app/logout">Logout</Link> :
+                  <Link className="nav-link" to="/app/login">Login</Link>}
               </NavItem>
             </Nav>
+            <form className="form-inline my-2 my-lg-0">
+              <SearchBox/>
+            </form>
           </Collapse>
         </Navbar>
       </div>

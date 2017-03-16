@@ -13,11 +13,13 @@ import * as moment from "moment";
 import History from "./views/History";
 import Error from "./model/Error";
 import {Alert} from "reactstrap";
+import SearchResults from "./views/SearchResults";
 
 interface AppState {
   selectedItem?: FeedItem;
   error?: Error;
   lastSync?: moment.Moment;
+  searchQuery?: string;
 }
 
 class App extends React.Component<{}, AppState> {
@@ -27,11 +29,8 @@ class App extends React.Component<{}, AppState> {
 
     this.handleItemSelected = this.handleItemSelected.bind(this);
     this.updateItem = this.updateItem.bind(this);
-    this.setItem = this.setItem.bind(this);
-  }
-
-  setItem(item: FeedItem) {
-
+    this.searchCallback = this.searchCallback.bind(this);
+    this.searchEnded = this.searchEnded.bind(this);
   }
 
   updateItem(item: FeedItem) {
@@ -47,6 +46,18 @@ class App extends React.Component<{}, AppState> {
           error: error
         });
       });
+  }
+
+  searchCallback(query: string) {
+    this.setState({
+      searchQuery: query
+    });
+  }
+
+  searchEnded() {
+    this.setState({
+      searchQuery: undefined
+    });
   }
 
   handleItemSelected(item: FeedItem) {
@@ -70,18 +81,16 @@ class App extends React.Component<{}, AppState> {
       });
     });
 
-    const lastSync = this.state.lastSync;
-
     return (
       <div id="main" className="container">
         <Navigation />
-        <div className="grow">
+        <div>
           {auth.isLoggedIn() &&
-          <Player callbackInterval={10}
-                  callbackHandler={this.updateItem}
-                  setItem={this.setItem}
+          <Player
+            callbackInterval={10}
+            callbackHandler={this.updateItem}
+            item={this.state.selectedItem}
           />}
-          {lastSync && <p>Last sync: {lastSync.fromNow()}</p>}
           {this.state.error && <Alert color="danger">{this.state.error.message}</Alert>}
           {children}
         </div>
@@ -99,6 +108,12 @@ function requireAuth(nextState: RouterState, replace: RedirectFunction) {
   }
 }
 
+class NotFound extends React.Component<any, any> {
+  render() {
+    return <p>404 Not Found</p>;
+  }
+}
+
 class Routes extends React.Component<null, null> {
   render() {
     return <Router history={browserHistory}>
@@ -111,8 +126,10 @@ class Routes extends React.Component<null, null> {
           <Route path="podcasts/:id/page/:page" component={PodcastDetails}/>
           <Route path="podcasts/:id/item/:itemId" component={PodcastDetails}/>
           <Route path="history" component={History}/>
+          <Route path="search" component={SearchResults}/>
         </Route>
       </Route>
+      <Route path="*" component={NotFound}/>
     </Router>;
   }
 }

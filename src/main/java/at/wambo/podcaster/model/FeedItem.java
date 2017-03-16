@@ -12,7 +12,6 @@ import javax.persistence.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Martin
@@ -22,6 +21,9 @@ import java.util.concurrent.TimeUnit;
 @Entity
 @Table(name = "feed_items")
 @ToString(exclude = "feed")
+@NamedNativeQuery(name = "FeedItem.search",
+        query = "SELECT * FROM feed_items WHERE to_tsquery('english', ?1) @@ to_tsvector('english', title || ' ' || description)",
+        resultClass = FeedItem.class)
 public class FeedItem {
     private static final long MAX_LENGTH = 60 * 60 * 10;
 
