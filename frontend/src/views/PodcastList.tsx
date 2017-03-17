@@ -63,7 +63,7 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
   render() {
     const user = this.state.user;
     if (!user) {
-      return <p>Please wait</p>;
+      return <p>Please wait...</p>;
     }
 
     return (

@@ -216,7 +216,7 @@ class PlayerProgress extends React.Component<ProgressProps, any> {
     const playedText = formatDuration(this.props.played);
     const durationText = formatDuration(this.props.duration);
     const style = {
-      width: `${Math.round(progress)}%`,
+      width: `${progress}%`,
       height: "1.2rem"
     };
     return (
