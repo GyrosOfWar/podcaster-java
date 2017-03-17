@@ -196,7 +196,7 @@ export class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps,
           <div className="podcast-details-description" dangerouslySetInnerHTML={description}/>
         </div>
         <div className="ml-auto">
-          <button onClick={this.clickItem.bind(this)} className="btn btn-sm">
+          <button onClick={this.clickItem.bind(this)} className="btn">
             <i className="fa fa-play"/>
           </button>
         </div>

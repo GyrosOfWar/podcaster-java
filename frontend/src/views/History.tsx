@@ -66,7 +66,7 @@ export default class History extends React.Component<null, HistoryState> {
     entries.forEach((v, k) => {
       views.push(<div key={"group-" + i}>
         <strong className="text-secondary">{k}</strong>
-        {v.map(e => <HistoryEntryView entry={e} key={e.id}/>)};
+        {v.map(e => <HistoryEntryView entry={e} key={e.id}/>)}
       </div>);
       i += 1;
     });

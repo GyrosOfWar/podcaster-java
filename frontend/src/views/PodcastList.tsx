@@ -41,6 +41,7 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
   }
 
   addPodcast(event: React.FormEvent<HTMLButtonElement>) {
+    // TODO replace with modal
     const url = prompt("Enter URL:");
     if (url) {
       ajax.postWithAuth(`/api/feeds?url=${encodeURIComponent(url)}`,
@@ -72,7 +73,7 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
           <button className="btn ml-auto p-3" onClick={this.addPodcast}><i className="fa fa-plus"/></button>
         </div>
         {this.state.error && <Alert color="danger"><strong>Error:</strong> {this.state.error.message}</Alert>}
-        <div className="flex-row">
+        <div className="d-flex flex-row flex-wrap">
           {this.state.items.map(item => <PodcastListItem key={item.id} feed={item}/>)}
         </div>
       </div>
@@ -87,8 +88,13 @@ interface PodcastListItemProps {
 class PodcastListItem extends React.Component<PodcastListItemProps, null> {
   render() {
     const item = this.props.feed;
-    return <Link to={`/app/podcasts/${item.id}/page/0`}>
-      <img className="img-thumbnail" src={item.getThumbnailUrl(300)}/>
-    </Link>;
+    return <div className="d-flex flex-column mx-1">
+      <Link to={`/app/podcasts/${item.id}/page/0`}>
+        <img src={item.getThumbnailUrl(300)} alt={item.title}/>
+      </Link>
+      <big>
+        <p className="text-center figure-caption">{item.title}</p>
+      </big>
+    </div>;
   }
 }

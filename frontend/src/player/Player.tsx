@@ -32,10 +32,15 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
       state: State.None,
       played: 0
     };
+
     this.play = this.play.bind(this);
     this.pause = this.pause.bind(this);
     this.onCanPlay = this.onCanPlay.bind(this);
-    this.onEnded = this.onEnded.bind(this)
+    this.onEnded = this.onEnded.bind(this);
+    this.onStepBack = this.onStepBack.bind(this);
+    this.onStepForward = this.onStepForward.bind(this);
+    this.forceRefresh = this.forceRefresh.bind(this);
+    this.onPlayPause = this.onPlayPause.bind(this);
   }
 
   onEnded() {
@@ -43,6 +48,13 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
       this.setState({
         state: State.None
       });
+    }
+  }
+
+  forceRefresh() {
+    if (this.props.item) {
+      this.props.item.lastPosition = moment.duration(Math.round(this.player.currentTime), "seconds");
+      this.props.callbackHandler(this.props.item);
     }
   }
 
@@ -148,15 +160,18 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
 
     return (
       <div className="d-flex mt-1 flex-column flex-lg-row flex-xl-row">
-        <div className="flex-row mx-auto mx-lg-0 mx-xl-0 mb-1">
-          <button className="btn mr-1 step-backward" onClick={this.onStepBack.bind(this)}>
+        <div className="flex-row mx-auto mx-lg-0 mx-xl-0 mb-1 flex-last flex-lg-first flex-xl-first">
+          <button className="btn mr-1 step-backward" onClick={this.onStepBack} title="10 Seconds backwards">
             10 <i className="fa fa-step-backward"/>
           </button>
-          <button className="btn mr-1 play-button btn-primary" onClick={this.onPlayPause.bind(this)}>
+          <button className="btn mr-1 play-button btn-primary" onClick={this.onPlayPause} title="Pause/Play">
             {buttonEl}
           </button>
-          <button className="btn step-forward" onClick={this.onStepForward.bind(this)}>
+          <button className="btn step-forward mr-1" onClick={this.onStepForward} title="10 Seconds forwards">
             <i className="fa fa-step-forward"/> 10
+          </button>
+          <button className="btn" onClick={this.forceRefresh}>
+            <i className="fa fa-refresh"/>
           </button>
         </div>
         <PlayerProgress duration={duration} played={played} title={title} seekTo={this.seek.bind(this)}/>
@@ -196,7 +211,8 @@ class PlayerProgress extends React.Component<ProgressProps, any> {
     const playedText = formatDuration(this.props.played);
     const durationText = formatDuration(this.props.duration);
     const style = {
-      width: `${Math.round(progress)}%`
+      width: `${Math.round(progress)}%`,
+      height: "1.2rem"
     };
     return (
       <div className="progress-container ml-2" style={{flex: "1"}}>
