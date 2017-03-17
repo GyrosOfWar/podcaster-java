@@ -44,11 +44,9 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
   }
 
   onEnded() {
-    if (this.props.getNextItem) {
-      this.setState({
-        state: State.None
-      });
-    }
+    this.setState({
+      state: State.None
+    });
   }
 
   forceRefresh() {
