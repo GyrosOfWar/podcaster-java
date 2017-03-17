@@ -17,3 +17,4 @@ Copy-Item -Path .\build\asset-manifest.json -Destination $STATIC_FOLDER
 Copy-Item -Path .\build\static\js -Destination $STATIC_FOLDER -Recurse
 Copy-Item -Path .\build\static\css -Destination $STATIC_FOLDER -Recurse
 Copy-Item -Path .\build\static\media -Destination $STATIC_FOLDER -Recurse
+Copy-Item -Path .\build\manifest.json -Destination $STATIC_FOLDER

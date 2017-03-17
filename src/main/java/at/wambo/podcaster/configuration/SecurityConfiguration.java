@@ -82,7 +82,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/**/*.svg",
                         "/**/*.woff2",
                         "/api/images/**",
-                        "/app/**"
+                        "/app/**",
+                        "/manifest.json"
                 ).permitAll()
                 .antMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated();

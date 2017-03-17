@@ -1,0 +1,9 @@
+{
+  "name": "Podcaster",
+  "short_name": "Podcaster",
+  "start_url": "/app",
+  "display": "minimal-ui",
+  "description": "A web app for listening to podcasts.",
+  "background_color": "#D9230F",
+  "theme_color": "#D9230F"
+}
