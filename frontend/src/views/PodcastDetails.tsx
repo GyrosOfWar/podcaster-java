@@ -160,9 +160,11 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
       </div>
       {this.state.items.content.map(i =>
         <PodcastDetailsItem item={i} key={i.id} itemClicked={this.props.itemClicked}/>)}
-      <Pagination page={this.state.items}
-                  nextLink={`/app/podcasts/${id}/page/${page + 1}`}
-                  prevLink={`/app/podcasts/${id}/page/${page - 1}`}/>
+      <Pagination
+        page={this.state.items}
+        nextLink={`/app/podcasts/${id}/page/${page + 1}`}
+        prevLink={`/app/podcasts/${id}/page/${page - 1}`}
+      />
     </div>;
   }
 }

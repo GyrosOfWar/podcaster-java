@@ -13,11 +13,11 @@ export default class SearchResults extends React.Component<any, SearchResultsSta
   constructor(props: any) {
     super(props);
     this.state = {};
+
+    this.doSearch = this.doSearch.bind(this);
   }
 
-  componentDidMount() {
-    const query = decodeURIComponent(this.props.location.query.q);
-
+  doSearch(query: string) {
     ajax.getWithAuth("/api/search?q=" + encodeURIComponent(query),
       (result) => this.setState({
         results: result.map((r: any) => FeedItem.fromJSON(r))
@@ -25,11 +25,23 @@ export default class SearchResults extends React.Component<any, SearchResultsSta
       (error) => this.setState({error: error}));
   }
 
+  componentDidMount() {
+    const query = decodeURIComponent(this.props.location.query.q);
+    this.doSearch(query);
+  }
+
+  componentWillReceiveProps(nextProps: any) {
+    const query = decodeURIComponent(nextProps.location.query.q);
+    this.doSearch(query);
+  }
+
   render() {
     return <div>
       {this.state.results ?
         this.state.results.map((r: FeedItem) =>
-          <PodcastDetailsItem item={r} itemClicked={() => {}}/>) :
+          <PodcastDetailsItem key={r.id} item={r} itemClicked={(item: FeedItem) => {
+
+          }}/>) :
         <p>Please wait..</p>}
     </div>;
   }

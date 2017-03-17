@@ -22,7 +22,10 @@ import java.util.Date;
 @Table(name = "feed_items")
 @ToString(exclude = "feed")
 @NamedNativeQuery(name = "FeedItem.search",
-        query = "SELECT * FROM feed_items WHERE to_tsquery('english', ?1) @@ to_tsvector('english', title || ' ' || description)",
+        query = "SELECT *, ts_rank_cd(to_tsvector('english', title || ' ' || description), to_tsquery('english', ?1)) AS ranking " +
+                "FROM feed_items " +
+                "WHERE to_tsquery('english', ?1) @@ to_tsvector('english', title || ' ' || description) " +
+                "ORDER BY ranking",
         resultClass = FeedItem.class)
 public class FeedItem {
     private static final long MAX_LENGTH = 60 * 60 * 10;

@@ -175,8 +175,13 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
           </button>
         </div>
         <PlayerProgress duration={duration} played={played} title={title} seekTo={this.seek.bind(this)}/>
-        <audio id="player-audio" src={mp3Url} ref={(el) => this.player = el}
-               onCanPlay={this.onCanPlay.bind(this)} onEnded={this.onEnded}/>
+        <audio
+          id="player-audio"
+          src={mp3Url}
+          ref={(el) => this.player = el}
+          onCanPlay={this.onCanPlay}
+          onEnded={this.onEnded}
+        />
       </div>
     );
   }
@@ -227,8 +232,7 @@ class PlayerProgress extends React.Component<ProgressProps, any> {
             aria-valuemin="0"
             aria-valuemax="100"
             style={style}
-          >
-          </div>
+          />
         </div>
         <div className="flex-row">
           <span className="progress-title">{this.props.title}</span>
