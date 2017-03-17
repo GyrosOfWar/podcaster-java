@@ -48,23 +48,25 @@ public class RssFeed {
     @JsonIgnore
     private List<FeedItem> items;
 
-    public static RssFeed fromUrl(String url, User user) {
+    public static RssFeed fromUrl(String urlString, User user) {
+        URL url;
         try {
-            url = URLDecoder.decode(url, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
+            url = fixUrl(URLDecoder.decode(urlString, "UTF-8"));
+        } catch (UnsupportedEncodingException | MalformedURLException e) {
             throw new RuntimeException(e);
         }
+
         SyndFeedInput input = new SyndFeedInput();
         SyndFeed feed;
         try {
-            feed = input.build(new XmlReader(fixUrl(url)));
+            feed = input.build(new XmlReader(url));
         } catch (FeedException | IOException e) {
             throw new RuntimeException(e);
         }
 
         RssFeed f = new RssFeed();
         String imageUrl = feed.getImage().getUrl();
-        f.setFeedUrl(url);
+        f.setFeedUrl(url.toString());
         f.setImageUrl(imageUrl);
         f.setTitle(feed.getTitle());
         List<FeedItem> items = feed.getEntries()

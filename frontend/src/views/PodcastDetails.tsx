@@ -91,7 +91,6 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
           this.setState({
             info: "Feed has no new items."
           });
-
         }
 
         this.setState({
