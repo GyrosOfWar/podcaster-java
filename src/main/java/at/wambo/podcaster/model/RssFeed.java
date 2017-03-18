@@ -9,6 +9,7 @@ import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import lombok.Data;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.hibernate.annotations.BatchSize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +46,7 @@ public class RssFeed {
     private User owner;
     private String hashedImageUrl;
     @OneToMany(targetEntity = FeedItem.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @BatchSize(size = 20)
     @JsonIgnore
     private List<FeedItem> items;
 

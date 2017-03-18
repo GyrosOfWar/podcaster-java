@@ -18,9 +18,7 @@ import java.util.List;
 @RequestMapping("/api/search")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SearchController {
-    private final
-    @NonNull
-    FeedItemRepository feedItemRepository;
+    private final @NonNull FeedItemRepository feedItemRepository;
 
     @RequestMapping
     public List<FeedItem> doSearch(@RequestParam("q") String query) {

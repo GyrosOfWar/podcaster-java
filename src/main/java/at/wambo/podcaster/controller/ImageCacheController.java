@@ -71,6 +71,9 @@ public class ImageCacheController {
                         url = new URL(items.get(0).getImageUrl());
                     } else {
                         List<RssFeed> feeds = this.rssFeedRepository.findByHashedImageUrl(hashedUrl);
+                        if (feeds.size() == 0) {
+                            return null;
+                        }
                         url = new URL(feeds.get(0).getImageUrl());
                     }
                     logger.debug("Found URL {} for hash {}", url, hashedUrl);
