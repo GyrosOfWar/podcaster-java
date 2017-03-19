@@ -2,13 +2,16 @@ import * as React from "react";
 import FeedItem from "../model/FeedItem";
 import * as moment from "moment";
 import {formatDuration} from "../common/util";
+import {Howl} from "howler";
+
+const DEBUG = true;
 
 interface PlayerProps {
   callbackInterval: number;
   callbackHandler: (f: FeedItem) => void;
   item?: FeedItem;
 
-  loadFinishedCallback?: (player: HTMLAudioElement) => void;
+  loadFinishedCallback?: (player: Howl | null) => void;
   getNextItem?: (lastItem?: FeedItem) => FeedItem;
 }
 
@@ -21,8 +24,142 @@ enum State {
   None, Loading, LoadFinished, Paused, Playing
 }
 
+function stateToString(state: State): string {
+  switch (state) {
+    case State.None:
+      return "None";
+    case State.Loading:
+      return "Loading";
+    case State.LoadFinished:
+      return "LoadFinished";
+    case State.Paused:
+      return "Pausee";
+    case State.Playing:
+      return "Playing";
+  }
+  throw Error("missing enum!");
+}
+
+class PlayerStateMachine {
+  state: State;
+
+  constructor(state: State) {
+    this.state = state
+  }
+
+  itemSelected(): PlayerStateMachine {
+    let newState = this.state;
+
+    switch (this.state) {
+      case State.None:
+        newState = State.Loading;
+        break;
+      case State.Loading:
+        break;
+      case State.LoadFinished:
+        break;
+      case State.Paused:
+        break;
+      case State.Playing:
+        break;
+    }
+
+    return new PlayerStateMachine(newState);
+  }
+
+  onLoad(): PlayerStateMachine {
+    let newState = this.state;
+
+    switch (this.state) {
+      case State.None:
+        throw Error("None -> onload");
+      case State.Loading:
+        newState = State.LoadFinished;
+        break;
+      case State.LoadFinished:
+        break;
+      case State.Paused:
+        newState = State.LoadFinished;
+        break;
+      case State.Playing:
+        newState = State.LoadFinished;
+        break;
+    }
+    return new PlayerStateMachine(newState);
+  }
+
+  play(): PlayerStateMachine {
+    let newState = this.state;
+
+    switch (this.state) {
+      case State.None:
+        throw Error("None -> play");
+      case State.Loading:
+        newState = State.Loading;
+        break;
+      case State.LoadFinished:
+        newState = State.Playing;
+        break;
+      case State.Paused:
+        newState = State.Playing;
+        break;
+      case State.Playing:
+        newState = State.Playing;
+        break;
+    }
+
+    return new PlayerStateMachine(newState);
+  }
+
+  pause(): PlayerStateMachine {
+    let newState = this.state;
+
+    switch (this.state) {
+      case State.None:
+        throw Error("None -> pause");
+      case State.Loading:
+        newState = State.Loading;
+        break;
+      case State.LoadFinished:
+        newState = State.Paused;
+        break;
+      case State.Paused:
+        newState = State.Paused;
+        break;
+      case State.Playing:
+        newState = State.Paused;
+        break;
+    }
+
+    return new PlayerStateMachine(newState);
+  }
+
+  seek(): PlayerStateMachine {
+    let newState = this.state;
+
+    switch (this.state) {
+      case State.None:
+        throw Error("None -> seek");
+      case State.Loading:
+        newState = State.Loading;
+        break;
+      case State.LoadFinished:
+        newState = State.Loading;
+        break;
+      case State.Paused:
+        newState = State.Loading;
+        break;
+      case State.Playing:
+        newState = State.Loading;
+        break;
+    }
+
+    return new PlayerStateMachine(newState);
+  }
+}
+
 export default class Player extends React.Component<PlayerProps, PlayerState> {
-  player: HTMLAudioElement;
+  player: Howl | null;
   timePlayedInterval?: number;
   callbackInterval?: number;
 
@@ -41,6 +178,8 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
     this.onStepForward = this.onStepForward.bind(this);
     this.forceRefresh = this.forceRefresh.bind(this);
     this.onPlayPause = this.onPlayPause.bind(this);
+    this.initSound = this.initSound.bind(this);
+    this.resetSound = this.resetSound.bind(this);
   }
 
   onEnded() {
@@ -50,25 +189,53 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
   }
 
   forceRefresh() {
-    if (this.props.item) {
-      this.props.item.lastPosition = moment.duration(Math.round(this.player.currentTime), "seconds");
+    if (this.props.item && this.player) {
+      this.props.item.lastPosition = moment.duration(Math.round(this.player.seek() as number), "seconds");
       this.props.callbackHandler(this.props.item);
     }
   }
 
+  resetSound() {
+    this.setState({
+      state: State.Loading
+    });
+    this.player = null;
+  }
+
+  initSound(props: PlayerProps) {
+    this.resetSound();
+
+    if (props.item) {
+      this.player = new Howl({
+        src: props.item.mp3Url,
+        html5: true,
+        volume: 1.0,
+        onload: this.onCanPlay,
+      });
+    }
+  }
+
+  componentWillReceiveProps(newProps: PlayerProps) {
+    this.initSound(newProps);
+  }
+
   play(): State {
-    this.player.play();
+    if (this.player) {
+      this.player.play();
+    }
     this.timePlayedInterval = window.setInterval(
       () => {
-        this.setState({
-          played: this.player.currentTime
-        });
+        if (this.player) {
+          this.setState({
+            played: this.player.seek() as number
+          });
+        }
       },
       1000);
 
     this.callbackInterval = window.setInterval(() => {
-      if (this.props.item) {
-        this.props.item.lastPosition = moment.duration(Math.round(this.player.currentTime), "seconds");
+      if (this.props.item && this.player) {
+        this.props.item.lastPosition = moment.duration(Math.round(this.player.seek() as number), "seconds");
         this.props.callbackHandler(this.props.item);
       } else {
         throw Error("Missing item");
@@ -85,12 +252,19 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
     if (this.callbackInterval) {
       window.clearInterval(this.callbackInterval);
     }
-
-    this.player.pause();
+    if (this.player) {
+      this.player.pause();
+    }
     return State.Paused;
   }
 
   onPlayPause() {
+    if (!this.player) {
+      this.initSound(this.props);
+    }
+    if (this.player === null) {
+      throw Error("player null");
+    }
     let newState;
     switch (this.state.state) {
       case State.None:
@@ -123,18 +297,35 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
     this.setState({
       state: State.LoadFinished
     });
+    if (this.props.item && this.player) {
+      const pos = this.props.item.lastPosition.asSeconds();
+      this.player.seek(pos);
+    }
   }
 
   seek(percent: number) {
-    this.player.currentTime = this.player.duration * percent;
+    // FIXME callback stuff goes here
+    if (this.player) {
+      this.setState({
+        state: State.Loading
+      });
+      let target = this.player.duration() * percent;
+      this.player.seek(target);
+    }
   }
 
   onStepBack() {
-    this.player.currentTime -= 10;
+    if (this.player) {
+      // FIXME callback stuff goes here
+      this.player.seek(this.player.seek() as number - 10);
+    }
   }
 
   onStepForward() {
-    this.player.currentTime += 10;
+    if (this.player) {
+      // FIXME callback stuff goes here
+      this.player.seek(this.player.seek() as number + 10);
+    }
   }
 
   render() {
@@ -142,8 +333,8 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
     let played = moment.duration(0);
     let duration = moment.duration(0);
     if (this.player) {
-      played = moment.duration(this.player.currentTime, "seconds");
-      duration = moment.duration(this.player.duration, "seconds");
+      played = moment.duration(this.player.seek() as number, "seconds");
+      duration = moment.duration(this.player.duration(), "seconds");
     }
 
     let buttonEl = <i className="fa fa-play"/>;
@@ -153,7 +344,6 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
     if (this.state.state === State.Loading) {
       buttonEl = <i className="fa fa-spinner fa-spin fa-fw"/>;
     }
-    const mp3Url = item ? item.mp3Url : "";
     const title = item ? item.title : "";
 
     return (
@@ -173,13 +363,8 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
           </button>
         </div>
         <PlayerProgress duration={duration} played={played} title={title} seekTo={this.seek.bind(this)}/>
-        <audio
-          id="player-audio"
-          src={mp3Url}
-          ref={(el) => this.player = el}
-          onCanPlay={this.onCanPlay}
-          onEnded={this.onEnded}
-        />
+        &nbsp;
+        {DEBUG && <span>{stateToString(this.state.state)}</span>}
       </div>
     );
   }

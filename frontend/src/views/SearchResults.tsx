@@ -37,9 +37,14 @@ export default class SearchResults extends React.Component<any, SearchResultsSta
 
   render() {
     return <div>
+      <h3>Search results</h3>
       {this.state.results ?
-        this.state.results.map((r: FeedItem) =>
-          <PodcastDetailsItem key={r.id} item={r} itemClicked={item => this.props.itemClicked(item)}/>) :
+        <div>
+          <p>{this.state.results.length} results found</p>
+          {this.state.results.map((r: FeedItem) =>
+            <PodcastDetailsItem key={r.id} item={r} itemClicked={item => this.props.itemClicked(item)}/>)}
+        </div>
+        :
         <p>Please wait..</p>}
     </div>;
   }
