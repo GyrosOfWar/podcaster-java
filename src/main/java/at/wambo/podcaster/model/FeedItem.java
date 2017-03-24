@@ -25,7 +25,7 @@ import java.util.Date;
         query = "SELECT *, ts_rank_cd(to_tsvector('english', title || ' ' || description), to_tsquery('english', ?1)) AS ranking " +
                 "FROM feed_items " +
                 "WHERE to_tsquery('english', ?1) @@ to_tsvector('english', title || ' ' || description) " +
-                "ORDER BY ranking",
+                "ORDER BY ranking DESC",
         resultClass = FeedItem.class)
 public class FeedItem {
     private static final long MAX_LENGTH = 60 * 60 * 10;

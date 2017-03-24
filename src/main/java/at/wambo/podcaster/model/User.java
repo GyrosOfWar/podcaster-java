@@ -2,6 +2,7 @@ package at.wambo.podcaster.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -36,9 +37,9 @@ public class User implements UserDetails {
     @JsonIgnore
     private String pwHash;
 
-    // TODO limit number of entries
     @OneToMany(targetEntity = FeedItem.class)
     @JsonIgnore
+    @BatchSize(size = 20)
     private List<HistoryEntry> history;
 
     public User(String name, String email, String pwHash) {
