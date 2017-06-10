@@ -145,27 +145,29 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
       refreshClasses += " fa-spin fa-fw";
     }
 
-    return <div className="d-flex flex-column">
-      {this.state.info && <UncontrolledAlert color="info">{this.state.info}</UncontrolledAlert>}
-      <div className="flex-row mt-2">
-        <button className="btn btn-sm mr-1" onClick={this.refreshPodcast}>
-          <i className={refreshClasses}/> Refresh
-        </button>
-        <button className="btn btn-sm mr-1" onClick={this.randomPodcast}>
-          <i className="fa fa-random"/> Random podcast
-        </button>
-        <button className="btn btn-sm btn-danger float-right" onClick={this.deletePodcast}>
-          <i className="fa fa-trash"/> Delete
-        </button>
+    return (
+      <div className="d-flex flex-column">
+        {this.state.info && <UncontrolledAlert color="info">{this.state.info}</UncontrolledAlert>}
+        <div className="flex-row mt-2">
+          <button className="btn btn-sm mr-1" onClick={this.refreshPodcast}>
+            <i className={refreshClasses}/> Refresh
+          </button>
+          <button className="btn btn-sm mr-1" onClick={this.randomPodcast}>
+            <i className="fa fa-random"/> Random podcast
+          </button>
+          <button className="btn btn-sm btn-danger float-right" onClick={this.deletePodcast}>
+            <i className="fa fa-trash"/> Delete
+          </button>
+        </div>
+        {this.state.items.content.map(i =>
+          <PodcastDetailsItem item={i} key={i.id} itemClicked={this.props.itemClicked}/>)}
+        <Pagination
+          page={this.state.items}
+          nextLink={`/app/podcasts/${id}/page/${page + 1}`}
+          prevLink={`/app/podcasts/${id}/page/${page - 1}`}
+        />
       </div>
-      {this.state.items.content.map(i =>
-        <PodcastDetailsItem item={i} key={i.id} itemClicked={this.props.itemClicked}/>)}
-      <Pagination
-        page={this.state.items}
-        nextLink={`/app/podcasts/${id}/page/${page + 1}`}
-        prevLink={`/app/podcasts/${id}/page/${page - 1}`}
-      />
-    </div>;
+    );
   }
 }
 
@@ -175,6 +177,11 @@ interface PodcastDetailsItemProps {
 }
 
 export class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> {
+  constructor(props: PodcastDetailsItemProps) {
+    super(props);
+    this.clickItem = this.clickItem.bind(this);
+  }
+
   clickItem() {
     this.props.itemClicked(this.props.item);
   }
@@ -198,7 +205,7 @@ export class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps,
           <div className="podcast-details-description" dangerouslySetInnerHTML={description}/>
         </div>
         <div className="ml-auto">
-          <button onClick={this.clickItem.bind(this)} className="btn">
+          <button onClick={this.clickItem} className="btn">
             <i className="fa fa-play"/>
           </button>
         </div>

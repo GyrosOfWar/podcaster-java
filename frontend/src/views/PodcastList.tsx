@@ -88,13 +88,15 @@ interface PodcastListItemProps {
 class PodcastListItem extends React.Component<PodcastListItemProps, null> {
   render() {
     const item = this.props.feed;
-    return <div className="d-flex flex-column mx-1">
+    return (
+      <div className="d-flex flex-column mx-1">
       <Link to={`/app/podcasts/${item.id}/page/0`}>
         <img src={item.getThumbnailUrl(300)} alt={item.title}/>
       </Link>
       <big>
         <p className="text-center figure-caption">{item.title}</p>
       </big>
-    </div>;
+    </div>
+    );
   }
 }

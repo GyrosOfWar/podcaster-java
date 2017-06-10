@@ -56,11 +56,11 @@ export default class Navigation extends React.Component<NavigationProps, Navigat
   render() {
     return (
       <div>
-        <Navbar light color="primary" toggleable>
-          <NavbarToggler right onClick={this.toggle}/>
+        <Navbar light={true} color="primary" toggleable={true}>
+          <NavbarToggler right={true} onClick={this.toggle}/>
           <Link className="navbar-brand" to="/app/">Podcaster</Link>
-          <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav navbar className="mr-auto">
+          <Collapse isOpen={this.state.isOpen} navbar={true}>
+            <Nav navbar={true} className="mr-auto">
               <NavItem>
                 <Link className="nav-link" to="/app/history">History</Link>
               </NavItem>

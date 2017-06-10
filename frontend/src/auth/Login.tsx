@@ -41,32 +41,19 @@ export default class Login extends React.Component<any, LoginState> {
       error = <Alert color="danger"><strong>{this.state.error.message}</strong></Alert>;
     }
 
-    return <Form>
-      {error}
-      <FormGroup>
-        <Label for="username">Username</Label>
-        <Input type="text" name="username" id="username" placeholder="Username"/>
-      </FormGroup>
-      <FormGroup>
-        <Label for="password">Password</Label>
-        <Input type="password" name="password" id="password" placeholder="Password"/>
-      </FormGroup>
-      <button className="btn" onClick={this.handleSubmit}>Login</button>
-    </Form>;
-
-    // return <form className="form" onSubmit={this.handleSubmit}>
-    //   {error}
-    //   <div className="form-group">
-    //     <label className="form-label" htmlFor="username">Username:</label>
-    //     <input className="text-input" type="text" id="username" ref={(el) => this.username = el}/>
-    //   </div>
-    //   <div className="form-group">
-    //     <label className="form-label" htmlFor="password">Password</label>
-    //     <input className="text-input" type="password" id="password" ref={(el) => this.password = el}/>
-    //   </div>
-    //   <div className="form-group">
-    //     <button className="button button-outline">Login</button>
-    //   </div>
-    // </form>;
+    return (
+      <Form>
+        {error}
+        <FormGroup>
+          <Label for="username">Username</Label>
+          <Input type="text" name="username" id="username" placeholder="Username"/>
+        </FormGroup>
+        <FormGroup>
+          <Label for="password">Password</Label>
+          <Input type="password" name="password" id="password" placeholder="Password"/>
+        </FormGroup>
+        <button className="btn" onClick={this.handleSubmit}>Login</button>
+      </Form>
+    );
   }
 }

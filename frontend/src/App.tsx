@@ -22,8 +22,8 @@ interface AppState {
   searchQuery?: string;
 }
 
-class App extends React.Component<{}, AppState> {
-  constructor(props: {}) {
+class App extends React.Component<null, AppState> {
+  constructor(props: null) {
     super(props);
     this.state = {};
 
@@ -62,10 +62,11 @@ class App extends React.Component<{}, AppState> {
 
   handleItemSelected(item: FeedItem) {
     this.setState({selectedItem: item});
-    // const player = document.getElementById("player-audio") as HTMLAudioElement;
-    // if (player.currentTime !== pos) {
-    //   player.currentTime = pos;
-    // }
+    const pos = item.lastPosition.asSeconds();
+    const player = document.getElementById("player-audio") as HTMLAudioElement;
+    if (player.currentTime !== pos) {
+      player.currentTime = pos;
+    }
     document.title = item.title;
   }
 
@@ -113,9 +114,10 @@ class NotFound extends React.Component<any, any> {
   }
 }
 
-class Routes extends React.Component<null, null> {
+class Routes extends React.Component<any, any> {
   render() {
-    return <Router history={browserHistory}>
+    return (
+      <Router history={browserHistory}>
       <Route path="/" component={App}>
         <IndexRedirect to="/app"/>
         <Route path="app">
@@ -129,7 +131,7 @@ class Routes extends React.Component<null, null> {
         </Route>
       </Route>
       <Route path="*" component={NotFound}/>
-    </Router>;
+    </Router>);
   }
 }
 
