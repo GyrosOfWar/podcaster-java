@@ -21,4 +21,6 @@ public interface FeedItemRepository extends PagingAndSortingRepository<FeedItem,
 
     @Query(name = "FeedItem.search")
     List<FeedItem> search(String query);
+
+    List<FeedItem> findByFeedId(Integer id);
 }

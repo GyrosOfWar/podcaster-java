@@ -55,8 +55,8 @@ public class ImageCacheControllerTests {
                 .param("size", "150")
                 .header("Authorization", "Bearer " + token))
                 .andReturn();
-        assertEquals(result.getResponse().getStatus(), 200);
-        assertEquals(result.getResponse().getContentType(), "image/jpeg");
+        assertEquals(200, result.getResponse().getStatus());
+        assertEquals("image/jpeg", result.getResponse().getContentType());
     }
 
     @Test
@@ -66,7 +66,7 @@ public class ImageCacheControllerTests {
                 .param("size", "350")
                 .header("Authorization", "Bearer " + token))
                 .andReturn();
-        assertEquals(result.getResponse().getStatus(), 200);
-        assertEquals(result.getResponse().getContentType(), "image/jpeg");
+        assertEquals(200, result.getResponse().getStatus());
+        assertEquals("image/jpeg", result.getResponse().getContentType());
     }
 }

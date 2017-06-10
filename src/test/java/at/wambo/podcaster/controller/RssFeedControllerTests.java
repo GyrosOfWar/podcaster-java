@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class RssFeedControllerTests {
-    final static String FEED_URL = "http://www.giantbomb.com/podcast-xml/beastcast";
+    final static String FEED_URL = "https://www.giantbomb.com/podcast-xml/beastcast";
     private static final String password = "test";
     @Autowired
     private WebApplicationContext context;

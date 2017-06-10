@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,8 +18,12 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -32,11 +34,9 @@ import java.util.List;
 @RequestMapping(path = "/api/images/")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ImageCacheController {
-    private static final byte[] REDIS_KEY = "podcasterImageSet".getBytes();
-
     private static final Logger logger = LoggerFactory.getLogger(ImageCacheController.class);
+    private static final Path BASE_PATH = Paths.get("thumbnails");
 
-    private final @NonNull RedisConnectionFactory connectionFactory;
     private final @NonNull FeedItemRepository itemRepository;
     private final @NonNull RssFeedRepository rssFeedRepository;
 
@@ -53,47 +53,34 @@ public class ImageCacheController {
     }
 
     private byte[] getImage(String hashedUrl, int width) {
-        logger.debug("getImage: start (url = {}, width = {})", hashedUrl, width);
-        RedisConnection connection = null;
-
-        byte[] key = String.format("url=%s,width=%s", hashedUrl, width).getBytes();
-
+        String fileName = hashedUrl + "_" + width + ".jpeg";
+        Path path = BASE_PATH.resolve(fileName);
+        File file = path.toFile();
         try {
-            connection = this.connectionFactory.getConnection();
-            logger.debug("getImage: acquired Redis connection: {}", connection);
-            byte[] result = connection.hGet(REDIS_KEY, key);
-            if (result == null) {
-                logger.debug("Found no image in Redis");
+            if (file.isFile()) {
+                return Files.readAllBytes(path);
+            } else {
                 URL url;
                 List<FeedItem> items = this.itemRepository.findByHashedImageUrl(hashedUrl);
-                try {
-                    if (items.size() > 0) {
-                        url = new URL(items.get(0).getImageUrl());
-                    } else {
-                        List<RssFeed> feeds = this.rssFeedRepository.findByHashedImageUrl(hashedUrl);
-                        if (feeds.size() == 0) {
-                            return null;
-                        }
-                        url = new URL(feeds.get(0).getImageUrl());
+                if (items.size() > 0) {
+                    url = new URL(items.get(0).getImageUrl());
+                } else {
+                    List<RssFeed> feeds = this.rssFeedRepository.findByHashedImageUrl(hashedUrl);
+                    if (feeds.size() == 0) {
+                        return null;
                     }
-                    logger.debug("Found URL {} for hash {}", url, hashedUrl);
-                    byte[] imageBytes = resizeImage(url, width);
-                    connection.hSet(REDIS_KEY, key, imageBytes);
-                    logger.debug("Wrote image to Redis, returning");
-                    return imageBytes;
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    url = new URL(feeds.get(0).getImageUrl());
                 }
-            } else {
-                logger.debug("Found image in redis, returing");
-                return result;
+                byte[] image = resizeImage(url, width);
+                if (!BASE_PATH.toFile().isDirectory()) {
+                    Files.createDirectories(BASE_PATH);
+                }
+                Files.write(path, image);
+                return image;
             }
-        } catch (Exception ex) {
+
+        } catch (IOException ex) {
             throw new RuntimeException(ex);
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
         }
     }
 

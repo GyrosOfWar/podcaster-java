@@ -1,3 +1,5 @@
-[ ] Add theme support
-[ ] Add heading, info (number of results) and pagination to search results
-[ ] Look at React PWA
+- [ ] Add theme support
+- [ ] Add heading, info (number of results) and pagination to search results
+- [ ] Look at React PWA
+- [ ] Migrate to Spring Boot 2.0 once it's released
+- [ ] Throw out Redis for image caching and just save the screenshots as files in a folder

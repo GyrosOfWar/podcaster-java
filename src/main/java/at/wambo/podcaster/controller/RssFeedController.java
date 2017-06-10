@@ -87,10 +87,10 @@ public class RssFeedController {
         return this.feedRepository.fullTextSearch(feed.getId(), tsQuery);
     }
 
-    @RequestMapping(path = "{feed}/random")
-    public FeedItem randomItem(@PathVariable RssFeed feed) {
-        int max = feed.getItems().size();
-        return feed.getItems().get(RANDOM.nextInt(max));
+    @RequestMapping(path = "{id}/random")
+    public FeedItem randomItem(@PathVariable Integer id) {
+        List<FeedItem> feedItems = feedItemRepository.findByFeedId(id);
+        return feedItems.get(RANDOM.nextInt(feedItems.size()));
     }
 
     @RequestMapping(path = "{feed}/favorites")
