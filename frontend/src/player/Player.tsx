@@ -2,6 +2,7 @@ import * as React from "react";
 import FeedItem from "../model/FeedItem";
 import * as moment from "moment";
 import {formatDuration} from "../common/util";
+import * as ajax from "../common/ajax";
 
 interface PlayerProps {
   callbackInterval: number;
@@ -42,6 +43,7 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
     this.forceRefresh = this.forceRefresh.bind(this);
     this.onPlayPause = this.onPlayPause.bind(this);
     this.seek = this.seek.bind(this);
+    this.favoriteItem = this.favoriteItem.bind(this);
   }
 
   onEnded() {
@@ -138,6 +140,14 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
     this.player.currentTime += 10;
   }
 
+  favoriteItem() {
+    if (this.props.item) {
+      const isFav = !this.props.item.isFavorite;
+      const item = Object.assign(this.props.item, {isFavorite: isFav});
+      ajax.postWithAuth(`/api/feed_items/${item.id}`);
+    }
+  }
+
   render() {
     const item = this.props.item;
     let played = moment.duration(0);
@@ -169,8 +179,11 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
           <button className="btn step-forward mr-1" onClick={this.onStepForward} title="10 Seconds forwards">
             <i className="fa fa-step-forward"/> 10
           </button>
-          <button className="btn" onClick={this.forceRefresh}>
+          <button className="btn mr-1" onClick={this.forceRefresh}>
             <i className="fa fa-refresh"/>
+          </button>
+          <button className="btn" onClick={this.favoriteItem}>
+            <i className="fa fa-star-o"/>
           </button>
         </div>
         <PlayerProgress duration={duration} played={played} title={title} seekTo={this.seek}/>
