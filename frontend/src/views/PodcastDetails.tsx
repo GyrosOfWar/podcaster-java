@@ -63,7 +63,7 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     }
   }
 
-  componentWillReceiveProps?(nextProps: Readonly<PodcastDetailsProps>, nextContext: any): void {
+  componentWillReceiveProps?(nextProps: Readonly<PodcastDetailsProps>): void {
     const id = nextProps.params.id;
 
     ajax.getWithAuth(`/api/feeds/${id}/items?page=${nextProps.params.page}`,

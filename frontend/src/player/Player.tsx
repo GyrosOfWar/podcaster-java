@@ -224,7 +224,10 @@ class PlayerProgress extends React.Component<ProgressProps, any> {
   }
 
   render() {
-    const progress = (this.props.played.asMilliseconds() / this.props.duration.asMilliseconds()) * 100.0;
+    let progress = (this.props.played.asMilliseconds() / this.props.duration.asMilliseconds()) * 100.0;
+    if (isNaN(progress)) {
+      progress = 0;
+    }
     const playedText = formatDuration(this.props.played);
     const durationText = formatDuration(this.props.duration);
     const style = {

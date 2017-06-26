@@ -3,14 +3,6 @@ import * as moment from "moment";
 import RssFeed from "./RssFeed";
 import {formatDuration} from "../common/util";
 
-// const TAG_RE: RegExp = /<\/?(.*)\/?>/g.compile();
-
-function removeTags(text: string): string {
-  const tmp = document.createElement("div");
-  tmp.innerHTML = text;
-  return tmp.textContent || tmp.innerText || "";
-}
-
 export default class FeedItem {
   id: number;
   title: string;
@@ -69,5 +61,4 @@ export default class FeedItem {
   getFormattedElapsedTime(): string {
     return `${formatDuration(this.lastPosition)} / ${formatDuration(this.duration)}`;
   }
-
 }

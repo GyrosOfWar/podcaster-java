@@ -69,7 +69,7 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
     return (
       <div className="d-flex flex-column">
         <div className="d-flex flex-row">
-          <h1>{capitalize(user.name)}s Podcasts</h1>
+          <h3>{capitalize(user.name)}s Podcasts</h3>
           <button className="btn ml-auto p-3" onClick={this.addPodcast}><i className="fa fa-plus"/></button>
         </div>
         {this.state.error && <Alert color="danger"><strong>Error:</strong> {this.state.error.message}</Alert>}
@@ -90,12 +90,10 @@ class PodcastListItem extends React.Component<PodcastListItemProps, null> {
     const item = this.props.feed;
     return (
       <div className="d-flex flex-column mx-1">
-      <Link to={`/app/podcasts/${item.id}/page/0`}>
-        <img src={item.getThumbnailUrl(300)} alt={item.title}/>
-      </Link>
-      <big>
-        <p className="text-center figure-caption">{item.title}</p>
-      </big>
+        <Link to={`/app/podcasts/${item.id}/page/0`}>
+          <img src={item.getThumbnailUrl(300)} alt={item.title}/>
+        </Link>
+        <p className="text-center figure-caption bigger">{item.title}</p>
     </div>
     );
   }

@@ -72,6 +72,7 @@ export default class History extends React.Component<null, HistoryState> {
     });
 
     return <div>
+      <h3>History</h3>
       {error}
       {views}
     </div>;
