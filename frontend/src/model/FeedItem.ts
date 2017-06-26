@@ -14,7 +14,7 @@ export default class FeedItem {
   imageUrl: string;
   lastPosition: moment.Duration;
   owner: User;
-  isFavorite: boolean;
+  favorite: boolean;
   hashedImageUrl: String;
   feed: RssFeed;
 
@@ -30,7 +30,7 @@ export default class FeedItem {
       obj.imageUrl,
       moment.duration(obj.lastPosition, "seconds"),
       User.fromJSON(obj.owner),
-      obj.isFavorite,
+      obj.favorite,
       obj.hashedImageUrl,
       RssFeed.fromJSON(obj.feed)
     );
@@ -38,7 +38,7 @@ export default class FeedItem {
 
   constructor(id: number, title: string, link: string, description: string, mp3Url: string,
               pubDate: moment.Moment, duration: moment.Duration, imageUrl: string, lastPosition: moment.Duration,
-              owner: User, isFavorite: boolean, hashedImageUrl: String, feed: RssFeed) {
+              owner: User, favorite: boolean, hashedImageUrl: String, feed: RssFeed) {
     this.id = id;
     this.title = title;
     this.link = link;
@@ -49,7 +49,7 @@ export default class FeedItem {
     this.imageUrl = imageUrl;
     this.lastPosition = lastPosition;
     this.owner = owner;
-    this.isFavorite = isFavorite;
+    this.favorite = favorite;
     this.hashedImageUrl = hashedImageUrl;
     this.feed = feed;
   }

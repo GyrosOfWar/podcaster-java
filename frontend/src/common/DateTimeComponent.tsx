@@ -13,7 +13,7 @@ interface DateTimeComponentProps {
   type?: DisplayType;
 }
 
-export default class DateTimeComponent extends React.Component<DateTimeComponentProps, null> {
+export default class DateTimeComponent extends React.Component<DateTimeComponentProps, {}> {
   render() {
     const date = this.props.date;
     const type = this.props.type;

@@ -12,6 +12,7 @@ import javax.persistence.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Martin
@@ -49,8 +50,10 @@ public class FeedItem {
     private User owner;
     private boolean isFavorite;
     private String hashedImageUrl;
+    @OneToMany(targetEntity = Bookmark.class)
+    private List<Bookmark> bookmarks;
 
-    public static FeedItem fromEntry(RssFeed feed, SyndEntry entry, User owner) {
+    static FeedItem fromEntry(RssFeed feed, SyndEntry entry, User owner) {
         FeedItem item = new FeedItem();
         item.setTitle(entry.getTitle());
         item.setLink(entry.getLink());

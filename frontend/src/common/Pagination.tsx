@@ -8,7 +8,7 @@ interface PaginationProps {
   prevLink: string;
 }
 
-export default class Pagination extends React.Component<PaginationProps, null> {
+export default class Pagination extends React.Component<PaginationProps, {}> {
   constructor(props: PaginationProps) {
     super(props);
   }

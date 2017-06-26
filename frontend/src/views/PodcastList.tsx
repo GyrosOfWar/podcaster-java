@@ -40,7 +40,7 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
       }, error => this.setState({error: error}));
   }
 
-  addPodcast(event: React.FormEvent<HTMLButtonElement>) {
+  addPodcast() {
     // TODO replace with modal
     const url = prompt("Enter URL:");
     if (url) {
@@ -85,7 +85,7 @@ interface PodcastListItemProps {
   feed: RssFeed;
 }
 
-class PodcastListItem extends React.Component<PodcastListItemProps, null> {
+class PodcastListItem extends React.Component<PodcastListItemProps, {}> {
   render() {
     const item = this.props.feed;
     return (

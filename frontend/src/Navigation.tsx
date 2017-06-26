@@ -1,15 +1,15 @@
 import * as React from "react";
 import * as auth from "./common/auth";
-import {Navbar, Collapse, NavbarToggler, Nav, NavItem} from "reactstrap";
-import {Link, browserHistory} from "react-router";
+import {Collapse, Nav, Navbar, NavbarToggler, NavItem} from "reactstrap";
+import {browserHistory, Link} from "react-router";
 
 interface SearchBoxProps {
 }
 
-class SearchBox extends React.Component<SearchBoxProps, null> {
+class SearchBox extends React.Component<SearchBoxProps, {}> {
   constructor(props: SearchBoxProps) {
     super(props);
-    this.state = null;
+    this.state = {};
 
     this.onInput = this.onInput.bind(this);
   }

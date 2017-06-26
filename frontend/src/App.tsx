@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Router, Route, browserHistory, IndexRoute, RouterState, RedirectFunction, IndexRedirect} from "react-router";
+import {browserHistory, IndexRedirect, IndexRoute, RedirectFunction, Route, Router, RouterState} from "react-router";
 import Login from "./auth/Login";
 import Logout from "./auth/Logout";
 import Navigation from "./Navigation";
@@ -31,6 +31,7 @@ class App extends React.Component<null, AppState> {
     this.updateItem = this.updateItem.bind(this);
     this.searchCallback = this.searchCallback.bind(this);
     this.searchEnded = this.searchEnded.bind(this);
+    this.itemChanged = this.itemChanged.bind(this);
   }
 
   updateItem(item: FeedItem) {
@@ -74,6 +75,12 @@ class App extends React.Component<null, AppState> {
     document.title = "Podcaster";
   }
 
+  itemChanged(item: FeedItem) {
+    this.setState({
+      selectedItem: item
+    });
+  }
+
   render() {
     const children = React.Children.map(this.props.children, child => {
       return React.cloneElement(child as React.ReactElement<any>, {
@@ -90,6 +97,7 @@ class App extends React.Component<null, AppState> {
             callbackInterval={10}
             callbackHandler={this.updateItem}
             item={this.state.selectedItem}
+            itemChanged={this.itemChanged}
           />}
           {this.state.error && <Alert color="danger">{this.state.error.message}</Alert>}
           {children}

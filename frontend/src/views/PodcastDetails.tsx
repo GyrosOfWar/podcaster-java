@@ -123,7 +123,7 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
       const items = this.state.items;
       if (items) {
         const id = items.content[0].feed.id;
-        ajax.deleteWithAuth(`/api/feeds/${id}`, res => {
+        ajax.deleteWithAuth(`/api/feeds/${id}`, () => {
           this.props.history.push("/app");
         });
       }
@@ -176,7 +176,7 @@ interface PodcastDetailsItemProps {
   itemClicked: (i: FeedItem) => void;
 }
 
-export class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, null> {
+export class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, {}> {
   constructor(props: PodcastDetailsItemProps) {
     super(props);
     this.clickItem = this.clickItem.bind(this);

@@ -7,6 +7,7 @@ import * as ajax from "../common/ajax";
 interface PlayerProps {
   callbackInterval: number;
   callbackHandler: (f: FeedItem) => void;
+  itemChanged: (f: FeedItem) => void;
   item?: FeedItem;
 
   loadFinishedCallback?: (player: HTMLAudioElement) => void;
@@ -142,9 +143,12 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
 
   favoriteItem() {
     if (this.props.item) {
-      const isFav = !this.props.item.isFavorite;
-      const item = Object.assign(this.props.item, {isFavorite: isFav});
-      ajax.postWithAuth(`/api/feed_items/${item.id}`);
+      const isFav = !this.props.item.favorite;
+      const item = Object.assign(this.props.item, {favorite: isFav});
+      ajax.postWithAuth(`/api/feed_items/${item.id}`,
+        JSON.stringify(item),
+        () => this.props.itemChanged(item)
+      );
     }
   }
 
@@ -166,6 +170,10 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
     }
     const mp3Url = item ? item.mp3Url : "";
     const title = item ? item.title : "";
+    let star = "fa fa-star-o";
+    if (item && item.favorite) {
+      star = "fa fa-star";
+    }
 
     return (
       <div className="d-flex mt-1 flex-column flex-lg-row flex-xl-row">
@@ -183,14 +191,18 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
             <i className="fa fa-refresh"/>
           </button>
           <button className="btn" onClick={this.favoriteItem}>
-            <i className="fa fa-star-o"/>
+            <i className={star}/>
           </button>
         </div>
         <PlayerProgress duration={duration} played={played} title={title} seekTo={this.seek}/>
         <audio
           id="player-audio"
           src={mp3Url}
-          ref={(el) => this.player = el}
+          ref={(el) => {
+            if (el) {
+              this.player = el;
+            }
+          }}
           onCanPlay={this.onCanPlay}
           onEnded={this.onEnded}
         />

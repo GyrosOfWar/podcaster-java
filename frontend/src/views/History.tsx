@@ -13,6 +13,13 @@ interface HistoryState {
   error?: Error;
 }
 
+interface HistoryProps {
+  // Router history
+  history: any;
+  // Router params
+  params: any;
+}
+
 function groupBy<Type, Key>(array: Array<Type>, keyFunc: (t: Type) => Key): Map<Key, Array<Type>> {
   const map = new Map<Key, Array<Type>>();
   for (const value of array) {
@@ -28,8 +35,8 @@ function groupBy<Type, Key>(array: Array<Type>, keyFunc: (t: Type) => Key): Map<
   return map;
 }
 
-export default class History extends React.Component<null, HistoryState> {
-  constructor(props: null) {
+export default class History extends React.Component<HistoryProps, HistoryState> {
+  constructor(props: HistoryProps) {
     super(props);
     this.state = {};
   }
@@ -83,7 +90,7 @@ interface HistoryEntryViewProps {
   entry: HistoryEntry;
 }
 
-class HistoryEntryView extends React.Component<HistoryEntryViewProps, null> {
+class HistoryEntryView extends React.Component<HistoryEntryViewProps, {}> {
   render() {
     const entry = this.props.entry;
     const date = entry.time;
