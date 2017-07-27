@@ -10,7 +10,8 @@ import org.jdom2.Element;
 
 import javax.persistence.*;
 import java.time.Duration;
-import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class FeedItem {
     @Column(columnDefinition = "varchar")
     private String description;
     private String mp3Url;
-    private Instant pubDate;
+    private ZonedDateTime pubDate;
     private Duration duration;
     @ManyToOne(targetEntity = RssFeed.class)
     @JsonIgnoreProperties({"items", "owner"})
@@ -86,7 +87,7 @@ public class FeedItem {
         item.setDuration(duration);
         item.setLink(entry.getLink());
         Date pubDate = entry.getPublishedDate();
-        item.setPubDate(pubDate.toInstant());
+        item.setPubDate(ZonedDateTime.ofInstant(pubDate.toInstant(), ZoneId.systemDefault()));
         item.setLastPosition(Duration.ZERO);
         item.setFeed(feed);
         String imageUrl = null;
