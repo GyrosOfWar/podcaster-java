@@ -57,3 +57,5 @@ hs_err_pid*
 classes
 src/main/resources/static
 thumbnails
+.settings
+.vscode

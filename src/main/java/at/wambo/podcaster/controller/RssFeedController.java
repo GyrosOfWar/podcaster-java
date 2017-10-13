@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 /**
@@ -57,13 +58,16 @@ public class RssFeedController {
 
     @RequestMapping(path = "{id}", method = RequestMethod.DELETE)
     public String deleteFeed(@PathVariable Integer id) {
-        if (id != null) {
-            RssFeed feed = feedRepository.findOne(id);
+        Optional<RssFeed> result = feedRepository.findById(id);
+        if (result.isPresent()) {
+            RssFeed feed = result.get();
             historyService.deleteForFeed(id);
-            feedItemRepository.delete(feed.getItems());
-            feedRepository.delete(id);
+            feedItemRepository.deleteAll(feed.getItems());
+            feedRepository.deleteById(id);
+            return "OK";
+        } else {
+            return "Feed doesn't exist";
         }
-        return "OK";
     }
 
     @RequestMapping(path = "{feed}", method = RequestMethod.POST)

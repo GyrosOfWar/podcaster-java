@@ -38,6 +38,6 @@ public class HistoryService {
     }
 
     public void deleteForFeed(Integer id) {
-        historyEntryRepository.delete(historyEntryRepository.findByFeedItemFeedId(id));
+        historyEntryRepository.deleteAll(historyEntryRepository.findByFeedItemFeedId(id));
     }
 }
