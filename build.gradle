@@ -1,13 +1,13 @@
 buildscript {
     ext {
-        springBootVersion = "2.0.0.M5"
+        springBootVersion = "2.0.0.RC1"
     }
     repositories {
         mavenCentral()
         maven { url 'http://repo.spring.io/milestone' }
     }
     dependencies {
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.0.0.M5'
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.0.0.RC1'
     }
 }
 
@@ -37,8 +37,8 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
 
-    compile("com.rometools:rome:1.8.0")
-    compile("commons-codec:commons-codec:1.10")
+    compile("com.rometools:rome:1.9.0")
+    compile("commons-codec:commons-codec:1.11")
     compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.1")
     compile("org.projectlombok:lombok:1.16.18")
     compile("com.nimbusds:nimbus-jose-jwt:5.1")

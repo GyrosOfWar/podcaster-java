@@ -4,3 +4,4 @@
 - [ ] Migrate to Spring Boot 2.0 once it's released
 - [ ] Add bookmarks to frontend and backend
 - [ ] Add favorite feature to frontend
+- [ ] Add sleep timer to frontend
