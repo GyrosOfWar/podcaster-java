@@ -1,10 +1,12 @@
 import * as React from "react";
 import Error from "../model/Error";
 import * as ajax from "../common/ajax";
-import FeedItem from "../model/FeedItem";
+import FeedItem, { parseDates } from "../model/FeedItem";
 import Page from "../model/Page";
 import Pagination from "../common/Pagination";
 import { UncontrolledAlert } from "reactstrap";
+import * as util from "../common/util";
+import * as moment from "moment";
 
 interface PodcastDetailsItemProps {
   item: FeedItem;
@@ -24,19 +26,20 @@ export class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps,
   render() {
     const item = this.props.item;
     const description = { __html: item.description };
+    const pubDate = (item.pubDate as moment.Moment).format("YYYY-MM-DD");
     return (
       <div className="d-flex my-2">
         <img
           className="pr-2 hidden-md-down"
-          src={item.getThumbnailUrl(120)}
+          src={util.getThumbnailUrl(item.hashedImageUrl, 120)}
           style={{ maxHeight: "120px" }}
         />
         <div className="d-flex flex-column">
           <div className="podcast-title">
             <strong className="text-primary">{item.title}</strong>&nbsp;
-            <small>{item.pubDate.format("DD.MM.YYYY")}</small>
+            <small>{pubDate}</small>
           </div>
-          <span>{item.getFormattedElapsedTime()}</span>
+          <span>{util.getFormattedElapsedTime(item.lastPosition, item.duration)}</span>
           <div className="podcast-details-description" dangerouslySetInnerHTML={description} />
         </div>
         <div className="ml-auto">
@@ -81,7 +84,8 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
 
     ajax.getWithAuth(`/api/feeds/${id}/items?page=${this.state.currentPage}`,
       response => {
-        const page = Page.fromJSON(response, FeedItem.fromJSON);
+        const page = response as Page<FeedItem>;
+        page.content.forEach(item => parseDates(item));
         this.setState({
           items: page
         });
@@ -94,8 +98,7 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     const itemId = this.props.params.itemId;
     if (itemId) {
       ajax.getWithAuth(`/api/feed_items/${itemId}`,
-        response => {
-          const item = FeedItem.fromJSON(response);
+        item => {
           this.props.itemClicked(item);
         },
         error => {
@@ -107,15 +110,20 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
   }
 
   componentWillReceiveProps?(nextProps: Readonly<PodcastDetailsProps>): void {
+    if (nextProps.params === this.props.params) {
+      return;
+    }
+
     const id = nextProps.params.id;
 
     ajax.getWithAuth(`/api/feeds/${id}/items?page=${nextProps.params.page}`,
       response => {
-        const page = Page.fromJSON(response, FeedItem.fromJSON);
+        const page = response as Page<FeedItem>;
+        page.content.forEach(i => parseDates(i));
         this.setState({
           items: page
         });
-        document.title = page.content[0].feed.title;
+        document.title = response.content[0].feed.title;
       },
       error => {
         this.setState({ error: error });
@@ -128,18 +136,26 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     });
     ajax.postWithAuth(`/api/feeds/${this.props.params.id}`,
       undefined,
-      result => {
-        const feeds = result.map(FeedItem.fromJSON);
+      feeds => {
         if (feeds.length === 0) {
           this.setState({
             info: "Feed has no new items."
           });
         }
 
-        this.setState({
-          items: this.state.items && this.state.items.withNewContent(feeds),
-          doingRefresh: false
-        });
+        const oldItems = this.state.items;
+        if (oldItems) {
+          const newContent = [...feeds, ...oldItems.content].slice(oldItems.size);
+          const newPage = Object.assign({}, oldItems, { content: newContent });
+          this.setState({
+            doingRefresh: false,
+            items: newPage
+          });
+        } else {
+          this.setState({
+            doingRefresh: false
+          });
+        }
       },
       error => {
         this.setState({

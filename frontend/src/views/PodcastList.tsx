@@ -3,6 +3,7 @@ import RssFeed from "../model/RssFeed";
 import Error from "../model/Error";
 import * as ajax from "../common/ajax";
 import User from "../model/User";
+import * as util from "../common/util";
 import { capitalize } from "../common/util";
 import { Link } from "react-router";
 import { Alert } from "reactstrap";
@@ -17,7 +18,7 @@ class PodcastListItem extends React.Component<PodcastListItemProps, {}> {
     return (
       <div className="d-flex flex-column mx-1">
         <Link to={`/app/podcasts/${item.id}/page/0`}>
-          <img src={item.getThumbnailUrl(300)} alt={item.title} />
+          <img src={util.getThumbnailUrl(item.hashedImageUrl, 300)} alt={item.title} />
         </Link>
         <p className="text-center figure-caption bigger">{item.title}</p>
       </div>
@@ -43,17 +44,17 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
 
   componentDidMount() {
     ajax.getWithAuth("/api/feeds",
-      result => {
+      items => {
         this.setState({
-          items: result.map((i: any) => RssFeed.fromJSON(i))
+          items
         });
       },
       error => this.setState({ error: error }));
 
     ajax.getWithAuth("/api/users",
-      result => {
+      user => {
         this.setState({
-          user: User.fromJSON(result)
+          user
         });
       }, error => this.setState({ error: error }));
   }
@@ -65,9 +66,8 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
       ajax.postWithAuth(`/api/feeds?url=${encodeURIComponent(url)}`,
         undefined,
         result => {
-          const feed = RssFeed.fromJSON(result);
           this.setState({
-            items: [...this.state.items, feed]
+            items: [...this.state.items, result]
           });
         },
         error => {

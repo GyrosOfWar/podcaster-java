@@ -19,8 +19,8 @@ export default class SearchResults extends React.Component<any, SearchResultsSta
 
   doSearch(query: string) {
     ajax.getWithAuth("/api/search?q=" + encodeURIComponent(query),
-      (result) => this.setState({
-        results: result.map((r: any) => FeedItem.fromJSON(r))
+      (results) => this.setState({
+        results
       }),
       (error) => this.setState({ error: error }));
   }

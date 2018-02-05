@@ -43,4 +43,9 @@ public class UserController {
     public Page<HistoryEntry> getHistoryForUser(Pageable page) {
         return historyEntryRepository.getHistoryForUser(getUser(), page);
     }
+
+    @RequestMapping(path = "/history/grouped")
+    public Page<HistoryService.GroupedHistoryEntries> groupedHistory(Pageable page) {
+        return historyEntryRepository.getGroupedHistory(getUser(), page);
+    }
 }

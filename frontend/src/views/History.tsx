@@ -7,6 +7,8 @@ import Error from "../model/Error";
 import DateTimeComponent, { DisplayType } from "../common/DateTimeComponent";
 import { Link } from "react-router";
 import { Alert } from "reactstrap";
+import * as util from "../common/util";
+import * as moment from "moment";
 
 interface HistoryEntryViewProps {
   entry: HistoryEntry;
@@ -16,20 +18,32 @@ class HistoryEntryView extends React.Component<HistoryEntryViewProps, {}> {
   render() {
     const entry = this.props.entry;
     const date = entry.time;
-    const feedId = entry.feedItem.feed.id;
-    const itemId = entry.feedItem.id;
+    const item = entry.feedItem;
+
+    const feedId = item.feed.id;
+    const itemId = item.id;
+    let { lastPosition, duration } = item;
+    if (typeof lastPosition === "string" || typeof duration === "string") {
+      lastPosition = moment.duration(lastPosition);
+      duration = moment.duration(duration);
+    }
     return (
       <div>
         <Link to={`/app/podcasts/${feedId}/item/${itemId}`}>{entry.feedItem.title}</Link>&nbsp;
-        <small><DateTimeComponent date={date} type={DisplayType.FromNow} /></small>
-        <span className="float-right">{entry.feedItem.getFormattedElapsedTime()}</span>
+        <small>{date}</small>
+        <span className="float-right">{util.getFormattedElapsedTime(lastPosition, duration)}</span>
       </div>
     );
   }
 }
 
+interface GroupedHistoryEntry {
+  date: string;
+  entries: Array<HistoryEntry>;
+}
+
 interface HistoryState {
-  entries?: Map<string, Array<HistoryEntry>>;
+  entries?: Page<GroupedHistoryEntry>;
   error?: Error;
 }
 
@@ -40,21 +54,6 @@ interface HistoryProps {
   params: any;
 }
 
-function groupBy<Type, Key>(array: Array<Type>, keyFunc: (t: Type) => Key): Map<Key, Array<Type>> {
-  const map = new Map<Key, Array<Type>>();
-  for (const value of array) {
-    const key = keyFunc(value);
-    const entry = map.get(key);
-    if (entry) {
-      entry.push(value);
-    } else {
-      map.set(key, [value]);
-    }
-  }
-
-  return map;
-}
-
 export default class History extends React.Component<HistoryProps, HistoryState> {
   constructor(props: HistoryProps) {
     super(props);
@@ -62,12 +61,11 @@ export default class History extends React.Component<HistoryProps, HistoryState>
   }
 
   componentDidMount() {
-    ajax.getWithAuth("/api/users/history",
+    ajax.getWithAuth("/api/users/history/grouped",
       result => {
-        const page = Page.fromJSON(result, HistoryEntry.fromJSON);
-        const grouped = groupBy(page.content, (t) => t.time.format("DD.MM.YYYY"));
+        const page = result as Page<GroupedHistoryEntry>;
         this.setState({
-          entries: grouped
+          entries: page
         });
       },
       error => {
@@ -90,11 +88,11 @@ export default class History extends React.Component<HistoryProps, HistoryState>
     const views: React.ReactElement<any>[] = [];
     let i = 0;
 
-    entries.forEach((v, k) => {
+    entries.content.forEach(entry => {
       views.push((
         <div key={"group-" + i}>
-          <strong className="text-secondary">{k}</strong>
-          {v.map(e => <HistoryEntryView entry={e} key={e.id} />)}
+          <strong className="text-secondary">{entry.date}</strong>
+          {entry.entries.map(e => <HistoryEntryView entry={e} key={e.id} />)}
         </div>
       ));
       i += 1;

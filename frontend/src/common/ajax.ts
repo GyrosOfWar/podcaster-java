@@ -1,10 +1,10 @@
 import * as auth from "./auth";
-import Error from "../model/Error";
+import Error, { notLoggedIn } from "../model/Error";
 
 export function getWithAuth(url: string, success: (a: any) => void, error: (e: Error) => void) {
   const token = auth.getToken();
   if (token === null) {
-    error(Error.notLoggedIn());
+    error(notLoggedIn());
     return;
   }
 
@@ -15,11 +15,11 @@ export function getWithAuth(url: string, success: (a: any) => void, error: (e: E
     if (xhr.status < 400) {
       success(JSON.parse(xhr.responseText));
     } else {
-      error(Error.fromJSON(JSON.parse(xhr.responseText)));
+      error(JSON.parse(xhr.responseText));
     }
   };
   xhr.onerror = function() {
-    error(Error.fromJSON(JSON.parse(xhr.responseText)));
+    error(JSON.parse(xhr.responseText));
   };
 
   xhr.send();
@@ -29,7 +29,7 @@ export function postWithAuth(url: string, body?: string, success?: (a: any) => v
   const token = auth.getToken();
   if (token === null) {
     if (error) {
-      error(Error.notLoggedIn());
+      error(notLoggedIn());
     }
     return;
   }
@@ -41,11 +41,15 @@ export function postWithAuth(url: string, body?: string, success?: (a: any) => v
     if (xhr.status < 400) {
       if (success) { success(JSON.parse(xhr.responseText)); }
     } else {
-      if (error) { error(Error.fromJSON(JSON.parse(xhr.responseText))); }
+      if (error) {
+        error(JSON.parse(xhr.responseText));
+      }
     }
   };
   xhr.onerror = function() {
-    if (error) { error(Error.fromJSON(JSON.parse(xhr.responseText))); }
+    if (error) {
+      error(JSON.parse(xhr.responseText));
+    }
   };
 
   xhr.send(body);
@@ -55,7 +59,7 @@ export function deleteWithAuth(url: string, success?: (a: any) => void, error?: 
   const token = auth.getToken();
   if (token === null) {
     if (error) {
-      error(Error.notLoggedIn());
+      error(notLoggedIn());
     }
     return;
   }
@@ -67,11 +71,15 @@ export function deleteWithAuth(url: string, success?: (a: any) => void, error?: 
     if (xhr.status < 400) {
       if (success) { success(JSON.parse(xhr.responseText)); }
     } else {
-      if (error) { error(Error.fromJSON(JSON.parse(xhr.responseText))); }
+      if (error) {
+        error(JSON.parse(xhr.responseText));
+      }
     }
   };
   xhr.onerror = function() {
-    if (error) { error(Error.fromJSON(JSON.parse(xhr.responseText))); }
+    if (error) {
+      error(JSON.parse(xhr.responseText));
+    }
   };
 
   xhr.send();

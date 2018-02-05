@@ -25,11 +25,11 @@ export function login(username: string, password: string,
       localStorage.setItem("token", tokenObj.token);
       success(tokenObj);
     } else {
-      error(Error.fromJSON(JSON.parse(xhr.responseText)));
+      error(JSON.parse(xhr.responseText));
     }
   };
   xhr.onerror = function() {
-    error(Error.fromJSON(JSON.parse(xhr.responseText)));
+    error(JSON.parse(xhr.responseText));
   };
   xhr.send(JSON.stringify(data));
 }

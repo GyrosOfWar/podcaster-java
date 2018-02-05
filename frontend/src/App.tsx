@@ -63,7 +63,12 @@ class App extends React.Component<{}, AppState> {
 
   handleItemSelected(item: FeedItem) {
     this.setState({ selectedItem: item });
-    const pos = item.lastPosition.asSeconds();
+    let pos;
+    if (typeof item.lastPosition === "string") {
+      pos = moment.duration(item.lastPosition).asSeconds();
+    } else {
+      pos = item.lastPosition.asSeconds();
+    }
     const player = document.getElementById("player-audio") as HTMLAudioElement;
     if (player.currentTime !== pos) {
       player.currentTime = pos;
