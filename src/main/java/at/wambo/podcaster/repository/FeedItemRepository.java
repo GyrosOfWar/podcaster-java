@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Martin
@@ -23,4 +24,6 @@ public interface FeedItemRepository extends PagingAndSortingRepository<FeedItem,
     List<FeedItem> search(String query);
 
     List<FeedItem> findByFeedId(Integer id);
+
+    Optional<FeedItem> findById(Integer id);
 }

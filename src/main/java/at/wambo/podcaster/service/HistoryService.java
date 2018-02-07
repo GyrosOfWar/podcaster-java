@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class HistoryService {
     public Page<GroupedHistoryEntries> getGroupedHistory(User user, Pageable page) {
         Page<HistoryEntry> entries = getHistoryForUser(user, page);
-        Map<LocalDate, List<HistoryEntry>> grouped = entries.stream().collect(Collectors.groupingBy(e -> e.getTime().toLocalDate()));
+        Map<LocalDate, List<HistoryEntry>> grouped = entries.getContent().stream().collect(Collectors.groupingBy(e -> e.getTime().toLocalDate()));
 
         List<GroupedHistoryEntries> groupedEntries = new ArrayList<>();
         grouped.forEach((d, e) -> {
@@ -62,6 +62,6 @@ public class HistoryService {
     }
 
     public void deleteForFeed(Integer id) {
-        historyEntryRepository.deleteAll(historyEntryRepository.findByFeedItemFeedId(id));
+        historyEntryRepository.delete(historyEntryRepository.findByFeedItemFeedId(id));
     }
 }

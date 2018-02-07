@@ -15,7 +15,6 @@ import com.nimbusds.jwt.SignedJWT;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,9 +44,7 @@ public class AuthController {
     private final @NonNull UserRepository userRepository;
     private final @NonNull AuthenticationManager authenticationManager;
     private final @NonNull UserDetailsService userDetailsService;
-
-    @Value("${jwt.secret}")
-    private String secret;
+    private String secret = "asdasjdajskdajksdjaskjvkxjcjiweru23480i[lf";
 
     private String generateToken(UserDetails userDetails, byte[] secret) throws JOSEException {
         JWSSigner signer = new MACSigner(secret);

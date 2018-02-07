@@ -8,12 +8,11 @@ export function formatDuration(obj: moment.Duration | string): string {
   function pad(n: number): string {
     return n < 10 ? "0" + n : n.toString();
   }
-
   let duration;
-  if (typeof obj === "string") {
+  if (typeof duration === "string") {
     duration = moment.duration(obj);
   } else {
-    duration = obj;
+    duration = obj as moment.Duration;
   }
 
   const hr = duration.hours();

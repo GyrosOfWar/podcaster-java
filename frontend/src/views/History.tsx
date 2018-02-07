@@ -4,9 +4,9 @@ import Page from "../model/Page";
 import HistoryEntry from "../model/HistoryEntry";
 import Error from "../model/Error";
 //noinspection ES6UnusedImports
-import DateTimeComponent, { DisplayType } from "../common/DateTimeComponent";
-import { Link } from "react-router";
-import { Alert } from "reactstrap";
+import DateTimeComponent, {DisplayType} from "../common/DateTimeComponent";
+import {Link} from "react-router";
+import {Alert} from "reactstrap";
 import * as util from "../common/util";
 import * as moment from "moment";
 
@@ -30,7 +30,7 @@ class HistoryEntryView extends React.Component<HistoryEntryViewProps, {}> {
     return (
       <div>
         <Link to={`/app/podcasts/${feedId}/item/${itemId}`}>{entry.feedItem.title}</Link>&nbsp;
-        <small>{date}</small>
+        <small>{moment(date).format()}</small>
         <span className="float-right">{util.getFormattedElapsedTime(lastPosition, duration)}</span>
       </div>
     );
@@ -38,7 +38,7 @@ class HistoryEntryView extends React.Component<HistoryEntryViewProps, {}> {
 }
 
 interface GroupedHistoryEntry {
-  date: string;
+  date: Array<number>;
   entries: Array<HistoryEntry>;
 }
 
@@ -52,6 +52,10 @@ interface HistoryProps {
   history: any;
   // Router params
   params: any;
+}
+
+function formatDate(arr: Array<number>): string {
+  return moment(arr).format("YYYY-MM-DD");
 }
 
 export default class History extends React.Component<HistoryProps, HistoryState> {
@@ -91,7 +95,7 @@ export default class History extends React.Component<HistoryProps, HistoryState>
     entries.content.forEach(entry => {
       views.push((
         <div key={"group-" + i}>
-          <strong className="text-secondary">{entry.date}</strong>
+          <strong className="text-secondary">{formatDate(entry.date)}</strong>
           {entry.entries.map(e => <HistoryEntryView entry={e} key={e.id} />)}
         </div>
       ));

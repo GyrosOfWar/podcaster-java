@@ -19,12 +19,12 @@ export default interface FeedItem {
 }
 
 export function parseDates(item: FeedItem): void {
-  if (typeof item.duration === "number") {
-    item.duration = moment.duration(item.duration, "seconds");
+  if (typeof item.duration === "string") {
+    item.duration = moment.duration(item.duration);
   }
 
-  if (typeof item.lastPosition === "number") {
-    item.lastPosition = moment.duration(item.lastPosition, "seconds");
+  if (typeof item.lastPosition === "string") {
+    item.lastPosition = moment.duration(item.lastPosition);
   }
 
   if (typeof item.pubDate === "string") {

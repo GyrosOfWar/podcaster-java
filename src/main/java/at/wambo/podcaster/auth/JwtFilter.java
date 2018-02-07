@@ -7,7 +7,6 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.SignedJWT;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,9 +28,7 @@ import java.text.ParseException;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
-
-    @Value("${jwt.secret}")
-    private String secret;
+    private String secret = "asdasjdajskdajksdjaskjvkxjcjiweru23480i[lf";
 
     @Autowired
     public JwtFilter(UserDetailsService userDetailsService) {

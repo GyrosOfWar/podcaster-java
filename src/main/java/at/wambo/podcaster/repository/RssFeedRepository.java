@@ -8,6 +8,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Martin
@@ -21,4 +22,8 @@ public interface RssFeedRepository extends PagingAndSortingRepository<RssFeed, I
 
     @Query("from FeedItem i where i.feed = :feed and i.isFavorite = true")
     List<FeedItem> findFavoriteItems(@Param("feed") RssFeed feed);
+
+    Optional<RssFeed> findById(Integer id);
+
+    void deleteById(Integer id);
 }

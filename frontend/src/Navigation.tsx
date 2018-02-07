@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as auth from "./common/auth";
-import { Collapse, Nav, Navbar, NavbarToggler, NavItem } from "reactstrap";
-import { browserHistory, Link } from "react-router";
+import {Collapse, Nav, Navbar, NavbarToggler, NavItem} from "reactstrap";
+import {browserHistory, Link} from "react-router";
 
 interface SearchBoxProps {
 }
@@ -56,7 +56,7 @@ export default class Navigation extends React.Component<NavigationProps, Navigat
   render() {
     return (
       <div>
-        <Navbar light={true} color="primary" toggleable={true}>
+        <Navbar light={true} color="dark" toggleable={true}>
           <NavbarToggler right={true} onClick={this.toggle} />
           <Link className="navbar-brand" to="/app/">Podcaster</Link>
           <Collapse isOpen={this.state.isOpen} navbar={true}>

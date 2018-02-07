@@ -62,7 +62,7 @@ public class RssFeedController {
         if (result.isPresent()) {
             RssFeed feed = result.get();
             historyService.deleteForFeed(id);
-            feedItemRepository.deleteAll(feed.getItems());
+            feedItemRepository.delete(feed.getItems());
             feedRepository.deleteById(id);
             return "OK";
         } else {

@@ -4,6 +4,6 @@ import User from "./User";
 export default interface HistoryEntry {
   feedItem: FeedItem;
   user: User;
-  time: string;
+  time: number;
   id: number;
 }
