@@ -42,7 +42,7 @@ class PlayerProgress extends React.Component<ProgressProps, any> {
     return (
       <div className="progress-container ml-2" style={{ flex: "1" }}>
         <div
-          className="progress w-100"
+          className="progress w-100 h-50"
           onClick={this.progressBarClick}
         >
           <div

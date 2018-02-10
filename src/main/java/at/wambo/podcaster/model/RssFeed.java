@@ -39,12 +39,22 @@ public class RssFeed {
     @GeneratedValue
     @Id
     private int id;
+
+    @Column(nullable = false)
     private String feedUrl;
+
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private String imageUrl;
+
     @ManyToOne(targetEntity = User.class, optional = false)
     private User owner;
+
+    @Column(nullable = false)
     private String hashedImageUrl;
+
     @OneToMany(targetEntity = FeedItem.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @BatchSize(size = 20)
     @JsonIgnore

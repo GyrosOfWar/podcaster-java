@@ -4,9 +4,9 @@ import Page from "../model/Page";
 import HistoryEntry from "../model/HistoryEntry";
 import Error from "../model/Error";
 //noinspection ES6UnusedImports
-import DateTimeComponent, {DisplayType} from "../common/DateTimeComponent";
-import {Link} from "react-router";
-import {Alert} from "reactstrap";
+import DateTimeComponent, { DisplayType } from "../common/DateTimeComponent";
+import { Link } from "react-router";
+import { Alert } from "reactstrap";
 import * as util from "../common/util";
 import * as moment from "moment";
 

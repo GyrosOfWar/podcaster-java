@@ -1,7 +1,8 @@
 package at.wambo.podcaster.requests;
 
 import lombok.Data;
-import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.constraints.NotEmpty;
 
 /**
  * @author martin

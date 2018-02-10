@@ -1,6 +1,7 @@
 import User from "./User";
 import * as moment from "moment";
 import RssFeed from "./RssFeed";
+import Bookmark from "./Bookmark";
 
 export default interface FeedItem {
   id: number;
@@ -16,6 +17,7 @@ export default interface FeedItem {
   favorite: boolean;
   hashedImageUrl: string;
   feed: RssFeed;
+  bookmarks: Array<Bookmark>;
 }
 
 export function parseDates(item: FeedItem): void {

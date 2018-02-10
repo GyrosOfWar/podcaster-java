@@ -12,6 +12,7 @@ import javax.persistence.*;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -35,22 +36,44 @@ public class FeedItem {
     @GeneratedValue
     @Id
     private int id;
+
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private String link;
-    @Column(columnDefinition = "varchar")
+
+    @Column(columnDefinition = "varchar", nullable = false)
     private String description;
+
+    @Column(nullable = false)
     private String mp3Url;
+
+    @Column(nullable = false)
     private ZonedDateTime pubDate;
+
+    @Column(nullable = false)
     private Duration duration;
-    @ManyToOne(targetEntity = RssFeed.class)
+
+    @ManyToOne(targetEntity = RssFeed.class, optional = false)
     @JsonIgnoreProperties({"items", "owner"})
     private RssFeed feed;
+
+    @Column(nullable = false)
     private Duration lastPosition;
+
+    @Column(nullable = false)
     private String imageUrl;
-    @OneToOne(targetEntity = User.class)
+
+    @OneToOne(targetEntity = User.class, optional = false)
     private User owner;
+
+    @Column(nullable = false)
     private boolean isFavorite;
+
+    @Column(nullable = false)
     private String hashedImageUrl;
+
     @OneToMany(targetEntity = Bookmark.class)
     private List<Bookmark> bookmarks;
 
@@ -101,6 +124,7 @@ public class FeedItem {
         item.setImageUrl(imageUrl);
         String hash = DigestUtils.sha256Hex(imageUrl);
         item.setHashedImageUrl(hash);
+        item.setBookmarks(new ArrayList<>());
 
         return item;
     }

@@ -92,21 +92,21 @@ class App extends React.Component<{}, AppState> {
         itemClicked: this.handleItemSelected
       });
     });
-
     return (
-      <div id="main" className="container">
+      <div>
         <Navigation />
-        <div>
+        <main id="main" className="container">
           {auth.isLoggedIn() &&
-            <Player
-              callbackInterval={10}
-              callbackHandler={this.updateItem}
-              item={this.state.selectedItem}
-              itemChanged={this.itemChanged}
-            />}
+          <Player
+            callbackInterval={10}
+            callbackHandler={this.updateItem}
+            item={this.state.selectedItem}
+            itemChanged={this.itemChanged}
+          />
+          }
           {this.state.error && <Alert color="danger">{this.state.error.message}</Alert>}
           {children}
-        </div>
+        </main>
       </div>
     );
   }

@@ -16,9 +16,13 @@ public class Bookmark {
     @GeneratedValue
     @Id
     private int id;
-    private Duration duration;
-    @ManyToOne(targetEntity = User.class)
+
+    @Column(nullable = false)
+    private Duration position;
+
+    @ManyToOne(targetEntity = User.class, optional = false)
     private User user;
-    @ManyToOne(targetEntity = FeedItem.class)
+
+    @ManyToOne(targetEntity = FeedItem.class, optional = false)
     private FeedItem feedItem;
 }
