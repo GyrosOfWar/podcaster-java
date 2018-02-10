@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Date;
 
 /**
  * Created by martin on 18.11.16.
@@ -39,8 +40,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private boolean validateToken(UserDetails userDetails, JWT token) throws ParseException {
         User user = (User) userDetails;
+        Date now = new Date();
 
-        return user != null && token.getJWTClaimsSet().getSubject().equals(user.getUsername());
+        return user != null &&
+                token.getJWTClaimsSet().getSubject().equals(user.getUsername()) &&
+                token.getJWTClaimsSet().getExpirationTime().before(now);
     }
 
     private SignedJWT parseToken(String stringToken) {
