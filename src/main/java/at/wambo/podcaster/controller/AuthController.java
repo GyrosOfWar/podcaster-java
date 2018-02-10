@@ -40,7 +40,8 @@ import static at.wambo.podcaster.controller.UserController.PASSWORD_ENCODER;
 @RequestMapping(path = "/auth/")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthController {
-    public static final int JWT_DURATION = 12 * 60 * 60 * 1000;
+    // 1 week
+    private static final long JWT_DURATION_MS = 604_800 * 1000;
 
     private final @NonNull UserRepository userRepository;
     private final @NonNull AuthenticationManager authenticationManager;
@@ -55,7 +56,7 @@ public class AuthController {
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(userDetails.getUsername())
                 .issueTime(now)
-                .expirationTime(new Date(now.getTime() + JWT_DURATION))
+                .expirationTime(new Date(now.getTime() + JWT_DURATION_MS))
                 .issuer("podcaster")
                 .build();
         SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);

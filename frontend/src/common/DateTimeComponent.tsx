@@ -9,15 +9,16 @@ export enum DisplayType {
 }
 
 interface DateTimeComponentProps {
-  date: moment.Moment;
+  date: moment.Moment | string;
   type?: DisplayType;
 }
 
 export default class DateTimeComponent extends React.Component<DateTimeComponentProps, {}> {
   render() {
-    const date = this.props.date;
+    const date = typeof this.props.date === "string" ? moment(this.props.date) : this.props.date;
     const type = this.props.type;
     let fmt;
+    const long = date.format();
 
     switch (type) {
       case DisplayType.FromNow:
@@ -34,6 +35,6 @@ export default class DateTimeComponent extends React.Component<DateTimeComponent
         break;
     }
 
-    return <time title={date.format()} dateTime={date.format()}>{fmt}</time>;
+    return <time title={long} dateTime={long}>{fmt}</time>;
   }
 }

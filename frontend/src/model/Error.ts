@@ -10,3 +10,11 @@ export default interface Error {
 export function notLoggedIn(): Error {
   return { message: "Not logged in" };
 }
+
+export function parseError(text: string): Error {
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    return { message: text };
+  }
+}

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ajax from "../common/ajax";
 import Page from "../model/Page";
-import HistoryEntry from "../model/HistoryEntry";
+import HistoryEntry, { parseDates } from "../model/HistoryEntry";
 import Error from "../model/Error";
 //noinspection ES6UnusedImports
 import DateTimeComponent, { DisplayType } from "../common/DateTimeComponent";
@@ -30,7 +30,7 @@ class HistoryEntryView extends React.Component<HistoryEntryViewProps, {}> {
     return (
       <div>
         <Link to={`/app/podcasts/${feedId}/item/${itemId}`}>{entry.feedItem.title}</Link>&nbsp;
-        <small>{moment(date).format()}</small>
+        <small><DateTimeComponent date={date}/></small>
         <span className="float-right">{util.getFormattedElapsedTime(lastPosition, duration)}</span>
       </div>
     );
@@ -68,6 +68,7 @@ export default class History extends React.Component<HistoryProps, HistoryState>
     ajax.getWithAuth("/api/users/history/grouped",
       result => {
         const page = result as Page<GroupedHistoryEntry>;
+        page.content.forEach(e => e.entries.forEach(f => parseDates(f)));
         this.setState({
           entries: page
         });

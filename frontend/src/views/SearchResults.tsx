@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ajax from "../common/ajax";
 import Error from "../model/Error";
-import FeedItem from "../model/FeedItem";
+import FeedItem, { parseDates } from "../model/FeedItem";
 import { PodcastDetailsItem } from "./PodcastDetails";
 
 interface SearchResultsState {
@@ -19,9 +19,13 @@ export default class SearchResults extends React.Component<any, SearchResultsSta
 
   doSearch(query: string) {
     ajax.getWithAuth("/api/search?q=" + encodeURIComponent(query),
-      (results) => this.setState({
-        results
-      }),
+      (results) => {
+        const page = results as Array<FeedItem>;
+        page.forEach(e => parseDates(e));
+        this.setState({
+          results: page
+        });
+      },
       (error) => this.setState({ error: error }));
   }
 

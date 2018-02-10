@@ -30,7 +30,7 @@ export class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps,
     return (
       <div className="d-flex my-2">
         <img
-          className="pr-2 hidden-md-down"
+          className="pr-2 d-none d-md-block"
           src={util.getThumbnailUrl(item.hashedImageUrl, 120)}
           style={{ maxHeight: "120px" }}
         />

@@ -1,5 +1,5 @@
 import * as auth from "./auth";
-import Error, { notLoggedIn } from "../model/Error";
+import Error, { notLoggedIn, parseError } from "../model/Error";
 
 export function getWithAuth(url: string, success: (a: any) => void, error: (e: Error) => void) {
   const token = auth.getToken();
@@ -15,11 +15,11 @@ export function getWithAuth(url: string, success: (a: any) => void, error: (e: E
     if (xhr.status < 400) {
       success(JSON.parse(xhr.responseText));
     } else {
-      error(JSON.parse(xhr.responseText));
+      error(parseError(xhr.responseText));
     }
   };
   xhr.onerror = function() {
-    error(JSON.parse(xhr.responseText));
+    error(parseError(xhr.responseText));
   };
 
   xhr.send();
@@ -48,7 +48,7 @@ export function postWithAuth(url: string, body?: string, success?: (a: any) => v
   };
   xhr.onerror = function() {
     if (error) {
-      error(JSON.parse(xhr.responseText));
+      error(parseError(xhr.responseText));
     }
   };
 
@@ -72,13 +72,13 @@ export function deleteWithAuth(url: string, success?: (a: any) => void, error?: 
       if (success) { success(JSON.parse(xhr.responseText)); }
     } else {
       if (error) {
-        error(JSON.parse(xhr.responseText));
+        error(parseError(xhr.responseText));
       }
     }
   };
   xhr.onerror = function() {
     if (error) {
-      error(JSON.parse(xhr.responseText));
+      error(parseError(xhr.responseText));
     }
   };
 

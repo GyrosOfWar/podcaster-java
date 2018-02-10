@@ -27,7 +27,7 @@ class PodcastListItem extends React.Component<PodcastListItemProps, {}> {
 }
 
 interface PodcastListState {
-  items: Array<RssFeed>;
+  items?: Array<RssFeed>;
   error?: Error;
   user?: User;
 }
@@ -35,9 +35,7 @@ interface PodcastListState {
 export default class PodcastList extends React.Component<{}, PodcastListState> {
   constructor(props: {}) {
     super(props);
-    this.state = {
-      items: []
-    };
+    this.state = {};
 
     this.addPodcast = this.addPodcast.bind(this);
   }
@@ -67,7 +65,7 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
         undefined,
         result => {
           this.setState({
-            items: [...this.state.items, result]
+            items: [...this.state.items || [], result]
           });
         },
         error => {
@@ -80,8 +78,13 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
 
   render() {
     const user = this.state.user;
-    if (!user) {
-      return <p>Please wait...</p>;
+    const items = this.state.items;
+    if (!user || !items) {
+      if (this.state.error) {
+        return <Alert color="danger"><strong>Error:</strong> {this.state.error.message}</Alert>;
+      } else {
+        return <p>Please wait...</p>;
+      }
     }
 
     return (
@@ -92,7 +95,7 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
         </div>
         {this.state.error && <Alert color="danger"><strong>Error:</strong> {this.state.error.message}</Alert>}
         <div className="d-flex flex-row flex-wrap">
-          {this.state.items.map(item => <PodcastListItem key={item.id} feed={item} />)}
+          {this.state.items!!.map(item => <PodcastListItem key={item.id} feed={item} />)}
         </div>
       </div>
     );

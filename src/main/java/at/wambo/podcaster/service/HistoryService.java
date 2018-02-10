@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,6 +36,8 @@ public class HistoryService {
         grouped.forEach((d, e) -> {
             groupedEntries.add(new GroupedHistoryEntries(d, e));
         });
+        Comparator<GroupedHistoryEntries> comparator = Comparator.comparing(GroupedHistoryEntries::getDate);
+        groupedEntries.sort(comparator.reversed());
         return new PageImpl<>(groupedEntries, page, entries.getTotalElements());
     }
 

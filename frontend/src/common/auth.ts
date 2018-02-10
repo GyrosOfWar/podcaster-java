@@ -1,4 +1,4 @@
-import Error from "../model/Error";
+import Error, { parseError } from "../model/Error";
 
 export class Token {
   token: string;
@@ -25,11 +25,11 @@ export function login(username: string, password: string,
       localStorage.setItem("token", tokenObj.token);
       success(tokenObj);
     } else {
-      error(JSON.parse(xhr.responseText));
+      error(parseError(xhr.responseText));
     }
   };
   xhr.onerror = function() {
-    error(JSON.parse(xhr.responseText));
+    error(parseError(xhr.responseText));
   };
   xhr.send(JSON.stringify(data));
 }

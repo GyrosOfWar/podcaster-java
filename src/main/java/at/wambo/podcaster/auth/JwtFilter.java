@@ -44,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         return user != null &&
                 token.getJWTClaimsSet().getSubject().equals(user.getUsername()) &&
-                token.getJWTClaimsSet().getExpirationTime().before(now);
+                token.getJWTClaimsSet().getExpirationTime().after(now);
     }
 
     private SignedJWT parseToken(String stringToken) {
