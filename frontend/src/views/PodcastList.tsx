@@ -46,9 +46,12 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
         fetchWithAuth<Array<RssFeed>>("/api/feeds"),
         fetchWithAuth<User>("/api/users")
       ]);
-      this.setState({
-        items, user
-      });
+      const error = (items as any).message || (user as any).message;
+      if (error) {
+        this.setState({ error });
+      } else {
+        this.setState({ items, user });
+      }
     } catch (error) {
       this.setState({ error });
     }

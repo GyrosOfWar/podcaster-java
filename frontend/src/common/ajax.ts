@@ -17,7 +17,7 @@ export default function fetchWithAuth<T>(url: string, init?: RequestInit): Promi
       if (res.ok) {
         return res.json();
       } else {
-        return Promise.reject(res.statusText);
+        return Promise.reject({ message: res.statusText });
       }
     })
     .catch(err => parseError(err));
