@@ -1,7 +1,7 @@
 import * as React from "react";
 import RssFeed from "../model/RssFeed";
 import Error from "../model/Error";
-import * as ajax from "../common/ajax";
+import fetchWithAuth from "../common/ajax";
 import User from "../model/User";
 import * as util from "../common/util";
 import { capitalize } from "../common/util";
@@ -40,39 +40,35 @@ export default class PodcastList extends React.Component<{}, PodcastListState> {
     this.addPodcast = this.addPodcast.bind(this);
   }
 
-  componentDidMount() {
-    ajax.getWithAuth("/api/feeds",
-      items => {
-        this.setState({
-          items
-        });
-      },
-      error => this.setState({ error: error }));
-
-    ajax.getWithAuth("/api/users",
-      user => {
-        this.setState({
-          user
-        });
-      }, error => this.setState({ error: error }));
+  async componentDidMount() {
+    try {
+      const [items, user] = await Promise.all([
+        fetchWithAuth<Array<RssFeed>>("/api/feeds"),
+        fetchWithAuth<User>("/api/users")
+      ]);
+      this.setState({
+        items, user
+      });
+    } catch (error) {
+      this.setState({ error });
+    }
   }
 
-  addPodcast() {
+  async addPodcast() {
     // TODO replace with modal
-    const url = prompt("Enter URL:");
-    if (url) {
-      ajax.postWithAuth(`/api/feeds?url=${encodeURIComponent(url)}`,
-        undefined,
-        result => {
-          this.setState({
-            items: [...this.state.items || [], result]
-          });
-        },
-        error => {
-          this.setState({
-            error: error
-          });
+    const p = prompt("Enter URL:");
+    if (p) {
+      const url = p.trim();
+      try {
+        const newItem = await fetchWithAuth<RssFeed>(`/api/feeds?url=${encodeURIComponent(url)}`, {
+          method: "POST"
         });
+        this.setState({
+          items: [... this.state.items || [], newItem]
+        });
+      } catch (error) {
+        this.setState({ error });
+      }
     }
   }
 

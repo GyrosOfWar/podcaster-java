@@ -1,6 +1,6 @@
 import * as React from "react";
 import Error from "../model/Error";
-import * as ajax from "../common/ajax";
+import fetchWithAuth from "../common/ajax";
 import FeedItem, { parseDates } from "../model/FeedItem";
 import Page from "../model/Page";
 import Pagination from "../common/Pagination";
@@ -77,75 +77,60 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     this.refreshPodcast = this.refreshPodcast.bind(this);
     this.randomPodcast = this.randomPodcast.bind(this);
     this.deletePodcast = this.deletePodcast.bind(this);
+    this.fetchPodcasts = this.fetchPodcasts.bind(this);
   }
 
-  componentDidMount() {
-    const id = this.props.params.id;
-
-    ajax.getWithAuth(`/api/feeds/${id}/items?page=${this.state.currentPage}`,
-      response => {
-        const page = response as Page<FeedItem>;
-        page.content.forEach(item => parseDates(item));
-        this.setState({
-          items: page
-        });
-        document.title = page.content[0].feed.title;
-      },
-      error => {
-        this.setState({ error: error });
+  async fetchPodcasts(id: number, page: number) {
+    try {
+      const data = await fetchWithAuth<Page<FeedItem>>(`/api/feeds/${id}/items?page=${page}`);
+      data.content.forEach(item => parseDates(item));
+      this.setState({
+        items: data
       });
-
-    const itemId = this.props.params.itemId;
-    if (itemId) {
-      ajax.getWithAuth(`/api/feed_items/${itemId}`,
-        item => {
-          this.props.itemClicked(item);
-        },
-        error => {
-          this.setState({
-            error: error
-          });
-        });
+      document.title = data.content[0].feed.title;
+    } catch (error) {
+      this.setState({ error });
     }
   }
 
-  componentWillReceiveProps?(nextProps: Readonly<PodcastDetailsProps>): void {
+  async componentDidMount() {
+    const id = this.props.params.id;
+    await this.fetchPodcasts(id, this.state.currentPage);
+    const itemId = this.props.params.itemId;
+    if (itemId) {
+      try {
+        const item = await fetchWithAuth<FeedItem>(`/api/feed_items/${itemId}`);
+        this.props.itemClicked(item);
+      } catch (error) {
+        this.setState({ error });
+      }
+    }
+  }
+
+  async componentWillReceiveProps?(nextProps: Readonly<PodcastDetailsProps>) {
     if (nextProps.params === this.props.params) {
       return;
     }
-
     const id = nextProps.params.id;
-
-    ajax.getWithAuth(`/api/feeds/${id}/items?page=${nextProps.params.page}`,
-      response => {
-        const page = response as Page<FeedItem>;
-        page.content.forEach(i => parseDates(i));
-        this.setState({
-          items: page
-        });
-        document.title = response.content[0].feed.title;
-      },
-      error => {
-        this.setState({ error: error });
-      });
+    await this.fetchPodcasts(id, this.state.currentPage);
   }
 
-  refreshPodcast() {
+  async refreshPodcast() {
     this.setState({
       doingRefresh: true
     });
-    ajax.postWithAuth(`/api/feeds/${this.props.params.id}`,
-      undefined,
-      feeds => {
-        if (feeds.length === 0) {
-          this.setState({
-            info: "Feed has no new items."
-          });
-        }
-
+    try {
+      const newItems = await fetchWithAuth<Array<FeedItem>>(`/api/feeds/${this.props.params.id}`, {
+        method: "POST"
+      });
+      if (newItems.length === 0) {
+        this.setState({
+          info: "Feed has no new items"
+        });
+      } else {
         const oldItems = this.state.items;
         if (oldItems) {
-          const newContent = [...feeds, ...oldItems.content].slice(oldItems.size);
+          const newContent = [...newItems, ...oldItems.content].slice(oldItems.size);
           const newPage = Object.assign({}, oldItems, { content: newContent });
           this.setState({
             doingRefresh: false,
@@ -156,35 +141,38 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
             doingRefresh: false
           });
         }
-      },
-      error => {
-        this.setState({
-          error: error
-        });
+      }
+    } catch (error) {
+      this.setState({
+        error,
+        doingRefresh: false
       });
+    }
   }
 
-  randomPodcast() {
+  async randomPodcast() {
     const id = this.props.params.id;
-    ajax.getWithAuth(`/api/feeds/${id}/random`,
-      response => {
-        this.props.itemClicked(response);
-      },
-      error => {
-        this.setState({
-          error: error
-        });
-      });
+    try {
+      const feed = await fetchWithAuth<FeedItem>(`/api/feeds/${id}/random`);
+      this.props.itemClicked(feed);
+    } catch (error) {
+      this.setState({ error });
+    }
   }
 
-  deletePodcast() {
+  async deletePodcast() {
     if (confirm("Are you sure?")) {
       const items = this.state.items;
       if (items) {
-        const id = items.content[0].feed.id;
-        ajax.deleteWithAuth(`/api/feeds/${id}`, () => {
+        try {
+          const id = items.content[0].feed.id;
+          await fetchWithAuth(`/api/feeds/${id}`, {
+            method: "DELETE"
+          });
           this.props.history.push("/app");
-        });
+        } catch (error) {
+          this.setState({ error });
+        }
       }
     }
   }

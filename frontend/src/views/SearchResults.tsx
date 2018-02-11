@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as ajax from "../common/ajax";
+import fetchWithAuth from "../common/ajax";
 import Error from "../model/Error";
 import FeedItem, { parseDates } from "../model/FeedItem";
 import { PodcastDetailsItem } from "./PodcastDetails";
@@ -17,26 +17,25 @@ export default class SearchResults extends React.Component<any, SearchResultsSta
     this.doSearch = this.doSearch.bind(this);
   }
 
-  doSearch(query: string) {
-    ajax.getWithAuth("/api/search?q=" + encodeURIComponent(query),
-      (results) => {
-        const page = results as Array<FeedItem>;
-        page.forEach(e => parseDates(e));
-        this.setState({
-          results: page
-        });
-      },
-      (error) => this.setState({ error: error }));
+  async doSearch(query: string) {
+    const encoded = encodeURIComponent(query);
+    try {
+      const results = await fetchWithAuth<Array<FeedItem>>(`/api/search?q=${encoded}`);
+      results.forEach(e => parseDates(e));
+      this.setState({ results });
+    } catch (error) {
+      this.setState({ error });
+    }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const query = decodeURIComponent(this.props.location.query.q);
-    this.doSearch(query);
+    await this.doSearch(query);
   }
 
-  componentWillReceiveProps(nextProps: any) {
+  async componentWillReceiveProps(nextProps: any) {
     const query = decodeURIComponent(nextProps.location.query.q);
-    this.doSearch(query);
+    await this.doSearch(query);
   }
 
   render() {

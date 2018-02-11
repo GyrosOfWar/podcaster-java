@@ -8,7 +8,7 @@ import * as auth from "./common/auth";
 import PodcastDetails from "./views/PodcastDetails";
 import Player from "./player/Player";
 import FeedItem from "./model/FeedItem";
-import { postWithAuth } from "./common/ajax";
+import fetchWithAuth from "./common/ajax";
 import * as moment from "moment";
 import History from "./views/History";
 import Error from "./model/Error";
@@ -34,19 +34,18 @@ class App extends React.Component<{}, AppState> {
     this.itemChanged = this.itemChanged.bind(this);
   }
 
-  updateItem(item: FeedItem) {
-    postWithAuth(`/api/feed_items/${item.id}`,
-      JSON.stringify(item),
-      () => {
-        this.setState({
-          lastSync: moment()
-        });
-      },
-      error => {
-        this.setState({
-          error: error
-        });
+  async updateItem(item: FeedItem) {
+    try {
+      await fetchWithAuth(`/api/feed_items/${item.id}`, {
+        method: "POST",
+        body: JSON.stringify(item)
       });
+      this.setState({
+        lastSync: moment()
+      });
+    } catch (error) {
+      this.setState({ error });
+    }
   }
 
   searchCallback(query: string) {

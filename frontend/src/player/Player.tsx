@@ -2,7 +2,7 @@ import * as React from "react";
 import FeedItem from "../model/FeedItem";
 import * as moment from "moment";
 import { formatDuration } from "../common/util";
-import * as ajax from "../common/ajax";
+import fetchWithAuth from "../common/ajax";
 
 interface ProgressProps {
   played: moment.Duration;
@@ -200,14 +200,15 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
     this.player.currentTime += 10;
   }
 
-  favoriteItem() {
+  async favoriteItem() {
     if (this.props.item) {
       const isFav = !this.props.item.favorite;
       const item = Object.assign(this.props.item, { favorite: isFav });
-      ajax.postWithAuth(`/api/feed_items/${item.id}`,
-        JSON.stringify(item),
-        () => this.props.itemChanged(item)
-      );
+      await fetchWithAuth(`/api/feed_items/${item.id}`, {
+        method: "POST",
+        body: JSON.stringify(item)
+      });
+      this.props.itemChanged(item);
     }
   }
 

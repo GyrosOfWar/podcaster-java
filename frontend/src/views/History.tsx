@@ -1,10 +1,9 @@
 import * as React from "react";
-import * as ajax from "../common/ajax";
+import fetchWithAuth from "../common/ajax";
 import Page from "../model/Page";
 import HistoryEntry, { parseDates } from "../model/HistoryEntry";
 import Error from "../model/Error";
-//noinspection ES6UnusedImports
-import DateTimeComponent, { DisplayType } from "../common/DateTimeComponent";
+import DateTimeComponent from "../common/DateTimeComponent";
 import { Link } from "react-router";
 import { Alert } from "reactstrap";
 import * as util from "../common/util";
@@ -64,20 +63,16 @@ export default class History extends React.Component<HistoryProps, HistoryState>
     this.state = {};
   }
 
-  componentDidMount() {
-    ajax.getWithAuth("/api/users/history/grouped",
-      result => {
-        const page = result as Page<GroupedHistoryEntry>;
-        page.content.forEach(e => e.entries.forEach(f => parseDates(f)));
-        this.setState({
-          entries: page
-        });
-      },
-      error => {
-        this.setState({
-          error: error
-        });
+  async componentDidMount() {
+    try {
+      const page = await fetchWithAuth<Page<GroupedHistoryEntry>>("/api/users/history/grouped");
+      page.content.forEach(e => e.entries.forEach(f => parseDates(f)));
+      this.setState({
+        entries: page
       });
+    } catch (error) {
+      this.setState({ error });
+    }
   }
 
   render() {
