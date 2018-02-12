@@ -1,10 +1,10 @@
 import * as React from "react";
 import Error from "../model/Error";
 import fetchWithAuth from "../common/ajax";
-import FeedItem, { parseDates } from "../model/FeedItem";
+import FeedItem, {parseDates} from "../model/FeedItem";
 import Page from "../model/Page";
 import Pagination from "../common/Pagination";
-import { UncontrolledAlert } from "reactstrap";
+import {UncontrolledAlert} from "reactstrap";
 import * as util from "../common/util";
 import * as moment from "moment";
 
@@ -132,6 +132,7 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
         if (oldItems) {
           const newContent = [...newItems, ...oldItems.content].slice(oldItems.size);
           const newPage = Object.assign({}, oldItems, { content: newContent });
+          newPage.content.forEach(e => parseDates(e));
           this.setState({
             doingRefresh: false,
             items: newPage
