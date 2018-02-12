@@ -1,5 +1,5 @@
 import * as React from "react";
-import { browserHistory, IndexRedirect, IndexRoute, RedirectFunction, Route, Router, RouterState } from "react-router";
+import {browserHistory, IndexRedirect, IndexRoute, RedirectFunction, Route, Router, RouterState} from "react-router";
 import Login from "./auth/Login";
 import Logout from "./auth/Logout";
 import Navigation from "./Navigation";
@@ -12,7 +12,7 @@ import fetchWithAuth from "./common/ajax";
 import * as moment from "moment";
 import History from "./views/History";
 import Error from "./model/Error";
-import { Alert } from "reactstrap";
+import {Alert} from "reactstrap";
 import SearchResults from "./views/SearchResults";
 
 interface AppState {
@@ -136,10 +136,10 @@ class Routes extends React.Component<any, any> {
             <IndexRoute component={PodcastList} onEnter={requireAuth} />
             <Route path="login" component={Login} />
             <Route path="logout" component={Logout} />
-            <Route path="podcasts/:id/page/:page" component={PodcastDetails} />
-            <Route path="podcasts/:id/item/:itemId" component={PodcastDetails} />
-            <Route path="history" component={History} />
-            <Route path="search" component={SearchResults} />
+            <Route path="podcasts/:id/page/:page" component={PodcastDetails} onEnter={requireAuth} />
+            <Route path="podcasts/:id/item/:itemId" component={PodcastDetails} onEnter={requireAuth} />
+            <Route path="history" component={History} onEnter={requireAuth} />
+            <Route path="search" component={SearchResults} onEnter={requireAuth} />
           </Route>
         </Route>
         <Route path="*" component={NotFound} />
