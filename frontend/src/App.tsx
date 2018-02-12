@@ -1,5 +1,5 @@
 import * as React from "react";
-import {browserHistory, IndexRedirect, IndexRoute, RedirectFunction, Route, Router, RouterState} from "react-router";
+import { browserHistory, IndexRedirect, IndexRoute, RedirectFunction, Route, Router, RouterState } from "react-router";
 import Login from "./auth/Login";
 import Logout from "./auth/Logout";
 import Navigation from "./Navigation";
@@ -12,7 +12,7 @@ import fetchWithAuth from "./common/ajax";
 import * as moment from "moment";
 import History from "./views/History";
 import Error from "./model/Error";
-import {Alert} from "reactstrap";
+import { Alert } from "reactstrap";
 import SearchResults from "./views/SearchResults";
 
 interface AppState {
