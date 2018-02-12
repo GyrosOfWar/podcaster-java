@@ -23,6 +23,11 @@ jar {
     baseName = "podcaster-java"
     version = "0.0.1-SNAPSHOT"
 }
+
+bootJar {
+    launchScript()
+}
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
