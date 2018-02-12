@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -56,13 +57,13 @@ public class RssFeedController {
         }
     }
 
+    @Transactional
     @RequestMapping(path = "{id}", method = RequestMethod.DELETE)
     public String deleteFeed(@PathVariable Integer id) {
         Optional<RssFeed> result = feedRepository.findById(id);
         if (result.isPresent()) {
-            RssFeed feed = result.get();
             historyService.deleteForFeed(id);
-            feedItemRepository.deleteAll(feed.getItems());
+            feedItemRepository.deleteByFeedId(id);
             feedRepository.deleteById(id);
             return "OK";
         } else {

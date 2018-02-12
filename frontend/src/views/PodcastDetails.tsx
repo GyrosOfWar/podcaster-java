@@ -61,7 +61,7 @@ interface PodcastDetailsState {
 }
 
 interface PodcastDetailsProps {
-  history: any;
+  router: any;
   params: any;
   itemClicked: (item: FeedItem) => void;
 }
@@ -170,7 +170,7 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
           await fetchWithAuth(`/api/feeds/${id}`, {
             method: "DELETE"
           });
-          this.props.history.push("/app");
+          this.props.router.push("/app");
         } catch (error) {
           this.setState({ error });
         }

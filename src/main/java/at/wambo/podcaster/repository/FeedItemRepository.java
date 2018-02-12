@@ -26,4 +26,6 @@ public interface FeedItemRepository extends PagingAndSortingRepository<FeedItem,
     List<FeedItem> findByFeedId(Integer id);
 
     Optional<FeedItem> findById(Integer id);
+
+    void deleteByFeedId(Integer id);
 }
