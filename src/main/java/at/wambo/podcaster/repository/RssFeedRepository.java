@@ -20,8 +20,8 @@ public interface RssFeedRepository extends PagingAndSortingRepository<RssFeed, I
 
     List<RssFeed> findByHashedImageUrl(String hashedImageUrl);
 
-    @Query("from FeedItem i where i.feed = :feed and i.isFavorite = true")
-    List<FeedItem> findFavoriteItems(@Param("feed") RssFeed feed);
+    @Query("from FeedItem i where i.feed = :feedId and i.isFavorite = true")
+    List<FeedItem> findFavoriteItems(@Param("feedId") Integer feedId);
 
     Optional<RssFeed> findById(Integer id);
 

@@ -1,6 +1,9 @@
 package at.wambo.podcaster.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.Duration;
@@ -12,10 +15,12 @@ import java.time.Duration;
 @Data
 @Entity
 @Table(name = "bookmarks")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Bookmark {
     @GeneratedValue
     @Id
-    private int id;
+    private Integer id;
 
     @Column(nullable = false)
     private Duration position;
@@ -24,5 +29,6 @@ public class Bookmark {
     private User user;
 
     @ManyToOne(targetEntity = FeedItem.class, optional = false)
+    @JsonIgnoreProperties("bookmarks")
     private FeedItem feedItem;
 }

@@ -1,6 +1,9 @@
 package at.wambo.podcaster.controller;
 
+import at.wambo.podcaster.model.Bookmark;
 import at.wambo.podcaster.model.FeedItem;
+import at.wambo.podcaster.model.User;
+import at.wambo.podcaster.repository.BookmarkRepository;
 import at.wambo.podcaster.repository.FeedItemRepository;
 import at.wambo.podcaster.requests.ChangeFeedItemRequest;
 import at.wambo.podcaster.service.HistoryService;
@@ -12,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Optional;
 
 /**
@@ -25,6 +29,7 @@ public class FeedItemController {
     private final @NonNull FeedItemRepository feedItemRepository;
     private final @NonNull HistoryService historyService;
     private final @NonNull ObjectMapper objectMapper;
+    private final @NonNull BookmarkRepository bookmarkRepository;
 
     @RequestMapping(path = "{id}", method = RequestMethod.GET)
     public Optional<FeedItem> getFeedItem(@PathVariable Integer id) {
@@ -48,4 +53,14 @@ public class FeedItemController {
         return saved;
     }
 
+    @RequestMapping(path = "{item}/bookmark", method = RequestMethod.POST)
+    public Bookmark addBookmark(@PathVariable FeedItem item, @RequestParam("position") String positionString) {
+        User user = Util.getUser();
+        Duration position = Duration.parse(positionString);
+        Bookmark bookmark = new Bookmark(null, position, user, item);
+        Bookmark saved = bookmarkRepository.save(bookmark);
+        item.getBookmarks().add(saved);
+        feedItemRepository.save(item);
+        return saved;
+    }
 }

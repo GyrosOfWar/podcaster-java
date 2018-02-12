@@ -1,5 +1,6 @@
 package at.wambo.podcaster.controller;
 
+import at.wambo.podcaster.model.Bookmark;
 import at.wambo.podcaster.model.FeedItem;
 import at.wambo.podcaster.model.RssFeed;
 import at.wambo.podcaster.model.User;
@@ -98,8 +99,8 @@ public class RssFeedController {
         return feedItems.get(RANDOM.nextInt(feedItems.size()));
     }
 
-    @RequestMapping(path = "{feed}/favorites")
-    public List<FeedItem> favorites(@PathVariable RssFeed feed) {
-        return this.feedRepository.findFavoriteItems(feed);
+    @RequestMapping(path = "{feedId}/favorites")
+    public List<FeedItem> favorites(@PathVariable Integer feedId) {
+        return this.feedRepository.findFavoriteItems(feedId);
     }
 }
