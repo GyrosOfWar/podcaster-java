@@ -55,7 +55,6 @@ export class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps,
 interface PodcastDetailsState {
   items?: Page<FeedItem>;
   error?: Error;
-  currentPage: number;
   doingRefresh: boolean;
   info?: string;
 }
@@ -64,13 +63,13 @@ interface PodcastDetailsProps {
   router: any;
   params: any;
   itemClicked: (item: FeedItem) => void;
+  location: { query: any };
 }
 
 export default class PodcastDetails extends React.Component<PodcastDetailsProps, PodcastDetailsState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      currentPage: props.params.page,
       doingRefresh: false
     };
 
@@ -78,6 +77,10 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     this.randomPodcast = this.randomPodcast.bind(this);
     this.deletePodcast = this.deletePodcast.bind(this);
     this.fetchPodcasts = this.fetchPodcasts.bind(this);
+  }
+
+  getPage(props: PodcastDetailsProps = this.props): number {
+    return parseInt(props.location.query.page, 10) || 0;
   }
 
   async fetchPodcasts(id: number, page: number) {
@@ -95,7 +98,8 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
 
   async componentDidMount() {
     const id = this.props.params.id;
-    await this.fetchPodcasts(id, this.state.currentPage);
+    const page = this.getPage();
+    await this.fetchPodcasts(id, page);
     const itemId = this.props.params.itemId;
     if (itemId) {
       try {
@@ -108,11 +112,12 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
   }
 
   async componentWillReceiveProps?(nextProps: Readonly<PodcastDetailsProps>) {
-    if (nextProps.params === this.props.params) {
+    if (nextProps.params === this.props.params || this.props.location.query === nextProps.location.query) {
       return;
     }
     const id = nextProps.params.id;
-    await this.fetchPodcasts(id, this.state.currentPage);
+    const page = this.getPage(nextProps);
+    await this.fetchPodcasts(id, page);
   }
 
   async refreshPodcast() {
@@ -187,7 +192,7 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
       return <div>...</div>;
     }
     const id = this.props.params.id;
-    const page = parseInt(this.props.params.page, 10);
+    const page = this.getPage();
     let refreshClasses = "fa fa-spinner";
     if (this.state.doingRefresh) {
       refreshClasses += " fa-spin fa-fw";
@@ -211,8 +216,8 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
           <PodcastDetailsItem item={i} key={i.id} itemClicked={this.props.itemClicked} />)}
         <Pagination
           page={this.state.items}
-          nextLink={`/app/podcasts/${id}/page/${page + 1}`}
-          prevLink={`/app/podcasts/${id}/page/${page - 1}`}
+          nextLink={`/app/podcasts/${id}?page=${page + 1}`}
+          prevLink={`/app/podcasts/${id}?page=${page - 1}`}
         />
       </div>
     );

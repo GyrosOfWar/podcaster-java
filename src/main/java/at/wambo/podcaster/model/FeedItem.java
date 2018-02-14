@@ -25,9 +25,9 @@ import java.util.List;
 @Table(name = "feed_items")
 @ToString(exclude = "feed")
 @NamedNativeQuery(name = "FeedItem.search",
-        query = "SELECT *, ts_rank_cd(to_tsvector('english', title || ' ' || description), to_tsquery('english', ?1)) AS ranking " +
+        query = "SELECT *, ts_rank_cd(to_tsvector('english', title || ' ' || description), plainto_tsquery('english', ?1)) AS ranking " +
                 "FROM feed_items " +
-                "WHERE to_tsquery('english', ?1) @@ to_tsvector('english', title || ' ' || description) " +
+                "WHERE plainto_tsquery('english', ?1) @@ to_tsvector('english', title || ' ' || description) " +
                 "ORDER BY ranking DESC",
         resultClass = FeedItem.class)
 public class FeedItem {

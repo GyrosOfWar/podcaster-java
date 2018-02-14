@@ -1,8 +1,6 @@
 package at.wambo.podcaster.repository;
 
-import at.wambo.podcaster.model.Bookmark;
 import at.wambo.podcaster.model.FeedItem;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -22,8 +20,15 @@ public interface FeedItemRepository extends PagingAndSortingRepository<FeedItem,
 
     Page<FeedItem> findByFeedIdOrderByPubDateDesc(Integer feedId, Pageable pageable);
 
-    @Query(name = "FeedItem.search")
-    List<FeedItem> search(String query);
+    @Query(value = "SELECT *, ts_rank_cd(to_tsvector('english', title || ' ' || description), plainto_tsquery('english', ?1)) AS ranking " +
+                    "FROM feed_items " +
+                    "WHERE plainto_tsquery('english', ?1) @@ to_tsvector('english', title || ' ' || description) " +
+                    "ORDER BY ?#{#pageable}",
+            countQuery = "SELECT count(*) " +
+                    "FROM feed_items " +
+                    "WHERE plainto_tsquery('english', ?1) @@ to_tsvector('english', title || ' ' || description) ",
+            nativeQuery = true)
+    Page<FeedItem> search(String query, Pageable pageable);
 
     List<FeedItem> findByFeedId(Integer id);
 

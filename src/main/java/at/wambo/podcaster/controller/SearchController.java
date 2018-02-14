@@ -5,11 +5,11 @@ import at.wambo.podcaster.repository.FeedItemRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * Created by Martin on 16.03.2017.
@@ -21,7 +21,7 @@ public class SearchController {
     private final @NonNull FeedItemRepository feedItemRepository;
 
     @RequestMapping
-    public List<FeedItem> doSearch(@RequestParam("q") String query) {
-        return feedItemRepository.search(query);
+    public Page<FeedItem> doSearch(@RequestParam("q") String query, Pageable pageable) {
+        return feedItemRepository.search(query, pageable);
     }
 }

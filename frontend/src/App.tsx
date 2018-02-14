@@ -136,7 +136,7 @@ class Routes extends React.Component<any, any> {
             <IndexRoute component={PodcastList} onEnter={requireAuth} />
             <Route path="login" component={Login} />
             <Route path="logout" component={Logout} />
-            <Route path="podcasts/:id/page/:page" component={PodcastDetails} onEnter={requireAuth} />
+            <Route path="podcasts/:id" component={PodcastDetails} onEnter={requireAuth} />
             <Route path="podcasts/:id/item/:itemId" component={PodcastDetails} onEnter={requireAuth} />
             <Route path="history" component={History} onEnter={requireAuth} />
             <Route path="search" component={SearchResults} onEnter={requireAuth} />

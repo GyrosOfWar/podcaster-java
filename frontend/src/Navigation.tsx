@@ -20,6 +20,7 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
 
     this.onInput = this.onInput.bind(this);
     this.onSearch = this.onSearch.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
   }
 
   onSearch(event?: React.MouseEvent<HTMLButtonElement>) {

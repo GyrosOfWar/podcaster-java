@@ -17,7 +17,7 @@ class PodcastListItem extends React.Component<PodcastListItemProps, {}> {
     const item = this.props.feed;
     return (
       <div className="d-flex flex-column mx-1">
-        <Link to={`/app/podcasts/${item.id}/page/0`}>
+        <Link to={`/app/podcasts/${item.id}`}>
           <img src={util.getThumbnailUrl(item.hashedImageUrl, 300)} alt={item.title} />
         </Link>
         <p className="text-center figure-caption bigger">{item.title}</p>
