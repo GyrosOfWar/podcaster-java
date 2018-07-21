@@ -60,3 +60,8 @@ thumbnails
 .settings
 .vscode
 secret.properties
+
+# Eclipse/vscode
+.classpath
+.properties
+.project

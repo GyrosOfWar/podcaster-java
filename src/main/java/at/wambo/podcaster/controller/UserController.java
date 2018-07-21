@@ -5,8 +5,6 @@ import at.wambo.podcaster.model.User;
 import at.wambo.podcaster.service.HistoryService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserController {
     public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final @NonNull HistoryService historyEntryRepository;
 
     private User getUser() {

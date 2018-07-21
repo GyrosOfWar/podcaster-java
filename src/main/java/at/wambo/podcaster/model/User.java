@@ -21,6 +21,8 @@ import java.util.List;
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 @EqualsAndHashCode
 public class User implements UserDetails {
+    private static final long serialVersionUID = 1L;
+
     private static final GrantedAuthority AUTHORITY = (GrantedAuthority) () -> "USER";
 
     @GeneratedValue

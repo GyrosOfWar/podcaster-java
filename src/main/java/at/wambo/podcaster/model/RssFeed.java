@@ -10,8 +10,6 @@ import com.rometools.rome.io.XmlReader;
 import lombok.Data;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.hibernate.annotations.BatchSize;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import java.io.IOException;
@@ -34,8 +32,6 @@ import java.util.stream.Collectors;
         query = "SELECT * FROM feed_items WHERE feed_id = ?1 AND to_tsvector('english', title || ' ' || description) @@ to_tsquery(?2)",
         resultClass = FeedItem.class)
 public class RssFeed {
-    private static final Logger logger = LoggerFactory.getLogger(RssFeed.class);
-
     @GeneratedValue
     @Id
     private int id;

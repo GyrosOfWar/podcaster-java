@@ -1,6 +1,5 @@
 package at.wambo.podcaster.controller;
 
-import at.wambo.podcaster.model.Bookmark;
 import at.wambo.podcaster.model.FeedItem;
 import at.wambo.podcaster.model.RssFeed;
 import at.wambo.podcaster.model.User;
@@ -29,7 +28,6 @@ import java.util.Random;
 @RequestMapping(path = "/api/feeds")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RssFeedController {
-    private static final int MAX_COUNT = 30;
     private static final Random RANDOM = new Random();
 
     private final @NonNull RssFeedRepository feedRepository;

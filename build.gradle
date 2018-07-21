@@ -1,18 +1,18 @@
 buildscript {
     ext {
-        springBootVersion = "2.0.0.RC1"
+        springBootVersion = "2.0.3.RELEASE"
     }
     repositories {
         mavenCentral()
         maven { url 'http://repo.spring.io/milestone' }
     }
     dependencies {
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.0.0.RC1'
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.0.3.RELEASE'
     }
 }
 
 plugins {
-    id "com.github.ben-manes.versions" version "0.17.0"
+    id "com.github.ben-manes.versions" version "0.20.0"
 }
 
 apply plugin: 'java'
@@ -42,11 +42,11 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
 
-    compile("com.rometools:rome:1.9.0")
+    compile("com.rometools:rome:1.11.0")
     compile("commons-codec:commons-codec:1.11")
-    compile("org.projectlombok:lombok:1.16.20")
-    compile("com.nimbusds:nimbus-jose-jwt:5.4")
-    runtime("org.postgresql:postgresql:42.2.1")
+    compile("org.projectlombok:lombok:1.18.0")
+    compile("com.nimbusds:nimbus-jose-jwt:5.14")
+    runtime("org.postgresql:postgresql:42.2.4")
 
     testCompile("org.springframework.security:spring-security-test")
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
