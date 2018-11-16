@@ -1,5 +1,7 @@
 package at.wambo.podcaster.controller;
 
+import static at.wambo.podcaster.controller.UserController.PASSWORD_ENCODER;
+
 import at.wambo.podcaster.auth.JwtResponse;
 import at.wambo.podcaster.model.User;
 import at.wambo.podcaster.repository.UserRepository;
@@ -12,6 +14,8 @@ import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import java.util.ArrayList;
+import java.util.Date;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +32,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Date;
-
-import static at.wambo.podcaster.controller.UserController.PASSWORD_ENCODER;
-
 /**
  * Created by martin on 19.11.16.
  */
@@ -40,77 +39,82 @@ import static at.wambo.podcaster.controller.UserController.PASSWORD_ENCODER;
 @RequestMapping(path = "/auth/")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthController {
-    // 1 week
-    private static final long JWT_DURATION_MS = 604_800 * 1000;
 
-    private final @NonNull UserRepository userRepository;
-    private final @NonNull AuthenticationManager authenticationManager;
-    private final @NonNull UserDetailsService userDetailsService;
-    @Value("${jwt.secret}")
-    private String secret;
+  // 1 week
+  private static final long JWT_DURATION_MS = 604_800 * 1000;
 
-    private String generateToken(UserDetails userDetails, byte[] secret) throws JOSEException {
-        JWSSigner signer = new MACSigner(secret);
+  private final @NonNull
+  UserRepository userRepository;
+  private final @NonNull
+  AuthenticationManager authenticationManager;
+  private final @NonNull
+  UserDetailsService userDetailsService;
+  @Value("${jwt.secret}")
+  private String secret;
 
-        Date now = new Date();
-        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(userDetails.getUsername())
-                .issueTime(now)
-                .expirationTime(new Date(now.getTime() + JWT_DURATION_MS))
-                .issuer("podcaster")
-                .build();
-        SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
-        signedJWT.sign(signer);
-        return signedJWT.serialize();
+  private String generateToken(UserDetails userDetails, byte[] secret) throws JOSEException {
+    JWSSigner signer = new MACSigner(secret);
+
+    Date now = new Date();
+    JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+        .subject(userDetails.getUsername())
+        .issueTime(now)
+        .expirationTime(new Date(now.getTime() + JWT_DURATION_MS))
+        .issuer("podcaster")
+        .build();
+    SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
+    signedJWT.sign(signer);
+    return signedJWT.serialize();
+  }
+
+  private String validateRequest(CreateUserRequest request) {
+    if (request.hasNullValues()) {
+      return "Request has null values.";
     }
-
-    private String validateRequest(CreateUserRequest request) {
-        if (request.hasNullValues()) {
-            return "Request has null values.";
-        }
-        if (!request.getPassword().equals(request.getPasswordRepeated())) {
-            return "Passwords do not match!";
-        }
-        if (userRepository.findByName(request.getUsername()).isPresent()) {
-            return "User with this name already exists.";
-        }
-        return null;
+    if (!request.getPassword().equals(request.getPasswordRepeated())) {
+      return "Passwords do not match!";
     }
-
-    private User createAndPersist(CreateUserRequest request) {
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setName(request.getUsername());
-        user.setPwHash(PASSWORD_ENCODER.encode(request.getPassword()));
-        user.setHistory(new ArrayList<>());
-        return this.userRepository.save(user);
+    if (userRepository.findByName(request.getUsername()).isPresent()) {
+      return "User with this name already exists.";
     }
+    return null;
+  }
 
-    @RequestMapping(path = "register", method = RequestMethod.POST)
-    public ResponseEntity<?> register(@RequestBody CreateUserRequest request) {
-        String error = validateRequest(request);
-        if (error == null) {
-            return ResponseEntity.ok(createAndPersist(request));
-        } else {
-            return ResponseEntity.badRequest().body(error);
-        }
+  private User createAndPersist(CreateUserRequest request) {
+    User user = new User();
+    user.setEmail(request.getEmail());
+    user.setName(request.getUsername());
+    user.setPwHash(PASSWORD_ENCODER.encode(request.getPassword()));
+    user.setHistory(new ArrayList<>());
+    return this.userRepository.save(user);
+  }
+
+  @RequestMapping(path = "register", method = RequestMethod.POST)
+  public ResponseEntity<?> register(@RequestBody CreateUserRequest request) {
+    String error = validateRequest(request);
+    if (error == null) {
+      return ResponseEntity.ok(createAndPersist(request));
+    } else {
+      return ResponseEntity.badRequest().body(error);
     }
+  }
 
 
-    @RequestMapping(path = "token", method = RequestMethod.POST)
-    public JwtResponse getToken(@RequestBody LoginRequest loginRequest) throws JOSEException {
-        final Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+  @RequestMapping(path = "token", method = RequestMethod.POST)
+  public JwtResponse getToken(@RequestBody LoginRequest loginRequest) throws JOSEException {
+    final Authentication authentication = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(
+            loginRequest.getUsername(),
+            loginRequest.getPassword()
+        )
+    );
+    SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Reload password post-security so we can generate token
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-        final String token = generateToken(userDetails, secret.getBytes());
+    // Reload password post-security so we can generate token
+    final UserDetails userDetails = userDetailsService
+        .loadUserByUsername(loginRequest.getUsername());
+    final String token = generateToken(userDetails, secret.getBytes());
 
-        return new JwtResponse(token);
-    }
+    return new JwtResponse(token);
+  }
 }

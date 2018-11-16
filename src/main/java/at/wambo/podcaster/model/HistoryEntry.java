@@ -1,16 +1,19 @@
 package at.wambo.podcaster.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.time.ZonedDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.time.ZonedDateTime;
-
 /**
- * @author Martin
- *         02.12.2016
+ * @author Martin 02.12.2016
  */
 @Data
 @AllArgsConstructor
@@ -18,17 +21,18 @@ import java.time.ZonedDateTime;
 @Entity
 @Table(name = "history")
 public class HistoryEntry {
-    @OneToOne
-    private FeedItem feedItem;
 
-    @OneToOne
-    @JsonIgnoreProperties("history")
-    private User user;
+  @OneToOne
+  private FeedItem feedItem;
 
-    @Column(nullable = false)
-    private ZonedDateTime time;
+  @OneToOne
+  @JsonIgnoreProperties("history")
+  private User user;
 
-    @Id
-    @GeneratedValue
-    private int id;
+  @Column(nullable = false)
+  private ZonedDateTime time;
+
+  @Id
+  @GeneratedValue
+  private int id;
 }

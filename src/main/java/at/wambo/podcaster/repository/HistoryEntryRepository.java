@@ -9,14 +9,14 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 /**
- * @author Martin
- *         02.12.2016
+ * @author Martin 02.12.2016
  */
 public interface HistoryEntryRepository extends CrudRepository<HistoryEntry, Integer> {
-    @Query("from HistoryEntry h where h.user = :user order by h.time desc")
-    Page<HistoryEntry> getHistoryForUser(@Param("user") User user, Pageable page);
 
-    HistoryEntry findFirstByUserOrderByTimeDesc(User user);
+  @Query("from HistoryEntry h where h.user = :user order by h.time desc")
+  Page<HistoryEntry> getHistoryForUser(@Param("user") User user, Pageable page);
 
-    Iterable<HistoryEntry> findByFeedItemFeedId(Integer feedId);
+  HistoryEntry findFirstByUserOrderByTimeDesc(User user);
+
+  Iterable<HistoryEntry> findByFeedItemFeedId(Integer feedId);
 }

@@ -16,33 +16,34 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @author Martin
- *         13.08.2016
+ * @author Martin 13.08.2016
  */
 
 @RestController
 @RequestMapping(path = "/api/users")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserController {
-    public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
-    private final @NonNull HistoryService historyEntryRepository;
 
-    private User getUser() {
-        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
+  public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
+  private final @NonNull
+  HistoryService historyEntryRepository;
 
-    @RequestMapping(method = RequestMethod.GET)
-    public User getUserInfo() {
-        return getUser();
-    }
+  private User getUser() {
+    return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  }
 
-    @RequestMapping(path = "/history")
-    public Page<HistoryEntry> getHistoryForUser(Pageable page) {
-        return historyEntryRepository.getHistoryForUser(getUser(), page);
-    }
+  @RequestMapping(method = RequestMethod.GET)
+  public User getUserInfo() {
+    return getUser();
+  }
 
-    @RequestMapping(path = "/history/grouped")
-    public Page<HistoryService.GroupedHistoryEntries> groupedHistory(Pageable page) {
-        return historyEntryRepository.getGroupedHistory(getUser(), page);
-    }
+  @RequestMapping(path = "/history")
+  public Page<HistoryEntry> getHistoryForUser(Pageable page) {
+    return historyEntryRepository.getHistoryForUser(getUser(), page);
+  }
+
+  @RequestMapping(path = "/history/grouped")
+  public Page<HistoryService.GroupedHistoryEntries> groupedHistory(Pageable page) {
+    return historyEntryRepository.getGroupedHistory(getUser(), page);
+  }
 }

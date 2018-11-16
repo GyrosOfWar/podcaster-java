@@ -1,13 +1,13 @@
 buildscript {
     ext {
-        springBootVersion = "2.0.3.RELEASE"
+        springBootVersion = "2.1.0.RELEASE"
     }
     repositories {
         mavenCentral()
         maven { url 'http://repo.spring.io/milestone' }
     }
     dependencies {
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.0.3.RELEASE'
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE'
     }
 }
 
@@ -28,8 +28,8 @@ bootJar {
     launchScript()
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
 
 repositories {
     mavenCentral()

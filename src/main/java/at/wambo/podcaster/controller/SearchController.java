@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/search")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SearchController {
-    private final @NonNull FeedItemRepository feedItemRepository;
 
-    @RequestMapping
-    public Page<FeedItem> doSearch(@RequestParam("q") String query, Pageable pageable) {
-        return feedItemRepository.search(query, pageable);
-    }
+  private final @NonNull
+  FeedItemRepository feedItemRepository;
+
+  @RequestMapping
+  public Page<FeedItem> doSearch(@RequestParam("q") String query, Pageable pageable) {
+    return feedItemRepository.search(query, pageable);
+  }
 }

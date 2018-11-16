@@ -7,11 +7,6 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
-import lombok.Data;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.hibernate.annotations.BatchSize;
-
-import javax.persistence.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -20,100 +15,114 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import lombok.Data;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.hibernate.annotations.BatchSize;
 
 /**
- * @author Martin
- *         01.07.2016
+ * @author Martin 01.07.2016
  */
 @Data
 @Entity
 @Table(name = "feeds", uniqueConstraints = {@UniqueConstraint(columnNames = "feedUrl")})
 @NamedNativeQuery(name = "RssFeed.fullTextSearch",
-        query = "SELECT * FROM feed_items WHERE feed_id = ?1 AND to_tsvector('english', title || ' ' || description) @@ to_tsquery(?2)",
-        resultClass = FeedItem.class)
+    query = "SELECT * FROM feed_items WHERE feed_id = ?1 AND to_tsvector('english', title || ' ' || description) @@ to_tsquery(?2)",
+    resultClass = FeedItem.class)
 public class RssFeed {
-    @GeneratedValue
-    @Id
-    private int id;
 
-    @Column(nullable = false)
-    private String feedUrl;
+  @GeneratedValue
+  @Id
+  private int id;
 
-    @Column(nullable = false)
-    private String title;
+  @Column(nullable = false)
+  private String feedUrl;
 
-    @Column(nullable = false)
-    private String imageUrl;
+  @Column(nullable = false)
+  private String title;
 
-    @ManyToOne(targetEntity = User.class, optional = false)
-    private User owner;
+  @Column(nullable = false)
+  private String imageUrl;
 
-    @Column(nullable = false)
-    private String hashedImageUrl;
+  @ManyToOne(targetEntity = User.class, optional = false)
+  private User owner;
 
-    @OneToMany(targetEntity = FeedItem.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @BatchSize(size = 20)
-    @JsonIgnore
-    private List<FeedItem> items;
+  @Column(nullable = false)
+  private String hashedImageUrl;
 
-    public static RssFeed fromUrl(String urlString, User user) {
-        URL url;
-        try {
-            url = fixUrl(URLDecoder.decode(urlString, "UTF-8"));
-        } catch (UnsupportedEncodingException | MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+  @OneToMany(targetEntity = FeedItem.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @BatchSize(size = 20)
+  @JsonIgnore
+  private List<FeedItem> items;
 
-        SyndFeedInput input = new SyndFeedInput();
-        SyndFeed feed;
-        try {
-            feed = input.build(new XmlReader(url));
-        } catch (FeedException | IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        RssFeed f = new RssFeed();
-        String imageUrl = feed.getImage().getUrl();
-        f.setFeedUrl(url.toString());
-        f.setImageUrl(imageUrl);
-        f.setTitle(feed.getTitle());
-        List<FeedItem> items = feed.getEntries()
-                .stream()
-                .map(e -> FeedItem.fromEntry(f, e, user))
-                .collect(Collectors.toList());
-        f.setItems(items);
-        String hash = DigestUtils.sha256Hex(imageUrl);
-        f.setHashedImageUrl(hash);
-        f.setOwner(user);
-        return f;
+  public static RssFeed fromUrl(String urlString, User user) {
+    URL url;
+    try {
+      url = fixUrl(URLDecoder.decode(urlString, "UTF-8"));
+    } catch (UnsupportedEncodingException | MalformedURLException e) {
+      throw new RuntimeException(e);
     }
 
-    private static URL fixUrl(String url) throws MalformedURLException {
-        if (url.startsWith("http")) {
-            return new URL(url);
-        } else {
-            return new URL("http://" + url);
-        }
+    SyndFeedInput input = new SyndFeedInput();
+    SyndFeed feed;
+    try {
+      feed = input.build(new XmlReader(url));
+    } catch (FeedException | IOException e) {
+      throw new RuntimeException(e);
     }
 
-    public List<FeedItem> refresh(FeedItemRepository itemRepository, User user) {
-        SyndFeedInput input = new SyndFeedInput();
-        SyndFeed feed;
-        try {
-            feed = input.build(new XmlReader(new URL(this.feedUrl)));
-        } catch (FeedException | IOException e) {
-            throw new RuntimeException(e);
-        }
-        List<FeedItem> newItems = new ArrayList<>();
+    RssFeed f = new RssFeed();
+    String imageUrl = feed.getImage().getUrl();
+    f.setFeedUrl(url.toString());
+    f.setImageUrl(imageUrl);
+    f.setTitle(feed.getTitle());
+    List<FeedItem> items = feed.getEntries()
+        .stream()
+        .map(e -> FeedItem.fromEntry(f, e, user))
+        .collect(Collectors.toList());
+    f.setItems(items);
+    String hash = DigestUtils.sha256Hex(imageUrl);
+    f.setHashedImageUrl(hash);
+    f.setOwner(user);
+    return f;
+  }
 
-        for (SyndEntry entry : feed.getEntries()) {
-            FeedItem item = itemRepository.findByLink(entry.getLink());
-            if (item == null) {
-                item = FeedItem.fromEntry(this, entry, user);
-                itemRepository.save(item);
-                newItems.add(item);
-            }
-        }
-        return newItems;
+  private static URL fixUrl(String url) throws MalformedURLException {
+    if (url.startsWith("http")) {
+      return new URL(url);
+    } else {
+      return new URL("http://" + url);
     }
+  }
+
+  public List<FeedItem> refresh(FeedItemRepository itemRepository, User user) {
+    SyndFeedInput input = new SyndFeedInput();
+    SyndFeed feed;
+    try {
+      feed = input.build(new XmlReader(new URL(this.feedUrl)));
+    } catch (FeedException | IOException e) {
+      throw new RuntimeException(e);
+    }
+    List<FeedItem> newItems = new ArrayList<>();
+
+    for (SyndEntry entry : feed.getEntries()) {
+      FeedItem item = itemRepository.findByLink(entry.getLink());
+      if (item == null) {
+        item = FeedItem.fromEntry(this, entry, user);
+        itemRepository.save(item);
+        newItems.add(item);
+      }
+    }
+    return newItems;
+  }
 }

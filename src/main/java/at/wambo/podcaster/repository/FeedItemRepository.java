@@ -1,38 +1,40 @@
 package at.wambo.podcaster.repository;
 
 import at.wambo.podcaster.model.FeedItem;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import java.util.List;
-import java.util.Optional;
-
 /**
- * @author Martin
- *         01.07.2016
+ * @author Martin 01.07.2016
  */
 public interface FeedItemRepository extends PagingAndSortingRepository<FeedItem, Integer> {
-    FeedItem findByLink(String link);
 
-    List<FeedItem> findByHashedImageUrl(String hashedImageUrl);
+  FeedItem findByLink(String link);
 
-    Page<FeedItem> findByFeedIdOrderByPubDateDesc(Integer feedId, Pageable pageable);
+  List<FeedItem> findByHashedImageUrl(String hashedImageUrl);
 
-    @Query(value = "SELECT *, ts_rank_cd(to_tsvector('english', title || ' ' || description), plainto_tsquery('english', ?1)) AS ranking " +
-                    "FROM feed_items " +
-                    "WHERE plainto_tsquery('english', ?1) @@ to_tsvector('english', title || ' ' || description) " +
-                    "ORDER BY ?#{#pageable}",
-            countQuery = "SELECT count(*) " +
-                    "FROM feed_items " +
-                    "WHERE plainto_tsquery('english', ?1) @@ to_tsvector('english', title || ' ' || description) ",
-            nativeQuery = true)
-    Page<FeedItem> search(String query, Pageable pageable);
+  Page<FeedItem> findByFeedIdOrderByPubDateDesc(Integer feedId, Pageable pageable);
 
-    List<FeedItem> findByFeedId(Integer id);
+  @Query(value =
+      "SELECT *, ts_rank_cd(to_tsvector('english', title || ' ' || description), plainto_tsquery('english', ?1)) AS ranking "
+          +
+          "FROM feed_items " +
+          "WHERE plainto_tsquery('english', ?1) @@ to_tsvector('english', title || ' ' || description) "
+          +
+          "ORDER BY ?#{#pageable}",
+      countQuery = "SELECT count(*) " +
+          "FROM feed_items " +
+          "WHERE plainto_tsquery('english', ?1) @@ to_tsvector('english', title || ' ' || description) ",
+      nativeQuery = true)
+  Page<FeedItem> search(String query, Pageable pageable);
 
-    Optional<FeedItem> findById(Integer id);
+  List<FeedItem> findByFeedId(Integer id);
 
-    void deleteByFeedId(Integer id);
+  Optional<FeedItem> findById(Integer id);
+
+  void deleteByFeedId(Integer id);
 }

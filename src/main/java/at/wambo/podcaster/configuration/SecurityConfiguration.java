@@ -19,80 +19,82 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * @author Martin
- *         13.08.2016
+ * @author Martin 13.08.2016
  */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-    private final JwtAuthenticationEntryPoint unauthorizedHandler;
-    private final UserDetailsService userDetailsService;
-    private final JwtFilter jwtFilter;
 
-    @Autowired
-    public SecurityConfiguration(JwtAuthenticationEntryPoint unauthorizedHandler, UserDetailsService userDetailsService, JwtFilter jwtFilter) {
-        this.unauthorizedHandler = unauthorizedHandler;
-        this.userDetailsService = userDetailsService;
-        this.jwtFilter = jwtFilter;
-    }
+  private final JwtAuthenticationEntryPoint unauthorizedHandler;
+  private final UserDetailsService userDetailsService;
+  private final JwtFilter jwtFilter;
 
-    @Autowired
-    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder
-                .userDetailsService(this.userDetailsService)
-                .passwordEncoder(passwordEncoder());
-    }
+  @Autowired
+  public SecurityConfiguration(JwtAuthenticationEntryPoint unauthorizedHandler,
+      UserDetailsService userDetailsService, JwtFilter jwtFilter) {
+    this.unauthorizedHandler = unauthorizedHandler;
+    this.userDetailsService = userDetailsService;
+    this.jwtFilter = jwtFilter;
+  }
 
-    @Bean(name = "authenticationManager")
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+  @Autowired
+  public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder)
+      throws Exception {
+    authenticationManagerBuilder
+        .userDetailsService(this.userDetailsService)
+        .passwordEncoder(passwordEncoder());
+  }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean(name = "authenticationManager")
+  @Override
+  public AuthenticationManager authenticationManagerBean() throws Exception {
+    return super.authenticationManagerBean();
+  }
 
-    @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-                // we don't need CSRF because our token is invulnerable
-                .csrf().disable()
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+  @Override
+  protected void configure(HttpSecurity httpSecurity) throws Exception {
+    httpSecurity
+        // we don't need CSRF because our token is invulnerable
+        .csrf().disable()
 
-                // don't create session
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+        .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 
-                .authorizeRequests()
-                // allow anonymous resource requests
-                .antMatchers(
-                        HttpMethod.GET,
-                        "/",
-                        "/*.html",
-                        "/favicon.ico",
-                        "/**/*.html",
-                        "/**/*.css",
-                        "/**/*.js",
-                        "/**/*.woff",
-                        "/**/*.eot",
-                        "/**/*.ttf",
-                        "/**/*.svg",
-                        "/**/*.woff2",
-                        "/api/images/**",
-                        "/app/**",
-                        "/manifest.json"
-                ).permitAll()
-                .antMatchers("/auth/**").permitAll()
-                .anyRequest().authenticated();
+        // don't create session
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
-        // Custom JWT based security filter
-        httpSecurity
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        .authorizeRequests()
+        // allow anonymous resource requests
+        .antMatchers(
+            HttpMethod.GET,
+            "/",
+            "/*.html",
+            "/favicon.ico",
+            "/**/*.html",
+            "/**/*.css",
+            "/**/*.js",
+            "/**/*.woff",
+            "/**/*.eot",
+            "/**/*.ttf",
+            "/**/*.svg",
+            "/**/*.woff2",
+            "/api/images/**",
+            "/app/**",
+            "/manifest.json"
+        ).permitAll()
+        .antMatchers("/auth/**").permitAll()
+        .anyRequest().authenticated();
 
-        // disable page caching
-        httpSecurity.headers().cacheControl();
-    }
+    // Custom JWT based security filter
+    httpSecurity
+        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+    // disable page caching
+    httpSecurity.headers().cacheControl();
+  }
 }

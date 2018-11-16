@@ -1,16 +1,19 @@
 package at.wambo.podcaster.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.time.Duration;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.time.Duration;
-
 /**
- * @author Martin
- *         26.06.2017
+ * @author Martin 26.06.2017
  */
 @Data
 @Entity
@@ -18,17 +21,18 @@ import java.time.Duration;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Bookmark {
-    @GeneratedValue
-    @Id
-    private Integer id;
 
-    @Column(nullable = false)
-    private Duration position;
+  @GeneratedValue
+  @Id
+  private Integer id;
 
-    @ManyToOne(targetEntity = User.class, optional = false)
-    private User user;
+  @Column(nullable = false)
+  private Duration position;
 
-    @ManyToOne(targetEntity = FeedItem.class, optional = false)
-    @JsonIgnoreProperties("bookmarks")
-    private FeedItem feedItem;
+  @ManyToOne(targetEntity = User.class, optional = false)
+  private User user;
+
+  @ManyToOne(targetEntity = FeedItem.class, optional = false)
+  @JsonIgnoreProperties("bookmarks")
+  private FeedItem feedItem;
 }
