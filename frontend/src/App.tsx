@@ -120,11 +120,7 @@ function requireAuth(nextState: RouterState, replace: RedirectFunction) {
   }
 }
 
-class NotFound extends React.Component<any, any> {
-  render() {
-    return <p>404 Not Found</p>;
-  }
-}
+const NotFound = () => <p>Resource not found (404)</p>;
 
 class Routes extends React.Component<any, any> {
   render() {
