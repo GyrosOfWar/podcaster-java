@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-import org.apache.commons.codec.digest.DigestUtils;
+import at.wambo.podcaster.model.RssFeed;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,16 +27,14 @@ public class ImageCacheControllerTests {
 
   private static final String PASSWORD = "test";
   private static final String USERNAME = "testImg";
-  private static final String RSS_URL = DigestUtils.sha256Hex(
-      "http://static.giantbomb.com/uploads/original/11/110673/2894068-3836779617-28773.png");
-  private static final String ITEM_URL = DigestUtils
-      .sha256Hex("http://static.giantbomb.com/uploads/original/0/31/2878095-1216252340-theod.jpg");
 
   private MockMvc mvc;
   @Autowired
   private WebApplicationContext context;
 
   private String token;
+  private int feedId;
+  private int feedItemId;
 
   @Before
   public void before() throws Exception {
@@ -46,12 +44,14 @@ public class ImageCacheControllerTests {
         .build();
     TestUtil.registerUser(this.mvc, USERNAME, PASSWORD);
     this.token = TestUtil.getToken(this.mvc, USERNAME, PASSWORD);
-    TestUtil.addPodcast(this.mvc, this.token, RssFeedControllerTests.FEED_URL);
+    RssFeed feed = TestUtil.addPodcast(this.mvc, this.token, RssFeedControllerTests.FEED_URL);
+    this.feedId = feed.getId();
+    this.feedItemId = feed.getItems().get(0).getId();
   }
 
   @Test
   public void testFeedImage() throws Exception {
-    String url = "/api/images/" + RSS_URL;
+    String url = "/api/images/feed/" + feedId;
     MvcResult result = this.mvc.perform(get(url)
         .param("size", "150")
         .header("Authorization", "Bearer " + token))
@@ -62,7 +62,7 @@ public class ImageCacheControllerTests {
 
   @Test
   public void testItemImage() throws Exception {
-    String url = "/api/images/" + ITEM_URL;
+    String url = "/api/images/feed_items/" + feedItemId;
     MvcResult result = this.mvc.perform(get(url)
         .param("size", "350")
         .header("Authorization", "Bearer " + token))

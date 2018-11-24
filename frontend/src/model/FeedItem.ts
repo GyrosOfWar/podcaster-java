@@ -15,9 +15,9 @@ export default interface FeedItem {
   lastPosition: moment.Duration | string;
   owner: User;
   favorite: boolean;
-  hashedImageUrl: string;
   feed: RssFeed;
   bookmarks: Array<Bookmark>;
+  guid: string;
 }
 
 export function parseDates(item: FeedItem): void {

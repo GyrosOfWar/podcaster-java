@@ -107,7 +107,9 @@ export default class Navigation extends React.Component<NavigationProps, Navigat
                   <Link className="nav-link" to="/app/login">Login</Link>}
               </NavItem>
             </Nav>
-            <SearchBox />
+            {auth.isLoggedIn() &&
+              <SearchBox/>
+            }
           </Collapse>
         </Navbar>
       </div>

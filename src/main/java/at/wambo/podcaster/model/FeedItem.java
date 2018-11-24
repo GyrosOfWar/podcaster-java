@@ -18,9 +18,9 @@ import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.ToString;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.jdom2.Element;
 
 /**
@@ -28,7 +28,9 @@ import org.jdom2.Element;
  */
 @Data
 @Entity
-@Table(name = "feed_items")
+@Table(name = "feed_items", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"guid", "feed_id"})
+})
 @ToString(exclude = "feed")
 @NamedNativeQuery(name = "FeedItem.search",
     query =
@@ -81,13 +83,13 @@ public class FeedItem {
   @Column(nullable = false)
   private boolean isFavorite;
 
-  @Column(nullable = false)
-  private String hashedImageUrl;
+  @Column
+  private String guid;
 
   @OneToMany(targetEntity = Bookmark.class)
   private List<Bookmark> bookmarks;
 
-  static FeedItem fromEntry(RssFeed feed, SyndEntry entry, User owner) {
+  public static FeedItem fromEntry(RssFeed feed, SyndEntry entry, User owner) {
     FeedItem item = new FeedItem();
     item.setTitle(entry.getTitle());
     item.setLink(entry.getLink());
@@ -132,9 +134,8 @@ public class FeedItem {
 
     }
     item.setImageUrl(imageUrl);
-    String hash = DigestUtils.sha256Hex(imageUrl);
-    item.setHashedImageUrl(hash);
     item.setBookmarks(new ArrayList<>());
+    item.setGuid(entry.getUri());
 
     return item;
   }

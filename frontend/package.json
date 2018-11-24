@@ -7,17 +7,17 @@
     "typescript": "^3.1.6"
   },
   "dependencies": {
-    "@types/react": "^16.0.36",
-    "@types/react-dom": "^16.0.3",
+    "@types/react": "^16.7.7",
+    "@types/react-dom": "^16.0.10",
     "@types/react-router": "^3.0.14",
-    "@types/reactstrap": "^6.0.0",
+    "@types/reactstrap": "^6.4.2",
     "font-awesome": "^4.7.0",
     "moment": "^2.20.1",
-    "react": "^16.4.0",
-    "react-dom": "^16.4.0",
-    "react-router": "^3.2.0",
-    "react-transition-group": "^2.2.1",
-    "reactstrap": "^6.3.0"
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "react-router": "^3.2.1",
+    "react-transition-group": "^2.5.0",
+    "reactstrap": "^6.5.0"
   },
   "scripts": {
     "start": "react-scripts-ts start",

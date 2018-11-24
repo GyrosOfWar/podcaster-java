@@ -25,6 +25,6 @@ export function getFormattedElapsedTime(lastPosition: moment.Duration | string, 
   return `${formatDuration(lastPosition)} / ${formatDuration(duration)}`;
 }
 
-export function getThumbnailUrl(hash: string, size: number): string {
-  return "/api/images/" + hash + "?size=" + size;
+export function getThumbnailUrl(id: number, type: string, size: number): string {
+  return "/api/images/" + type + "/" + id + "?size=" + size;
 }

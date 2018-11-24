@@ -31,7 +31,7 @@ export class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps,
       <div className="d-flex my-2">
         <img
           className="pr-2 d-none d-md-block"
-          src={util.getThumbnailUrl(item.hashedImageUrl, 120)}
+          src={util.getThumbnailUrl(item.id, "feed_items", 120)}
           style={{ maxHeight: "120px" }}
         />
         <div className="d-flex flex-column">
@@ -90,7 +90,8 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
       this.setState({
         items: data
       });
-      document.title = data.content[0].feed.title;
+      const firstItem = data.content[0];
+      document.title = firstItem ? firstItem.title : "Podcaster";
     } catch (error) {
       this.setState({ error });
     }
@@ -135,7 +136,8 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
       } else {
         const oldItems = this.state.items;
         if (oldItems) {
-          const newContent = [...newItems, ...oldItems.content].slice(oldItems.size);
+          const len = Math.max(oldItems.content.length, newItems.length);
+          const newContent = newItems.concat(oldItems.content).slice(0, len);
           const newPage = Object.assign({}, oldItems, { content: newContent });
           newPage.content.forEach(e => parseDates(e));
           this.setState({

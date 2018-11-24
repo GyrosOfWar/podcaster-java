@@ -38,6 +38,7 @@ public class UserControllerTests {
 
   @Before
   public void setup() {
+
     this.mvc = MockMvcBuilders
         .webAppContextSetup(this.context)
         .apply(springSecurity())

@@ -7,11 +7,9 @@ import at.wambo.podcaster.repository.BookmarkRepository;
 import at.wambo.podcaster.repository.FeedItemRepository;
 import at.wambo.podcaster.requests.ChangeFeedItemRequest;
 import at.wambo.podcaster.service.HistoryService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Optional;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,14 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FeedItemController {
 
-  private final @NonNull
-  FeedItemRepository feedItemRepository;
-  private final @NonNull
-  HistoryService historyService;
-  private final @NonNull
-  ObjectMapper objectMapper;
-  private final @NonNull
-  BookmarkRepository bookmarkRepository;
+  private final FeedItemRepository feedItemRepository;
+  private final HistoryService historyService;
+  private final BookmarkRepository bookmarkRepository;
 
   @RequestMapping(path = "{id}", method = RequestMethod.GET)
   public Optional<FeedItem> getFeedItem(@PathVariable Integer id) {
@@ -45,14 +38,11 @@ public class FeedItemController {
   }
 
   @RequestMapping(path = "{id}", method = RequestMethod.POST, consumes = "application/json")
-  public FeedItem postFeedItem(@PathVariable Integer id, @RequestBody String data,
-      @AuthenticationPrincipal User user) throws IOException {
-    Optional<FeedItem> existing = this.feedItemRepository.findById(id);
-    if (!existing.isPresent()) {
-      throw new IllegalArgumentException("Item does not exist");
-    }
-    FeedItem item = existing.get();
-    ChangeFeedItemRequest request = objectMapper.readValue(data, ChangeFeedItemRequest.class);
+  public FeedItem postFeedItem(@PathVariable Integer id, @RequestBody ChangeFeedItemRequest request,
+      @AuthenticationPrincipal User user) {
+    FeedItem item = this.feedItemRepository.findById(id).orElseThrow(
+        () -> new IllegalArgumentException("Item does not exist")
+    );
 
     item.setFavorite(request.isFavorite());
     item.setLastPosition(request.getLastPosition());

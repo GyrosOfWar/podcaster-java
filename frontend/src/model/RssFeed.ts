@@ -8,5 +8,4 @@ export default interface RssFeed {
   imageUrl: string;
   owner: User;
   items: Array<FeedItem>;
-  hashedImageUrl: string;
 }

@@ -2,7 +2,6 @@ package at.wambo.podcaster.controller;
 
 import at.wambo.podcaster.model.FeedItem;
 import at.wambo.podcaster.repository.FeedItemRepository;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,8 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SearchController {
 
-  private final @NonNull
-  FeedItemRepository feedItemRepository;
+  private final FeedItemRepository feedItemRepository;
 
   @RequestMapping
   public Page<FeedItem> doSearch(@RequestParam("q") String query, Pageable pageable) {

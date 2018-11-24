@@ -83,7 +83,7 @@ enum State {
 }
 
 export default class Player extends React.Component<PlayerProps, PlayerState> {
-  player: HTMLAudioElement;
+  player?: HTMLAudioElement;
   timePlayedInterval?: number;
   callbackInterval?: number;
 
@@ -114,24 +114,24 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
 
   forceRefresh() {
     if (this.props.item) {
-      this.props.item.lastPosition = moment.duration(Math.round(this.player.currentTime), "seconds");
+      this.props.item.lastPosition = moment.duration(Math.round(this.player!.currentTime), "seconds");
       this.props.callbackHandler(this.props.item);
     }
   }
 
   play(): State {
-    this.player.play();
+    this.player!.play();
     this.timePlayedInterval = window.setInterval(
       () => {
         this.setState({
-          played: this.player.currentTime
+          played: this.player!.currentTime
         });
       },
       1000);
 
     this.callbackInterval = window.setInterval(() => {
       if (this.props.item) {
-        this.props.item.lastPosition = moment.duration(Math.round(this.player.currentTime), "seconds");
+        this.props.item.lastPosition = moment.duration(Math.round(this.player!.currentTime), "seconds");
         this.props.callbackHandler(this.props.item);
       } else {
         throw Error("Missing item");
@@ -149,7 +149,7 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
       window.clearInterval(this.callbackInterval);
     }
 
-    this.player.pause();
+    this.player!.pause();
     return State.Paused;
   }
 
@@ -181,7 +181,7 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
 
   onCanPlay() {
     if (this.props.loadFinishedCallback) {
-      this.props.loadFinishedCallback(this.player);
+      this.props.loadFinishedCallback(this.player!);
     }
     this.setState({
       state: State.LoadFinished
@@ -189,15 +189,15 @@ export default class Player extends React.Component<PlayerProps, PlayerState> {
   }
 
   seek(percent: number) {
-    this.player.currentTime = this.player.duration * percent;
+    this.player!.currentTime = this.player!.duration * percent;
   }
 
   onStepBack() {
-    this.player.currentTime -= 10;
+    this.player!.currentTime -= 10;
   }
 
   onStepForward() {
-    this.player.currentTime += 10;
+    this.player!.currentTime += 10;
   }
 
   async favoriteItem() {

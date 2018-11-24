@@ -13,10 +13,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  */
 public interface FeedItemRepository extends PagingAndSortingRepository<FeedItem, Integer> {
 
-  FeedItem findByLink(String link);
-
-  List<FeedItem> findByHashedImageUrl(String hashedImageUrl);
-
   Page<FeedItem> findByFeedIdOrderByPubDateDesc(Integer feedId, Pageable pageable);
 
   @Query(value =
@@ -37,4 +33,10 @@ public interface FeedItemRepository extends PagingAndSortingRepository<FeedItem,
   Optional<FeedItem> findById(Integer id);
 
   void deleteByFeedId(Integer id);
+
+  List<FeedItem> findByGuid(String guid);
+
+  List<FeedItem> findByTitle(String title);
+
+  List<FeedItem> findByLink(String link);
 }

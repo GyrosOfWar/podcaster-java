@@ -17,8 +17,6 @@ public interface RssFeedRepository extends PagingAndSortingRepository<RssFeed, I
   @Query(name = "RssFeed.fullTextSearch")
   List<FeedItem> fullTextSearch(Integer id, String query);
 
-  List<RssFeed> findByHashedImageUrl(String hashedImageUrl);
-
   @Query("from FeedItem i where i.feed = :feedId and i.isFavorite = true")
   List<FeedItem> findFavoriteItems(@Param("feedId") Integer feedId);
 
