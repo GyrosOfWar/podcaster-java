@@ -92,7 +92,7 @@ class App extends React.Component<{}, AppState> {
       });
     });
     return (
-      <div>
+      <React.Fragment>
         <Navigation />
         <main id="main" className="container">
           {auth.isLoggedIn() &&
@@ -106,7 +106,7 @@ class App extends React.Component<{}, AppState> {
           {this.state.error && <Alert color="danger">{this.state.error.message}</Alert>}
           {children}
         </main>
-      </div>
+      </React.Fragment>
     );
   }
 }

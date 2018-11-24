@@ -14,14 +14,9 @@ interface PodcastDetailsItemProps {
 }
 
 export class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps, {}> {
-  constructor(props: PodcastDetailsItemProps) {
-    super(props);
-    this.clickItem = this.clickItem.bind(this);
-  }
-
-  clickItem() {
+  clickItem = () => {
     this.props.itemClicked(this.props.item);
-  }
+  };
 
   render() {
     const item = this.props.item;
@@ -52,38 +47,33 @@ export class PodcastDetailsItem extends React.Component<PodcastDetailsItemProps,
   }
 }
 
-interface PodcastDetailsState {
+interface State {
   items?: Page<FeedItem>;
   error?: Error;
   doingRefresh: boolean;
   info?: string;
 }
 
-interface PodcastDetailsProps {
+interface Props {
   router: any;
   params: any;
   itemClicked: (item: FeedItem) => void;
   location: { query: any };
 }
 
-export default class PodcastDetails extends React.Component<PodcastDetailsProps, PodcastDetailsState> {
-  constructor(props: any) {
+export default class PodcastDetails extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       doingRefresh: false
     };
-
-    this.refreshPodcast = this.refreshPodcast.bind(this);
-    this.randomPodcast = this.randomPodcast.bind(this);
-    this.deletePodcast = this.deletePodcast.bind(this);
-    this.fetchPodcasts = this.fetchPodcasts.bind(this);
   }
 
-  getPage(props: PodcastDetailsProps = this.props): number {
+  getPage = (props: Props = this.props): number  => {
     return parseInt(props.location.query.page, 10) || 0;
-  }
+  };
 
-  async fetchPodcasts(id: number, page: number) {
+  fetchPodcasts = async (id: number, page: number) => {
     try {
       const data = await fetchWithAuth<Page<FeedItem>>(`/api/feeds/${id}/items?page=${page}`);
       data.content.forEach(item => parseDates(item));
@@ -95,7 +85,7 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     } catch (error) {
       this.setState({ error });
     }
-  }
+  };
 
   async componentDidMount() {
     const id = this.props.params.id;
@@ -112,7 +102,7 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     }
   }
 
-  async componentWillReceiveProps?(nextProps: Readonly<PodcastDetailsProps>) {
+  async componentWillReceiveProps?(nextProps: Readonly<Props>) {
     if (nextProps.params === this.props.params || this.props.location.query === nextProps.location.query) {
       return;
     }
@@ -121,7 +111,7 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     await this.fetchPodcasts(id, page);
   }
 
-  async refreshPodcast() {
+  refreshPodcast = async () => {
     this.setState({
       doingRefresh: true
     });
@@ -156,9 +146,9 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
         doingRefresh: false
       });
     }
-  }
+  };
 
-  async randomPodcast() {
+  randomPodcast = async () => {
     const id = this.props.params.id;
     try {
       const feed = await fetchWithAuth<FeedItem>(`/api/feeds/${id}/random`);
@@ -166,9 +156,9 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
     } catch (error) {
       this.setState({ error });
     }
-  }
+  };
 
-  async deletePodcast() {
+  deletePodcast = async () => {
     if (confirm("Are you sure?")) {
       const items = this.state.items;
       if (items) {
@@ -183,13 +173,14 @@ export default class PodcastDetails extends React.Component<PodcastDetailsProps,
         }
       }
     }
-  }
+  };
 
   render() {
     if (this.state.error) {
       return <div>{this.state.error.message}</div>;
     }
 
+    // TODO show a loader/spinner 
     if (!this.state.items) {
       return <div>...</div>;
     }

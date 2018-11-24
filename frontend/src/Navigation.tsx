@@ -65,15 +65,15 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
   }
 }
 
-interface NavigationState {
+interface State {
   isOpen: boolean;
 }
 
-interface NavigationProps {
+interface Props {
 }
 
-export default class Navigation extends React.Component<NavigationProps, NavigationState> {
-  constructor(props: NavigationProps) {
+export default class Navigation extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
 
     this.toggle = this.toggle.bind(this);
@@ -90,29 +90,27 @@ export default class Navigation extends React.Component<NavigationProps, Navigat
 
   render() {
     return (
-      <div>
-        <Navbar light={true} color="light" expand={true}>
-          <NavbarToggler onClick={this.toggle} />
-          <Link className="navbar-brand" to="/app/">Podcaster</Link>
-          <Collapse isOpen={this.state.isOpen} navbar={true}>
-            <Nav navbar={true} className="mr-auto">
-              {auth.isLoggedIn() &&
-              <NavItem>
-                <Link className="nav-link" to="/app/history">History</Link>
-              </NavItem>
-              }
-              <NavItem>
-                {auth.isLoggedIn() ?
-                  <Link className="nav-link" to="/app/logout">Logout</Link> :
-                  <Link className="nav-link" to="/app/login">Login</Link>}
-              </NavItem>
-            </Nav>
+      <Navbar light color="light" expand>
+        <NavbarToggler onClick={this.toggle} />
+        <Link className="navbar-brand" to="/app/">Podcaster</Link>
+        <Collapse isOpen={this.state.isOpen} navbar={true}>
+          <Nav navbar={true} className="mr-auto">
             {auth.isLoggedIn() &&
-              <SearchBox/>
+            <NavItem>
+              <Link className="nav-link" to="/app/history">History</Link>
+            </NavItem>
             }
-          </Collapse>
-        </Navbar>
-      </div>
+            <NavItem>
+              {auth.isLoggedIn() ?
+                <Link className="nav-link" to="/app/logout">Logout</Link> :
+                <Link className="nav-link" to="/app/login">Login</Link>}
+            </NavItem>
+          </Nav>
+          {auth.isLoggedIn() &&
+            <SearchBox/>
+          }
+        </Collapse>
+      </Navbar>
     );
   }
 }
